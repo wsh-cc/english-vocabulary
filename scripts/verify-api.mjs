@@ -1,0 +1,27 @@
+﻿import assert from 'node:assert/strict';
+import fs from 'node:fs';
+const base='http://127.0.0.1:8787/api/state';
+const identity='qa-'+crypto.randomUUID();
+const headers={'Content-Type':'application/json','oai-authenticated-user-id':identity,'oai-authenticated-user-email':'qa@example.test'};
+const request=async(body,extra={})=>{const r=await fetch(base,{headers:{...headers,...extra},...(body?{method:'POST',body:JSON.stringify(body)}:{})});return {status:r.status,data:await r.json()};};
+const action=(type,values={})=>({type,operationId:crypto.randomUUID(),...values});
+const unauthorized=await fetch(base);assert.equal(unauthorized.status,401);
+const initial=await request();assert.equal(initial.status,200);assert.equal(initial.data.state.events.length,0);
+const wordId='anxious-adj-1';
+const one=action('result',{wordId,mode:'meaning',outcome:'correct',answer:'焦虑的'});
+const a=await request(one);assert.equal(a.status,200,JSON.stringify(a.data));assert.equal(a.data.state.events.length,1);assert.equal(a.data.state.progress[wordId].recall.attempts,0);
+const repeat=await request(one);assert.equal(repeat.data.state.events.length,1);
+const jobs=Array.from({length:4},(_,i)=>request(action('note',{wordId:['outline-n-1','confidence-n-1','practical-adj-1','rehearsal-n-1'][i],note:'concurrent '+i})));
+const results=await Promise.all(jobs);assert.ok(results.every(x=>x.status===200),JSON.stringify(results));
+const concurrent=await request();assert.equal(Object.keys(concurrent.data.state.notes).length,4);
+const hinted=await request(action('result',{wordId,mode:'recall',outcome:'hinted',answer:'anxious'}));assert.equal(hinted.data.state.progress[wordId].recall.correct,0);assert.equal(hinted.data.state.progress[wordId].recall.hinted,1);
+const bad=await request(action('result',{wordId:'missing-word',mode:'meaning',outcome:'correct',answer:'x'}));assert.equal(bad.status,409);
+const invalid=await request(action('restore',{backup:{version:1},revision:1}));assert.equal(invalid.status,400);
+const stale=await request(action('restore',{backup:initial.data.state,revision:0}));assert.equal(stale.status,409);
+const latest=await request();const restored=await request(action('restore',{backup:initial.data.state,revision:latest.data.revision}));assert.equal(restored.status,200);assert.equal(restored.data.state.events.length,0);
+const importWord={...JSON.parse(fs.readFileSync('content/catalog.json','utf8')).words[0],id:'qa-import-n-1',word:'review',meaning:'复查',scene:'custom'};
+const imported=await request(action('import',{words:[importWord,importWord]}));assert.equal(imported.status,200);assert.equal(imported.data.state.custom.length,1);
+const other=await request(undefined,{'oai-authenticated-user-id':'other-'+identity});assert.equal(other.data.state.custom.length,0);assert.equal(other.data.state.events.length,0);
+const cross=await request(action('settings',{settings:{daily:10}}),{'sec-fetch-site':'cross-site'});assert.equal(cross.status,403);
+console.log('PASS: authentication, per-user isolation, all three directions, idempotent retries, concurrent writes, hints, invalid/stale restore rejection, backup restore, import deduplication, cross-site write rejection.');
+

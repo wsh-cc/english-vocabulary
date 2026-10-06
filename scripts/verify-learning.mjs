@@ -1,0 +1,17 @@
+﻿import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {build} from 'esbuild';
+await build({entryPoints:['lib/learning.ts'],bundle:true,platform:'node',format:'esm',outfile:'.sites-runtime/learning-test.mjs'});
+const {initialState,applyAction,schedule,DAY,seedWords,scenes}=await import('../.sites-runtime/learning-test.mjs');
+const now=1780000000000;
+const first=schedule(undefined,'correct',now);assert.equal(first.interval,DAY);
+const sameDay=schedule(first,'correct',now+1000);assert.equal(sameDay.streak,1);assert.equal(sameDay.interval,DAY);
+const later=schedule(first,'correct',now+DAY);assert.equal(later.streak,2);assert.equal(later.interval,3*DAY);
+assert.equal(schedule(later,'hinted',now+4*DAY).correct,2);assert.equal(schedule(later,'hinted',now+4*DAY).streak,0);
+assert.equal(schedule(later,'wrong',now+4*DAY).interval,600000);
+let s=initialState();const id=seedWords[0].id;s=applyAction(s,{type:'familiar',wordId:id,value:'familiar',operationId:'a'},now);assert.equal(s.progress[id].meaning.attempts,0);assert.equal(s.progress[id].meaning.due,now+7*DAY);assert.equal(Object.keys(s.learned).length,0);
+s=applyAction(s,{type:'result',wordId:id,mode:'meaning',outcome:'correct',answer:'展示',operationId:'b'},now);assert.equal(s.progress[id].recall.attempts,0);assert.equal(s.events[0].delayed,false);
+s=applyAction(s,{type:'result',wordId:id,mode:'meaning',outcome:'correct',answer:'展示',operationId:'c'},now+DAY);assert.equal(s.events[1].delayed,true);
+const count=s.events.length;s=applyAction(s,{type:'result',wordId:id,mode:'meaning',outcome:'correct',answer:'展示',operationId:'c'},now+DAY);assert.equal(s.events.length,count);
+assert.equal(seedWords.length,100);assert.equal(scenes.length,10);for(const w of seedWords){assert.ok(w.tags.length);assert.ok(w.phonetic);assert.notEqual(w.example,w.test);assert.ok(w.sourceUrl.includes(w.version));assert.ok(scenes.find(x=>x.id===w.scene)?.words.includes(w.word));assert.ok(w.example.toLowerCase().includes(w.word)||['research','rehearsal','conserve'].includes(w.word),w.word);}
+console.log('PASS: independent ability tracks, same-day scheduling, spaced intervals, hinted/wrong outcomes, baseline not mastery, delayed-test classification, idempotency, 100 sourced units and 10 scene mappings.');

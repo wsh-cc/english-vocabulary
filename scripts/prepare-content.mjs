@@ -1,0 +1,8 @@
+import fs from 'node:fs';
+const source=JSON.parse(fs.readFileSync('content/sources/version.json','utf8'));
+const lists=['CET4','CET6'].map(tag=>({tag,lines:fs.readFileSync(`content/sources/${tag}_edited.txt`,'utf8').split(/\r?\n/)}));
+const scenes=JSON.parse(fs.readFileSync('content/scenes.json','utf8')).map(([id,title,category,text])=>({id,title,category,text,words:[...text.matchAll(/\{([a-z]+)\}/g)].map(m=>m[1])}));
+const words=fs.readFileSync('content/words.tsv','utf8').trim().split(/\r?\n/).map(line=>{const [word,pos,meaning,collocation,example,translation,test,testTranslation]=line.split('|');const matches=lists.map(l=>({tag:l.tag,line:l.lines.find(x=>x.startsWith(word+' '))})).filter(x=>x.line);if(!matches.length)throw Error('Unverified word: '+word);const scene=scenes.find(s=>s.words.includes(word));if(!scene||!test||example===test)throw Error('Incomplete content '+word);return {id:word+'-'+pos.replace('.','')+'-1',word,pos,meaning,collocation,example,translation,test,testTranslation,phonetic:matches[0].line.match(/\[([^\]]+)\]/)?.[1]||'',tags:matches.map(m=>m.tag),source:'mahavivo/english-wordlists',version:source.sha,sourceUrl:source.repository+'/tree/'+source.sha,sourceEntries:matches,scene:scene.id,mnemonic:`想象「${scene.title}」中的这一步：${meaning}。把 ${word} 与 ${collocation} 一起记住。`};});
+if(words.length!==100||new Set(words.map(w=>w.id)).size!==100)throw Error('Expected 100 unique units');
+fs.writeFileSync('content/catalog.json',JSON.stringify({source,words,scenes},null,2));
+console.log(JSON.stringify({words:words.length,scenes:scenes.length,cet4:words.filter(w=>w.tags.includes('CET4')).length,cet6:words.filter(w=>w.tags.includes('CET6')).length,source:source.sha}));
