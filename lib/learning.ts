@@ -6,11 +6,11 @@ export type Word={id:string;word:string;pos:string;meaning:string;collocation:st
 export type Track={due:number;streak:number;attempts:number;correct:number;hinted:number;wrong:number;last:number;interval:number};
 export type Result={id:string;wordId:string;mode:Mode;outcome:'correct'|'hinted'|'wrong';at:number;delayed:boolean;answer:string;nextDue:number};
 export type State={version:1;settings:{level:'CET4'|'CET6';daily:number;length:'long'|'short';count:number;gloss:'click'|'direct';onboarded:boolean};progress:Record<string,Partial<Record<Mode,Track>>>;notes:Record<string,string>;familiar:Record<string,string>;learned:Record<string,number>;custom:Word[];events:Result[];operations:string[]};
-export const seedWords:Word[]=catalog.words;
+export const seedWords:Word[]=catalog.words.map(w=>({...w,materialStatus:w.materialStatus==='basic'?'basic':'complete'}));
 export const scenes=catalog.scenes;
 export const hasContext=(w:Word)=>!!(w.test?.trim()&&w.testTranslation?.trim());
 export const availableModes=(w:Word|undefined):Mode[]=>!w?[]:hasContext(w)?[...MODES]:['meaning','recall'];
-export const initialState=():State=>({version:1,settings:{level:'CET4',daily:6,length:'long',count:6,gloss:'click',onboarded:false},progress:{},notes:{},familiar:{},learned:{},custom:[],events:[],operations:[]});
+export const initialState=():State=>({version:1,settings:{level:'CET6',daily:6,length:'long',count:6,gloss:'click',onboarded:false},progress:{},notes:{},familiar:{},learned:{},custom:[],events:[],operations:[]});
 export const allWords=(s:State)=>[...seedWords,...s.custom];
 export const DAY=86400000;
 export const chinaDay=(t:number)=>new Date(t+8*3600000).toISOString().slice(0,10);

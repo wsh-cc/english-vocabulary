@@ -1,4 +1,22 @@
-# vinext-starter
+# Wordweave / 词间
+
+私人英语学习站点，使用 Vinext、Cloudflare D1 和 Sites 托管。
+
+## 当前应用
+
+- 登录采用用户名、密码和服务端会话；首次注册需要私人密钥，仅能创建一个账号。下方 starter 中的 ChatGPT 身份说明不适用于本应用的账号或数据接口。
+- 词库包含 2163 个词条，覆盖 Koolearn 索引的全部 2085 个六级拼写；其中 100 个有完整语境材料，其余明确标记为基础词条。
+- 功能与验证范围见 `IMPLEMENTATION.md`。
+- `node scripts/verify-learning.mjs` 验证词库和学习逻辑。
+- `node scripts/verify-auth.mjs` 验证完整账号及数据流程，仅对 8791 端口的全新独立 QA 数据库运行。不要指向实际学习数据库。
+
+## 本地账号配置
+
+`scripts/create-registration-key.mjs` 将密钥和运行配置写入用户目录下的 `.codex/private/wordweave/`，同时生成被忽略的 `.dev.vars`。已有配置时不要重新生成或轮换。生产环境使用 Sites 的 `REGISTRATION_KEY_HASH` 和 `PASSWORD_PEPPER` 两个 secret。不得提交密钥、密码、会话或 `.dev.vars`。
+
+本地开发使用 `npm run dev`。构建预览需将环境配置提供给运行器；用于测试的 `dist/server/.dev.vars` 必须在打包发布前删除。生产迁移由 Sites 发布流程应用，本地数据库单独应用 `drizzle/` 的迁移。
+
+## Starter Reference
 
 A clean full-stack starter running on [vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and Drizzle support.
 

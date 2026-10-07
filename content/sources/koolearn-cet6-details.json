@@ -42,10 +42,12 @@
     "page": 1,
     "spelling": "whereas",
     "pos": "conj.",
-    "meaning": "鉴于",
+    "meaning": "然而；但是；而（表示对比）",
     "phonetic": "ˌweərˈæz",
     "sha256": "714a893e68afd855ed2e974c38a3b800d9487be08ec6809062d6becb2a9f87e5",
-    "retrievedAt": "2026-10-06T12:23:24.595Z"
+    "retrievedAt": "2026-10-06T12:23:24.595Z",
+    "reviewedAt": "2026-10-07",
+    "reviewNote": "释义根据原页英英释义、双语释义及例句校正；未采用人名元数据。"
   },
   {
     "word": "thresh",
@@ -1626,10 +1628,12 @@
     "page": 1,
     "spelling": "Mercury",
     "pos": "n.",
-    "meaning": "[化]汞，水银",
+    "meaning": "水星；汞，水银",
     "phonetic": "ˈmɜ:kjəri",
     "sha256": "988a172a826172170bb76ffdc6c0f23bf2ed8f3c0c1bceb799a0d56943e2f1d2",
-    "retrievedAt": "2026-10-06T12:23:40.944Z"
+    "retrievedAt": "2026-10-06T12:23:40.944Z",
+    "reviewedAt": "2026-10-07",
+    "reviewNote": "释义根据原页英英释义、双语释义及例句校正；未采用人名元数据。"
   },
   {
     "word": "shuttle",
@@ -5526,10 +5530,12 @@
     "page": 2,
     "spelling": "calculus",
     "pos": "n.",
-    "meaning": "[医]结石，石，积石，牙垢",
+    "meaning": "微积分；运算",
     "phonetic": "ˈkælkjələs",
     "sha256": "d217a34b3229d70f09ab26eb20396bee2374145fc65efcee67c3c7592b25c9fa",
-    "retrievedAt": "2026-10-06T12:24:16.881Z"
+    "retrievedAt": "2026-10-06T12:24:16.881Z",
+    "reviewedAt": "2026-10-07",
+    "reviewNote": "释义根据原页英英释义、双语释义及例句校正；未采用人名元数据。"
   },
   {
     "word": "impart",
@@ -7085,11 +7091,13 @@
     "listUrl": "https://www.koolearn.com/dict/tag_381_3.html",
     "page": 3,
     "spelling": "should",
-    "pos": "释义",
-    "meaning": "应该",
+    "pos": "aux.",
+    "meaning": "应该；应当",
     "phonetic": "ʃʊd",
     "sha256": "25c1a28449a50e5f90ebe43473af83ee8733fa0e5c26dde56ec6a96cecb6baf7",
-    "retrievedAt": "2026-10-06T12:24:30.484Z"
+    "retrievedAt": "2026-10-06T12:24:30.484Z",
+    "reviewedAt": "2026-10-07",
+    "reviewNote": "释义根据原页英英释义、双语释义及例句校正；未采用人名元数据。"
   },
   {
     "word": "criterion",
@@ -7662,10 +7670,12 @@
     "page": 3,
     "spelling": "tack",
     "pos": "n.",
-    "meaning": "[航]食物",
+    "meaning": "大头钉；方针，方法；航向",
     "phonetic": "tæk",
     "sha256": "7129f3e76a3cfdaf10e4a65e94328bd822b3ff3dfab85a0e30ef8719a2d1377b",
-    "retrievedAt": "2026-10-06T12:24:35.566Z"
+    "retrievedAt": "2026-10-06T12:24:35.566Z",
+    "reviewedAt": "2026-10-07",
+    "reviewNote": "释义根据原页英英释义、双语释义及例句校正；未采用人名元数据。"
   },
   {
     "word": "answer",
@@ -15521,11 +15531,13 @@
     "listUrl": "https://www.koolearn.com/dict/tag_381_6.html",
     "page": 6,
     "spelling": "impress",
-    "pos": "vt.",
-    "meaning": "印",
+    "pos": "v.",
+    "meaning": "给…留下深刻印象；使铭记",
     "phonetic": "ɪmˈpres",
     "sha256": "e360a489d089873b02cbab0b3fabdedb59aa66fea4b59637ed07025e720f946b",
-    "retrievedAt": "2026-10-06T12:25:47.441Z"
+    "retrievedAt": "2026-10-06T12:25:47.441Z",
+    "reviewedAt": "2026-10-07",
+    "reviewNote": "释义根据原页英英释义、双语释义及例句校正；未采用人名元数据。"
   },
   {
     "word": "extreme",
@@ -19217,11 +19229,13 @@
     "listUrl": "https://www.koolearn.com/dict/tag_381_7.html",
     "page": 7,
     "spelling": "Mars",
-    "pos": "abbr.",
-    "meaning": "master attitude reference system 主要态度参考系统",
-    "phonetic": "",
+    "pos": "n.",
+    "meaning": "火星；战神马尔斯",
+    "phonetic": "mɑ:z",
     "sha256": "bf78d825e10efc580b3a7a8dfd884e4e2ad7dd471193a9e83d28bc659a4bc6ad",
-    "retrievedAt": "2026-10-06T12:26:22.247Z"
+    "retrievedAt": "2026-10-06T12:26:22.247Z",
+    "reviewedAt": "2026-10-07",
+    "reviewNote": "释义根据原页英英释义、双语释义及例句校正；未采用人名元数据。"
   },
   {
     "word": "metropolitan",
@@ -24946,5 +24960,77 @@
     "phonetic": "dju:k",
     "sha256": "a3f3dbda1390aeb105c2f38b3badc01bda4b841584f278df0ec5699f0c726ad8",
     "retrievedAt": "2026-10-06T12:28:22.383Z"
+  },
+  {
+    "word": "scarlet",
+    "url": "https://www.koolearn.com/dict/wd_130838.html",
+    "listUrl": "https://www.koolearn.com/dict/tag_381_1.html",
+    "page": 1,
+    "spelling": "scarlet",
+    "pos": "n.",
+    "meaning": "猩红色；鲜红色",
+    "phonetic": "ˈskɑ:lət",
+    "reviewedAt": "2026-10-07",
+    "reviewNote": "释义根据原页英英释义、双语释义及例句校正；未采用人名元数据。"
+  },
+  {
+    "word": "jean",
+    "url": "https://www.koolearn.com/dict/wd_80613.html",
+    "listUrl": "https://www.koolearn.com/dict/tag_381_6.html",
+    "page": 6,
+    "spelling": "jean",
+    "pos": "n.",
+    "meaning": "牛仔布；牛仔裤（常用复数）",
+    "phonetic": "dʒi:n",
+    "reviewedAt": "2026-10-07",
+    "reviewNote": "释义根据原页英英释义、双语释义及例句校正；未采用人名元数据。"
+  },
+  {
+    "word": "Jesus",
+    "url": "https://www.koolearn.com/dict/wd_80784.html",
+    "listUrl": "https://www.koolearn.com/dict/tag_381_7.html",
+    "page": 7,
+    "spelling": "Jesus",
+    "pos": "n.",
+    "meaning": "耶稣",
+    "phonetic": "ˈdʒi:zəs",
+    "reviewedAt": "2026-10-07",
+    "reviewNote": "释义根据原页英英释义、双语释义及例句校正；未采用人名元数据。"
+  },
+  {
+    "word": "baron",
+    "url": "https://www.koolearn.com/dict/wd_13512.html",
+    "listUrl": "https://www.koolearn.com/dict/tag_381_7.html",
+    "page": 7,
+    "spelling": "baron",
+    "pos": "n.",
+    "meaning": "男爵；大亨",
+    "phonetic": "ˈbærən",
+    "reviewedAt": "2026-10-07",
+    "reviewNote": "释义根据原页英英释义、双语释义及例句校正；未采用人名元数据。"
+  },
+  {
+    "word": "Roman",
+    "url": "https://www.koolearn.com/dict/wd_127853.html",
+    "listUrl": "https://www.koolearn.com/dict/tag_381_7.html",
+    "page": 7,
+    "spelling": "Roman",
+    "pos": "n.",
+    "meaning": "古罗马人；罗马人",
+    "phonetic": "ˈrəumən",
+    "reviewedAt": "2026-10-07",
+    "reviewNote": "释义根据原页英英释义、双语释义及例句校正；未采用人名元数据。"
+  },
+  {
+    "word": "Venus",
+    "url": "https://www.koolearn.com/dict/wd_161335.html",
+    "listUrl": "https://www.koolearn.com/dict/tag_381_8.html",
+    "page": 8,
+    "spelling": "Venus",
+    "pos": "n.",
+    "meaning": "金星；维纳斯",
+    "phonetic": "ˈviːnəs",
+    "reviewedAt": "2026-10-07",
+    "reviewNote": "释义根据原页英英释义、双语释义及例句校正；未采用人名元数据。"
   }
 ]

@@ -1,7 +1,45 @@
-import { getChatGPTUser } from '@/app/chatgpt-auth';
-import { readState,updateState } from '@/db/state';
+import { getAccount, validWriteOrigin } from '@/lib/auth';
+import { readState, updateState } from '@/db/state';
 import { actionSchema } from '@/lib/validation';
-export const dynamic='force-dynamic';
-const json=(body:unknown,status=200)=>Response.json(body,{status,headers:{'Cache-Control':'no-store'}});
-export async function GET(){const user=await getChatGPTUser();if(!user)return json({error:'请登录后继续学习。'},401);try{return json({...await readState(user.userId),user:{name:user.displayName,email:user.email}});}catch(e){console.error('load-state',e);return json({error:'学习记录加载失败，请检查连接后重试。'},503);}}
-export async function POST(request:Request){const user=await getChatGPTUser();if(!user)return json({error:'请登录后保存记录。'},401);if(request.headers.get('sec-fetch-site')==='cross-site'||!request.headers.get('content-type')?.startsWith('application/json'))return json({error:'请求来源无效。'},403);try{const reader=request.body?.getReader();if(!reader)return json({error:'缺少内容。'},400);let length=0;const parts:Uint8Array[]=[];while(true){const {done,value}=await reader.read();if(done)break;length+=value.length;if(length>4000000){await reader.cancel();return json({error:'文件不能超过 4 MB。'},413);}parts.push(value);}const bytes=new Uint8Array(length);let offset=0;for(const part of parts){bytes.set(part,offset);offset+=part.length;}const input=JSON.parse(new TextDecoder().decode(bytes));const parsed=actionSchema.safeParse(input);if(!parsed.success)return json({error:'数据格式不正确：'+parsed.error.issues[0].message},400);return json(await updateState(user.userId,parsed.data));}catch(e){console.error('save-state',e);return json({error:e instanceof Error&&(/备份|记录|词汇|设备|编号/.test(e.message))?e.message:'保存未完成，请保留页面并重试。'},409);}}
+
+export const dynamic = 'force-dynamic';
+const json = (body: unknown, status = 200) => Response.json(body, {status, headers: {'Cache-Control': 'no-store'}});
+
+export async function GET() {
+  try {
+    const user = await getAccount();
+    if (!user) return json({error: '请登录后继续学习。'}, 401);
+    return json({...await readState(user.userId), user: {name: user.name}});
+  } catch (error) {
+    console.error('load-state', error);
+    return json({error: '学习记录加载失败，请检查连接后重试。'}, 503);
+  }
+}
+
+export async function POST(request: Request) {
+  try {
+    const reader = request.body?.getReader();
+    if (!reader) return json({error: '缺少内容。'}, 400);
+    let length = 0;
+    const parts: Uint8Array[] = [];
+    while (true) {
+      const {done, value} = await reader.read();
+      if (done) break;
+      length += value.length;
+      if (length > 4000000) { await reader.cancel(); return json({error: '文件不能超过 4 MB。'}, 413); }
+      parts.push(value);
+    }
+    const user = await getAccount();
+    if (!user) return json({error: '请登录后保存记录。'}, 401);
+    if (!validWriteOrigin(request)) return json({error: '请求来源无效。'}, 403);
+    const bytes = new Uint8Array(length);
+    let offset = 0;
+    for (const part of parts) { bytes.set(part, offset); offset += part.length; }
+    const parsed = actionSchema.safeParse(JSON.parse(new TextDecoder().decode(bytes)));
+    if (!parsed.success) return json({error: '数据格式不正确：' + parsed.error.issues[0].message}, 400);
+    return json(await updateState(user.userId, parsed.data));
+  } catch (error) {
+    console.error('save-state', error);
+    return json({error: error instanceof Error && /备份|记录|词汇|设备|编号/.test(error.message) ? error.message : '保存未完成，请保留页面并重试。'}, 409);
+  }
+}

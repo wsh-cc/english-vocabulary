@@ -1,8 +1,8 @@
-﻿import assert from 'node:assert/strict';
+import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {build} from 'esbuild';
 await build({entryPoints:['lib/learning.ts'],bundle:true,platform:'node',format:'esm',outfile:'.sites-runtime/learning-test.mjs'});
-const {initialState,applyAction,schedule,DAY,seedWords,scenes}=await import('../.sites-runtime/learning-test.mjs');
+const {initialState,applyAction,schedule,DAY,seedWords,scenes,availableModes,dueItems}=await import('../.sites-runtime/learning-test.mjs');
 const now=1780000000000;
 const first=schedule(undefined,'correct',now);assert.equal(first.interval,DAY);
 const sameDay=schedule(first,'correct',now+1000);assert.equal(sameDay.streak,1);assert.equal(sameDay.interval,DAY);
@@ -13,5 +13,16 @@ let s=initialState();const id=seedWords[0].id;s=applyAction(s,{type:'familiar',w
 s=applyAction(s,{type:'result',wordId:id,mode:'meaning',outcome:'correct',answer:'展示',operationId:'b'},now);assert.equal(s.progress[id].recall.attempts,0);assert.equal(s.events[0].delayed,false);
 s=applyAction(s,{type:'result',wordId:id,mode:'meaning',outcome:'correct',answer:'展示',operationId:'c'},now+DAY);assert.equal(s.events[1].delayed,true);
 const count=s.events.length;s=applyAction(s,{type:'result',wordId:id,mode:'meaning',outcome:'correct',answer:'展示',operationId:'c'},now+DAY);assert.equal(s.events.length,count);
-assert.equal(seedWords.length,100);assert.equal(scenes.length,10);for(const w of seedWords){assert.ok(w.tags.length);assert.ok(w.phonetic);assert.notEqual(w.example,w.test);assert.ok(w.sourceUrl.includes(w.version));assert.ok(scenes.find(x=>x.id===w.scene)?.words.includes(w.word));assert.ok(w.example.toLowerCase().includes(w.word)||['research','rehearsal','conserve'].includes(w.word),w.word);}
+assert.equal(seedWords.length,2163);assert.equal(scenes.length,10);for(const w of seedWords.filter(w=>w.materialStatus==='complete')){assert.ok(w.tags.length);assert.ok(w.phonetic);assert.notEqual(w.example,w.test);assert.ok(w.sourceUrl.includes(w.version));assert.ok(scenes.find(x=>x.id===w.scene)?.words.includes(w.word));assert.ok(w.example.toLowerCase().includes(w.word)||['research','rehearsal','conserve'].includes(w.word),w.word);}
 console.log('PASS: independent ability tracks, same-day scheduling, spaced intervals, hinted/wrong outcomes, baseline not mastery, delayed-test classification, idempotency, 100 sourced units and 10 scene mappings.');
+const index=JSON.parse(fs.readFileSync('content/sources/koolearn-cet6-index.json','utf8'));
+assert.equal(index.entries.length,2085);
+for(const entry of index.entries)assert.ok(seedWords.some(w=>w.word.toLowerCase()===entry.word.toLowerCase()&&w.tags.includes('CET6')),entry.word);
+assert.equal(new Set(seedWords.map(w=>w.id)).size,seedWords.length);
+const basic=seedWords.find(w=>w.materialStatus==='basic');
+assert.deepEqual(availableModes(basic),['meaning','recall']);
+s=applyAction(initialState(),{type:'introduce',ids:[basic.id],operationId:'basic-intro'},now);
+assert.equal(s.progress[basic.id].context,undefined);
+assert.equal(dueItems(s,now).length,2);
+assert.throws(()=>applyAction(s,{type:'result',wordId:basic.id,mode:'context',outcome:'correct',answer:'',operationId:'bad-context'},now),/训练方向/);
+console.log('PASS: all 2085 source words included, original IDs preserved, 2163 unique IDs, basic entries use two directions only.');
