@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import "./auth.css";
+import "./browse.css";
 
 export const metadata: Metadata = {
   title: "词间 · 四六级语境学习",

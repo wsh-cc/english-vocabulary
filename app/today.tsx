@@ -6,7 +6,7 @@ import { allWords, dueItems, chinaDay, MODES, modeNames } from '@/lib/learning';
 import { Choice } from './ui';
 import type {AppProps,QueueItem} from './types';
 
-export function Today({state,save,busy,onLearn,onLibrary,onReview}:AppProps&{onLearn:()=>void;onLibrary:()=>void;onReview:(items:QueueItem[])=>void}) {
+export function Today({state,save,busy,onLearn,onLibrary,onReview}:AppProps&{onLearn:()=>void;onLibrary:()=>void;onReview:(items:QueueItem[],browse?:boolean)=>void}) {
   const [assessing,setAssessing]=useState(false);
   const [index,setIndex]=useState(0);
   const [reveal,setReveal]=useState(false);
@@ -27,7 +27,7 @@ export function Today({state,save,busy,onLearn,onLibrary,onReview}:AppProps&{onL
   }
   const filtered=due.filter(x=>mode==='all'||x.mode===mode);
   return <>
-    <div className="overview-intro"><p>把精力留给今天，把记忆交给时间。</p><span>{state.settings.level==='CET6'?'大学英语六级':'大学英语四级'} · {words.length.toLocaleString()} 个词条</span></div>
+    <div className="overview-intro"><p>把精力留给今天，把记忆交给时间。</p><span>{state.settings.level==='CET6'?'大学英语六级':'大学英语四级'} · {words.length.toLocaleString()} 个词条</span><button className="secondary" disabled={busy||!words.length} onClick={()=>onReview(words.map(word=>({word,mode:'meaning'})),true)}><BookOpen size={16}/>快速浏览词表</button></div>
     <section className="overview-metrics" aria-label="学习概况">
       {[{label:'待复习',value:due.length,caption:'个到期练习',icon:RotateCcw,color:'green'},{label:'今日新词',value:doneToday,caption:`每日目标 ${state.settings.daily} 个`,icon:PenLine,color:'blue'},{label:'今日练习',value:reviewed,caption:'次主动回忆',icon:Target,color:'rose'},{label:'累计接触',value:known,caption:`共 ${words.length.toLocaleString()} 个词条`,icon:Layers,color:'gray'}].map(({label,value,caption,icon:Icon,color})=><div className={'overview-metric '+color} key={label}><div><span>{label}</span><Icon size={17}/></div><strong>{value.toLocaleString()}<small>{label==='今日新词'?'/ '+state.settings.daily:''}</small></strong><p>{caption}</p></div>)}
     </section>
