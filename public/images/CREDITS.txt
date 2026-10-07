@@ -3,3 +3,7 @@ Kaisa House, University of Helsinki.
 Source: https://www.helsinki.fi/en/news/teaching/finlands-most-popular-learning-environment-kaisa-house-attracts-over-9000-visitors-day
 Image: https://www.helsinki.fi/assets/drupal/s3fs-public/styles/og_images/public/migrated-news/11125-kaisatalo190216.jpg?itok=731Tr_Qn
 Image copyright remains with the original rights holder. Displayed with a CSS crop.
+
+book-sculpture-login.webp
+Original AI-generated book still life, created for Wordweave on 2026-10-07.
+Source bitmap: 1672 x 941; optimized as WebP for the login experience.
