@@ -1,16 +1,107 @@
 "use client";
-import { useMemo,useState } from 'react';
-import { BookOpen, Eye, SkipForward } from 'lucide-react';
-import { allWords,scenes,chinaDay,type Word } from '@/lib/learning';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { BookOpen, Check, RefreshCw } from 'lucide-react';
+import { allWords, type Word } from '@/lib/learning';
+import { passageParts, readingSummary, type Passage } from '@/lib/reading';
 import { Choice } from './ui';
-import type {AppProps,QueueItem} from './types';
-const compact:Record<string,string>={classroom:'面对明天的 {presentation}，我虽然 {anxious}，仍按照 {outline} 完成一次 {rehearsal}，听取 {practical} 建议后重获 {confidence}，决定面向 {audience} 换一种 {approach}，先 {focus} 重点再 {clarify} 细节。',report:'做课程 {research} 时，我们把 {survey} 作为收集 {evidence} 的 {method}，筛选 {relevant} 信息并核对 {source}，确保材料 {reliable}、数字 {accurate}，再通过 {analysis} 来 {conclude}。',travel:'这次 {journey} 出发前，我确认 {destination} 和 {accommodation}，做好 {reservation}，核对 {departure} 时间并收拾 {luggage}，遇到 {delay} 后改用 {alternative} 方案，调整 {route} 和 {arrival} 时间。',team:'面对 {project} 的 {deadline}，组长先 {assign} 任务，明确 {responsibility}，大家以 {efficient} 的方式 {cooperate}，确定 {priority}、跟进 {progress}，克服 {obstacle} 后 {accomplish} 目标。',green:'为了 {protect} 校园 {environment}，我们珍惜每一种 {resource}，主动 {conserve} 用水、{recycle} 废纸，记录每天 {consume} 的电量，用行动 {reduce} 浪费与 {pollution}，并关注活动的 {impact}，努力 {sustain} 这项计划。',work:'规划 {career} 时，我带着 {certificate} 和实践 {experience} 去参加 {interview}，作为 {candidate} 把握这次 {opportunity}，准备 {negotiate} 关于 {salary} 的细节，寻找能实现 {ambition} 的 {profession}。',lab:'这次 {experiment} 为检验 {hypothesis} 而设，我们控制 {variable}，逐个 {observe} 和 {measure} 每份 {sample}，取得 {precise}、{consistent} 的记录，再 {interpret} 结果，讨论它能否 {demonstrate} 最初的想法。',community:'周末，我以 {volunteer} 身份为 {community} 的 {charity} 活动 {contribute} 力量，协助 {organize} 义卖，邀请每个 {individual} 来 {participate}，在表达 {concern} 的同时提供 {support}，期待长远的 {benefit}。',digital:'借助 {technology} 的 {innovation}，新 {device} 可以通过 {secure} 的 {network} 获得词库 {access}，{transfer} 我的 {digital} 记录；这种 {convenient} 的方式也必须尊重 {privacy}。',habit:'面对学习的 {challenge}，我逐渐 {adapt} 新节奏，靠明确的 {motive} 和 {discipline} 来 {persist}，经常 {reflect} 并调整 {strategy}，在 {improve} 能力的同时 {maintain} 习惯，最终 {achieve} 目标。'};
-export function Lesson({state,save,busy,onWord,onReview}:AppProps&{onWord:(w:Word)=>void;onReview:(items:QueueItem[],browse?:boolean)=>void}){const [sceneId,setSceneId]=useState(scenes[0].id);const [practice,setPractice]=useState(false);const [peeked,setPeeked]=useState(false);const [failed,setFailed]=useState(false);const [stage,setStage]=useState(1);const [cursor,setCursor]=useState(0);const [answers,setAnswers]=useState<Record<string,string>>({});const [revealed,setRevealed]=useState(false);const [hint,setHint]=useState(false);const [saved,setSaved]=useState<string[]>([]);const [attempt,setAttempt]=useState('');const [fixed,setFixed]=useState<Word[]>([]);const words=allWords(state);const scene=scenes.find(s=>s.id===sceneId)!;
-const targets=useMemo(()=>{const eligible=words.filter(w=>w.scene===sceneId&&w.tags.includes(state.settings.level));const old=eligible.filter(w=>state.learned[w.id]).sort((a,b)=>Math.min(...Object.values(state.progress[a.id]??{}).map(t=>t.due))-Math.min(...Object.values(state.progress[b.id]??{}).map(t=>t.due)));const used=Object.values(state.learned).filter(t=>chinaDay(t)===chinaDay(Date.now())).length;const remaining=Math.max(0,state.settings.daily-used);const fresh=eligible.filter(w=>!state.learned[w.id]).slice(0,Math.min(6,remaining));const oldCount=Math.min(old.length,Math.max(2,state.settings.count-6));return [...fresh.slice(0,state.settings.count-oldCount),...old.slice(0,oldCount),...fresh.slice(state.settings.count-oldCount),...old.slice(oldCount)].slice(0,state.settings.count);},[state,sceneId]);
-const active=practice?fixed:targets;const hidden=practice?(stage===1?active.slice(cursor,cursor+1):stage===2?active.slice(cursor,cursor+3):active):[];const hiddenIds=new Set(hidden.map(w=>w.id));const text=state.settings.length==='long'?scene.text:compact[sceneId];
-async function start(){if(!active.length)return;if(await save({type:'introduce',ids:active.map(w=>w.id)})){setFixed(active);setPractice(true);setStage(1);reset();}}
-function reset(){setPeeked(false);setFailed(false);setCursor(0);setAnswers({});setRevealed(false);setHint(false);setSaved([]);setAttempt(crypto.randomUUID());}
-async function record(){for(const w of hidden){if(saved.includes(w.id))continue;const correct=(answers[w.id]??'').trim().toLowerCase()===w.word.toLowerCase();const ok=await save({type:'result',operationId:attempt+'-'+w.id,wordId:w.id,mode:'recall',outcome:correct?(hint?'hinted':'correct'):'wrong',answer:answers[w.id]??''});if(!ok){setFailed(true);return;}setSaved(s=>[...s,w.id]);}advance(true);}
-function advance(test:boolean){setPeeked(false);setFailed(false);if(stage<3&&cursor+(stage===1?1:3)<active.length){setCursor(c=>c+(stage===1?1:3));setAnswers({});setRevealed(false);setHint(false);setSaved([]);setAttempt(crypto.randomUUID());}else if(stage<3){setStage(s=>s+1);reset();}else {setPractice(false);if(test)onReview(active.map(word=>({word,mode:'context'})));}}
-return <><div className="toolbar"><Choice label="学习场景" value={sceneId} onChange={setSceneId} options={scenes.map(s=>[s.id,s.title])} disabled={practice||busy}/><Choice label="篇幅" value={state.settings.length} onChange={length=>save({type:'settings',settings:{length}})} options={ [['long','短段落'],['short','长句']] } disabled={practice||busy}/><Choice label="目标词数量" value={String(state.settings.count)} onChange={count=>save({type:'settings',settings:{count:Number(count)}})} options={ [['6','6 个'],['8','8 个'],['10','10 个']] } disabled={practice||busy}/><Choice label="中文释义" value={state.settings.gloss} onChange={gloss=>save({type:'settings',settings:{gloss}})} options={ [['click','点击查看'],['direct','直接显示']] } disabled={practice||busy}/></div><section className="paper-card lesson"><div className="section-label"><span>{scene.category} · {active.length} 个目标词</span><span className="pill">记忆辅助句</span></div><h2>{scene.title}</h2>{practice&&<div className="practice-label">{stage===1?'第一步 · 逐词隐藏':stage===2?'第二步 · 多词隐藏':'第三步 · 全部隐藏'} · {stage<3?`${Math.min(cursor+1,active.length)} / ${active.length}`:'完整回想'}</div>}<div className="story">{text.split(/(\{[a-z]+\})/g).map((part,i)=>{if(!part.startsWith('{'))return <span key={i}>{part}</span>;const spelling=part.slice(1,-1);const w=words.find(w=>w.word===spelling)!;const chosen=active.some(x=>x.id===w.id);if(!chosen)return <span key={i}>{w.meaning.split('；')[0]}</span>;if(hiddenIds.has(w.id)&&!revealed)return <span key={i} className="word-blank">〔{hidden.findIndex(x=>x.id===w.id)+1}〕</span>;if(practice)return <strong className="word-link" key={i}>{w.word}</strong>;return <span key={i}><button className="word-link" onClick={()=>onWord(w)}>{w.word}</button>{state.settings.gloss==='direct'&&<span className="inline-gloss">（{w.meaning}）</span>}</span>;})}</div>{practice?<><div className="answer-grid">{hidden.map((w,i)=><label key={w.id}>空格 {i+1}<input aria-label={'空格 '+(i+1)} autoComplete="off" spellCheck={false} disabled={revealed||busy} value={answers[w.id]??''} onChange={e=>setAnswers(a=>({...a,[w.id]:e.target.value}))} placeholder="回想英文单词" maxLength={100}/></label>)}</div>{hint&&!revealed&&<p className="hint">首字母提示：{hidden.map((w,i)=>`${i+1}. ${w.word[0]}`).join(' · ')}。本轮这些词按“借助提示”记录。</p>}{revealed?<div className="feedback"><h3>核对本轮目标词</h3>{hidden.map((w,i)=><p key={w.id}>{i+1}. <strong>{w.word}</strong> · {w.meaning} <span className="muted">{peeked?'仅浏览':(answers[w.id]??'').trim().toLowerCase()===w.word?'已回忆出目标词':'尚未回忆出目标词'}</span></p>)}{!peeked&&<p className="muted">其他英文表达可能成立；这里仅核对是否想起指定目标词。记录仍会保留你的原答案。</p>}{!peeked&&<button className="primary" disabled={busy} onClick={record}>{busy?'正在保存…':stage===3?'保存并进入新语境检验':'保存并继续隐藏练习'}</button>}</div>:<div className="action-row"><button className="secondary" disabled={hint||busy} onClick={()=>setHint(true)}>首字母提示</button><button className="secondary" disabled={busy} onClick={()=>{setPeeked(true);setRevealed(true);}}><Eye size={16}/>直接看答案</button><button className="primary" disabled={busy} onClick={()=>setRevealed(true)}>提交并核对</button></div>}<div className="review-skip-row"><button className="secondary" disabled={busy||failed||saved.length>0} onClick={()=>advance(false)}><SkipForward size={16}/>{peeked?'继续，不记分':stage===1?'跳过这个词':'跳过这组词'}</button><span>跳过不计答对，不改变复习时间</span></div><button className="text-button" disabled={busy||failed} onClick={()=>{setPractice(false);reset();}}>退出练习，已提交记录保留</button></>:<><div className="lesson-meta"><span>{active.filter(w=>!state.learned[w.id]).length} 个新词 · {active.filter(w=>state.learned[w.id]).length} 个已学词</span><span>当前词表：{state.settings.level==='CET4'?'四级':'六级'}</span></div>{active.length<state.settings.count&&<p className="muted">按当前词表、每日新词额度和已学词筛选，本轮可练 {active.length} 个词；其余位置以中文呈现。</p>}<div className="action-row"><button className="secondary" disabled={busy||!active.length} onClick={()=>onReview(active.map(word=>({word,mode:'meaning'})),true)}><BookOpen size={16}/>快速浏览本组</button><button className="primary" disabled={busy||!active.length} onClick={start}>开始隐藏回忆</button><button className="secondary" onClick={()=>onReview(active.map(word=>({word,mode:'meaning'})))} disabled={busy||!active.length}>练习英文认义</button></div><p className="small-note">混合句用于帮助记忆；点击单词查看完整英文例句，学习自然表达。练习后会逐词检验新的英文语境。</p></>}</section></>;
+import type { AppProps } from './types';
+
+type HistoryItem = { id: string; title: string; count: number; completed: boolean };
+type ReadingResponse = { passage: Passage | null; history: HistoryItem[]; nextCursor: string | null; available: number; completedCount: number; error?: string };
+export function Lesson({ state, save, busy, onWord, onProgress }: AppProps & { onWord: (word: Word) => void; onProgress: () => Promise<void> }) {
+  const [passage, setPassage] = useState<Passage | null>(null);
+  const [history, setHistory] = useState<HistoryItem[]>([]);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [available, setAvailable] = useState(0);
+  const [completedCount, setCompletedCount] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [working, setWorking] = useState('');
+  const [error, setError] = useState('');
+  const [completedHere, setCompletedHere] = useState<string[]>([]);
+  const inFlight = useRef(false);
+  const mounted = useRef(true);
+  const words = new Map(allWords(state).map(word => [word.id, word]));
+  const summary = readingSummary(state);
+  const disabled = busy || !!working || loading;
+  const completed = !!passage && (!!state.reading?.completed[passage.id] || completedHere.includes(passage.id));
+
+  const load = useCallback(async (id?: string, signal?: AbortSignal) => {
+    const response = await fetch('/api/passages' + (id ? '?id=' + encodeURIComponent(id) : ''), { cache: 'no-store', signal });
+    const data = await response.json() as ReadingResponse;
+    if (!response.ok) throw Error(data.error || '段落加载失败。');
+    if (!mounted.current) return;
+    setPassage(data.passage); setHistory(data.history); setNextCursor(data.nextCursor);
+    setAvailable(data.available); setCompletedCount(data.completedCount);
+  }, []);
+
+  useEffect(() => {
+    mounted.current = true;
+    const controller = new AbortController();
+    void load(undefined, controller.signal).catch(e => { if (!controller.signal.aborted) setError(e.message); }).finally(() => { if (!controller.signal.aborted) setLoading(false); });
+    return () => { mounted.current = false; controller.abort(); };
+  }, [load]);
+
+  async function open(id?: string) {
+    if (inFlight.current) return;
+    inFlight.current = true; setWorking('正在打开段落…'); setError('');
+    try { await load(id); } catch (e) { if (mounted.current) setError(e instanceof Error ? e.message : '加载失败，请重试。'); }
+    finally { inFlight.current = false; if (mounted.current) setWorking(''); }
+  }
+
+  async function more() {
+    if (inFlight.current || !nextCursor) return;
+    inFlight.current = true; setWorking('正在加载更多段落…'); setError('');
+    try {
+      const response = await fetch('/api/passages?cursor=' + encodeURIComponent(nextCursor), { cache: 'no-store' });
+      const data = await response.json() as ReadingResponse;
+      if (!response.ok) throw Error(data.error || '段落目录加载失败。');
+      if (!mounted.current) return;
+      setHistory(items => [...items, ...data.history.filter(item => !items.some(old => old.id === item.id))]);
+      setNextCursor(data.nextCursor);
+    } catch (e) { if (mounted.current) setError(e instanceof Error ? e.message : '段落目录加载失败。'); }
+    finally { inFlight.current = false; if (mounted.current) setWorking(''); }
+  }
+
+  async function act(kind: 'next' | 'complete') {
+    if (inFlight.current || !passage) return;
+    inFlight.current = true; setError(''); setWorking('正在保存阅读进度…');
+    try {
+      if (!completed) {
+        const response = await fetch('/api/passages', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'complete', id: passage.id, operationId: crypto.randomUUID() }) });
+        const data = await response.json() as { error?: string };
+        if (!response.ok) throw Error(data.error || '阅读进度未保存，请重试。');
+        if (!mounted.current) return;
+        setCompletedHere(ids => [...ids, passage.id]); setCompletedCount(count => count + 1);
+        setHistory(items => items.map(item => item.id === passage.id ? { ...item, completed: true } : item));
+        await onProgress();
+      }
+      if (kind === 'next' && mounted.current) {
+        setWorking('正在打开下一段…');
+        const response = await fetch('/api/passages', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'next', afterId: passage.id }) });
+        const data = await response.json() as { passage: Passage | null; error?: string };
+        if (!response.ok) throw Error(data.error || '下一段加载失败，请重试。');
+        if (mounted.current) { setPassage(data.passage); document.querySelector('.reading-workspace')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+      }
+    } catch (e) { if (mounted.current) setError(e instanceof Error ? e.message : '操作未完成，请重试。'); }
+    finally { inFlight.current = false; if (mounted.current) setWorking(''); }
+  }
+
+  return <div className="reading-workspace">
+    <div className="reading-progress" aria-label="语境阅读进度"><div><span>已在句子中读过</span><strong>{summary.covered.toLocaleString()} <small>/ {summary.total.toLocaleString()} 个词条</small></strong></div><div><span>已读段落</span><strong>{completedCount} <small>/ {available} 篇</small></strong></div><p>每段 20～40 个目标词，跟着故事逐步读完当前内置词表。</p></div>
+    <div className="toolbar reading-toolbar"><Choice label="词义提示" value={state.settings.gloss} onChange={gloss => save({ type: 'settings', settings: { gloss } })} options={ [['click', '点词查看'], ['direct', '随句显示']] } disabled={disabled}/><span className="reading-instruction">先读完整句；不懂的词可以点开。</span></div>
+    {error && <div className="error-banner" role="alert">{error}<button className="secondary" disabled={disabled} onClick={() => void open(passage?.id)}>重新加载</button></div>}
+    {working && <p className="reading-status" role="status"><RefreshCw size={16} className="reading-spinner"/>{working}</p>}
+    {loading ? <div className="loading-state" role="status">正在打开阅读内容…</div> : passage ? <article className="paper-card lesson reading-paper">
+      <div className="section-label"><span>{passage.wordIds.length} 个目标词 · {passage.level === 'CET6' ? '六级' : '四级'}语境阅读</span><span className="pill">{completed ? '已读过 · 可以重读' : '内置故事 · 记忆辅助段落'}</span></div>
+      <h2>{passage.title}</h2>
+      <div className="story reading-story">{passageParts(passage.text).map((part, index) => {
+        if (part.type === 'text') return <span key={index}>{part.text}</span>;
+        const word = words.get(part.id);
+        if (!word) return <span key={index}>〔词条暂不可用〕</span>;
+        return <span key={index}><button className="word-link" onClick={() => onWord(word)}>{word.word}</button>{state.settings.gloss === 'direct' && <span className="inline-gloss">（{word.meaning}）</span>}</span>;
+      })}</div>
+      <div className="reading-footer"><div className="action-row"><button className="primary" disabled={disabled} onClick={() => void act('next')}><BookOpen size={17}/>{completed ? '继续下一段' : '读完，继续下一段'}</button><button className="secondary" disabled={disabled || completed} onClick={() => void act('complete')}><Check size={17}/>{completed ? '阅读进度已保存' : '读完，保存进度'}</button></div><p>内容已写好，可以随时从目录重读。阅读足迹与测试成绩分别记录。</p></div>
+    </article> : <section className="reading-empty"><BookOpen size={28}/><h2>阅读内容暂不可用</h2><p>重新加载后，从当前词表的第一篇未读段落继续。</p><button className="primary" disabled={disabled} onClick={() => void open()}>重新加载</button></section>}
+    {history.length > 0 && <details className="reading-history"><summary>段落目录 · 共 {available} 篇 · 随时重读</summary><div>{history.map(item => <button key={item.id} className={passage?.id === item.id ? 'current' : ''} disabled={disabled} onClick={() => void open(item.id)}><span>{item.title}</span><small>{item.count} 词 · {item.completed || completedHere.includes(item.id) ? '已读' : '未读'}</small></button>)}</div>{nextCursor && <button className="secondary" disabled={disabled} onClick={() => void more()}>更多段落</button>}</details>}
+  </div>;
 }

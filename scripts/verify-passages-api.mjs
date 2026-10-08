@@ -1,0 +1,86 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import { DatabaseSync } from 'node:sqlite';
+import { build } from 'esbuild';
+import { createHash } from 'node:crypto';
+
+// Only in-memory SQLite. This test never writes to the learner's database.
+const db = new DatabaseSync(':memory:');
+for (const file of fs.readdirSync('drizzle').filter(file => file.endsWith('.sql')).sort()) db.exec(fs.readFileSync('drizzle/' + file, 'utf8'));
+const d1 = { prepare(sql) { const statement = db.prepare(sql); let values = []; return {
+  bind(...args) { values = args; return this; },
+  async first() { return statement.get(...values) ?? null; },
+  async all() { return { results: statement.all(...values) }; },
+  async run() { return { meta: { changes: Number(statement.run(...values).changes) } }; },
+}; } };
+globalThis.readingTestEnv = { DB: d1 };
+globalThis.readingTestCookie = 'a'.repeat(64);
+for (const [userId, token] of [['reader', 'a'.repeat(64)], ['other', 'b'.repeat(64)]]) {
+  db.prepare('INSERT INTO app_accounts VALUES (?, ?, ?, ?, ?, ?, ?)').run(userId, userId, userId, userId, 'test', 'test', Date.now());
+  db.prepare('INSERT INTO app_sessions VALUES (?, ?, ?)').run(createHash('sha256').update(token).digest('hex'), userId, Date.now() + 3600000);
+}
+await build({ entryPoints: ['app/api/passages/route.ts'], outfile: '.sites-runtime/passages-api-test.mjs', bundle: true, platform: 'node', format: 'esm', plugins: [{
+  name: 'isolated-runtime', setup(build) {
+    build.onResolve({ filter: /^(cloudflare:workers|next\/headers)$/ }, args => ({ path: args.path, namespace: 'reading-test' }));
+    build.onLoad({ filter: /.*/, namespace: 'reading-test' }, args => ({ contents: args.path === 'cloudflare:workers' ? 'export const env = globalThis.readingTestEnv;' : 'export const cookies = async () => ({get: () => globalThis.readingTestCookie ? ({value: globalThis.readingTestCookie}) : undefined});' }));
+  },
+}] });
+const { GET, POST } = await import('../.sites-runtime/passages-api-test.mjs');
+const request = (body, headers = {}) => new Request('http://reading.test/api/passages', { method: 'POST', headers: { Origin: 'http://reading.test', 'Content-Type': 'application/json', ...headers }, body: JSON.stringify(body) });
+const get = async (query = '') => { const response = await GET(new Request('http://reading.test/api/passages' + query)); return { status: response.status, body: await response.json() }; };
+const post = async body => { const response = await POST(request(body)); return { status: response.status, body: await response.json() }; };
+const originalFetch = globalThis.fetch;
+globalThis.fetch = () => { throw Error('The built-in course must not use external services.'); };
+
+try {
+  globalThis.readingTestCookie = '';
+  assert.equal((await get()).status, 401);
+  assert.equal((await post({action:'next'})).status, 401);
+  globalThis.readingTestCookie = 'a'.repeat(64);
+  assert.equal((await POST(request({action:'next'}, {Origin:'https://other.test'}))).status, 403);
+  assert.equal((await post({action:'generate',count:30})).status, 400);
+  assert.equal((await post({action:'next', extra:'x'.repeat(3000)})).status, 413);
+  assert.equal((await get('?id=bad')).status, 400);
+  assert.equal((await get('?cursor=bad')).status, 400);
+  const missing = crypto.randomUUID();
+  assert.equal((await get('?id='+missing)).status, 404);
+  assert.equal((await get('?cursor='+missing)).status, 404);
+  assert.equal((await post({action:'next',afterId:missing})).status, 404);
+
+  const first = await get();
+  assert.equal(first.status, 200); assert.equal(first.body.available, 58); assert.equal(first.body.completedCount, 0);
+  assert.equal(first.body.history.length, 30); assert.equal(first.body.summary.covered, 0);
+  assert.equal((await post({action:'next'})).body.passage.id, first.body.passage.id);
+  assert.equal(db.prepare('SELECT COUNT(*) AS total FROM learner_state').get().total, 0, 'Opening is not reading');
+  const complete = {action:'complete',id:first.body.passage.id,operationId:crypto.randomUUID()};
+  const saved = await post(complete);
+  assert.equal(saved.status, 200); assert.equal(saved.body.summary.covered, first.body.passage.wordIds.length);
+  assert.deepEqual(saved.body.state.events, []); assert.deepEqual(saved.body.state.learned, {});
+  const retried = await post(complete); assert.equal(retried.body.revision, saved.body.revision);
+  const reread = await post({...complete,operationId:crypto.randomUUID()});
+  assert.equal(reread.body.summary.reread, 0);
+  assert.equal((await get()).body.passage.id, first.body.history[1].id, 'Reopening resumes first unread');
+  assert.equal((await post({action:'next',afterId:first.body.passage.id})).body.passage.id, first.body.history[1].id);
+  assert.equal((await get('?id='+first.body.passage.id)).body.passage.id, first.body.passage.id, 'Read paragraphs remain available');
+  assert.equal((await get()).body.completedCount, 1);
+  const found = new Set(); let cursor = '';
+  do {
+    const page = await get(cursor ? '?cursor='+cursor : '');
+    for (const item of page.body.history) { assert.ok(!found.has(item.id)); found.add(item.id); }
+    cursor = page.body.nextCursor;
+  } while (cursor);
+  assert.equal(found.size, 58);
+  // A different account shares content, but never the first account's reading progress.
+  globalThis.readingTestCookie = 'b'.repeat(64);
+  assert.equal((await get()).body.summary.covered, 0);
+  assert.equal((await get()).body.passage.id, first.body.passage.id);
+  globalThis.readingTestCookie = 'a'.repeat(64);
+  const row = db.prepare('SELECT payload FROM learner_state WHERE user_id=?').get('reader');
+  const state = JSON.parse(row.payload); state.settings.level = 'CET4';
+  db.prepare('UPDATE learner_state SET payload=? WHERE user_id=?').run(JSON.stringify(state),'reader');
+  const cet4 = await get(); assert.equal(cet4.body.available,3); assert.equal(cet4.body.completedCount,0);
+  assert.equal(cet4.body.passage.level,'CET4'); assert.equal(cet4.body.nextCursor,null);
+  assert.equal((await post({...complete,operationId:crypto.randomUUID()})).status,404);
+  assert.equal((await get('?id='+first.body.passage.id)).status,404);
+  console.log('PASS: real handlers + isolated SQLite; auth, origin, size, pagination, level isolation, static content, resume, idempotent progress, shared content/private records. Zero external calls.');
+} finally { globalThis.fetch = originalFetch; db.close(); }
