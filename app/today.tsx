@@ -1,5 +1,5 @@
 ﻿"use client";
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { BookOpen, RotateCcw, Layers, BarChart3, Check, Sparkles, CalendarDays } from 'lucide-react';
 import { allWords, dueItems, chinaDay, MODES, modeNames, DAY, availableModes, type State } from '@/lib/learning';
 import { readingSummary } from '@/lib/reading';
@@ -8,11 +8,14 @@ import type { AppProps, QueueItem } from './types';
 
 export function ReviewPlan({ state, compact = false }: { state: State; compact?: boolean }) {
   const now = useLearningClock();
-  const tracks = allWords(state).filter(w => w.tags.includes(state.settings.level)).flatMap(w => availableModes(w).flatMap(mode => state.progress[w.id]?.[mode] ? [state.progress[w.id][mode]!] : []));
-  const days = Array.from({ length: 7 }, (_, i) => {
-    const day = chinaDay(now + i * DAY);
-    return { day, count: tracks.filter(track => chinaDay(track.due) === day).length };
-  });
+  const tracks = useMemo(() => allWords(state).filter(w => w.tags.includes(state.settings.level)).flatMap(w => availableModes(w).flatMap(mode => state.progress[w.id]?.[mode] ? [state.progress[w.id][mode]!] : [])), [state]);
+  const today = chinaDay(now);
+  const days = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const track of tracks) { const day = chinaDay(track.due); counts.set(day, (counts.get(day) ?? 0) + 1); }
+    const start = Date.parse(today + 'T00:00:00+08:00');
+    return Array.from({ length: 7 }, (_, i) => { const day = chinaDay(start + i * DAY); return { day, count: counts.get(day) ?? 0 }; });
+  }, [tracks, today]);
   return <section className={compact ? 'overview-section' : 'paper-card'}><div className="section-label"><h2>{compact ? '未来七天' : '接下来七天的复习安排'}</h2><span className="mini-tag">计划</span></div><div className="burden-chart" aria-label="未来七天计划到期练习数，不含此前逾期项目">{days.map((day, index) => <div key={day.day}><strong>{day.count}</strong><div className="bar-track"><span style={{ height: `${day.count ? Math.max(5, day.count / Math.max(1, ...days.map(d => d.count)) * 100) : 0}%` }}/></div><span>{index === 0 ? '今天' : day.day.slice(5).replace('-', '/')}</span></div>)}</div><p className="muted">{!compact&&`当前到期 ${dueItems(state, now).length} 项练习 · `}按北京时间排程 · 此前逾期项目计入待复习。</p></section>;
 }
 
@@ -29,11 +32,12 @@ export function Today({ state, save, busy, onLearn, onLibrary, onReview, onStats
   const [index, setIndex] = useState(0);
   const [reveal, setReveal] = useState(false);
   const [mode, setMode] = useState('all');
-  const words = allWords(state).filter(w => w.tags.includes(state.settings.level));
-  const due = dueItems(state, now);
-  const reading = readingSummary(state);
-  const doneToday = Object.values(state.reading?.completed ?? {}).filter(t => chinaDay(t) === chinaDay(now)).length;
-  const reviewed = state.events.filter(e => chinaDay(e.at) === chinaDay(now)).length;
+  const words = useMemo(() => allWords(state).filter(w => w.tags.includes(state.settings.level)), [state]);
+  const due = useMemo(() => dueItems(state, now), [state, now]);
+  const reading = useMemo(() => readingSummary(state), [state]);
+  const today = chinaDay(now);
+  const doneToday = useMemo(() => Object.values(state.reading?.completed ?? {}).filter(t => chinaDay(t) === today).length, [state.reading, today]);
+  const reviewed = useMemo(() => state.events.filter(e => chinaDay(e.at) === today).length, [state.events, today]);
   const assessment = words.filter((_, i) => i % Math.max(1, Math.floor(words.length / 5)) === 0).slice(0, 5);
   const word = assessment[index];
   const filtered = due.filter(item => mode === 'all' || item.mode === mode);

@@ -1,15 +1,22 @@
 import { getAccount, validWriteOrigin } from '@/lib/auth';
-import { readState, updateState } from '@/db/state';
+import { readState, readRevision, updateState } from '@/db/state';
 import { actionSchema } from '@/lib/validation';
 
 export const dynamic = 'force-dynamic';
 const json = (body: unknown, status = 200) => Response.json(body, {status, headers: {'Cache-Control': 'no-store'}});
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     const user = await getAccount();
     if (!user) return json({error: '请登录后继续学习。'}, 401);
-    return json({...await readState(user.userId), user: {name: user.name}});
+    const tag = (revision: number) => `"wordweave-${user.userId}-${revision}"`;
+    // Authenticate first; only a matching account and revision may skip the payload.
+    if (request.headers.get('if-none-match')) {
+      const etag = tag(await readRevision(user.userId));
+      if (request.headers.get('if-none-match') === etag) return new Response(null, {status: 304, headers: {'Cache-Control': 'no-store', ETag: etag}});
+    }
+    const current = await readState(user.userId);
+    return Response.json({...current, user: {name: user.name}}, {headers: {'Cache-Control': 'no-store', ETag: tag(current.revision)}});
   } catch (error) {
     console.error('load-state', error);
     return json({error: '学习记录加载失败，请检查连接后重试。'}, 503);

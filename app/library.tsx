@@ -1,14 +1,14 @@
 "use client";
 import { Empty,EmptyDescription } from '@/components/ui/empty';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Search,Upload,Download,BookOpen } from 'lucide-react';
-import { allWords,availableModes,chinaDay,seedWords,type Word } from '@/lib/learning';
+import { availableModes,chinaDay,seedWords,type Word } from '@/lib/learning';
 import { wordSchema } from '@/lib/validation';
 import { Choice, useLearningClock } from './ui';
 import type {AppProps,QueueItem} from './types';
 import { toast } from 'sonner';
 export function download(name:string,data:unknown){const a=document.createElement('a');const url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),2000);}
-export function Library({state,save,busy,onWord,onReview,cancelPending}:AppProps&{onWord:(w:Word)=>void;onReview:(items:QueueItem[],browse?:boolean)=>void}){const now=useLearningClock();const [search,setSearch]=useState('');const [level,setLevel]=useState<string>(state.settings.level);const [status,setStatus]=useState('all');const [pending,setPending]=useState<Word[]|null>(null);const [limit,setLimit]=useState(30);const words=allWords(state);const filtered=words.filter(w=>(level==='all'||w.tags.includes(level))&&(status==='all'||(state.familiar[w.id]??'learning')===status)&&`${w.word} ${w.meaning}`.toLowerCase().includes(search.toLowerCase()));
+export function Library({state,save,busy,onWord,onReview,cancelPending}:AppProps&{onWord:(w:Word)=>void;onReview:(items:QueueItem[],browse?:boolean)=>void}){const now=useLearningClock();const [search,setSearch]=useState('');const [level,setLevel]=useState<string>(state.settings.level);const [status,setStatus]=useState('all');const [pending,setPending]=useState<Word[]|null>(null);const [limit,setLimit]=useState(30);const words=useMemo(()=>[...seedWords,...state.custom],[state.custom]);const searchIndex=useMemo(()=>words.map(word=>({word,text:`${word.word} ${word.meaning}`.toLowerCase()})),[words]);const query=search.toLowerCase();const filtered=useMemo(()=>searchIndex.filter(({word:w,text})=>(level==='all'||w.tags.includes(level))&&(status==='all'||(state.familiar[w.id]??'learning')===status)&&text.includes(query)).map(({word})=>word),[searchIndex,level,status,state.familiar,query]);
 const remaining=Math.max(0,state.settings.daily-Object.values(state.learned).filter(t=>chinaDay(t)===chinaDay(now)).length);
 const fresh=filtered.filter(w=>!state.learned[w.id]&&state.familiar[w.id]!=='familiar').slice(0,Math.min(10,remaining));
 async function importFile(file:File){try{if(file.size>2000000)throw Error('词表文件不能超过 2 MB。');const data=JSON.parse(await file.text());const rows=Array.isArray(data)?data:data.words;if(!Array.isArray(rows)||rows.length<1||rows.length>500)throw Error('每次导入 1–500 个义项。');const parsed=rows.map((row:unknown,i:number)=>{if(!row||typeof row!=='object'||Array.isArray(row))throw Error(`第 ${i+1} 行：词条格式不正确`);const w=row as Record<string,unknown>;const parsed=wordSchema.safeParse({...w,id:w.id??'custom-'+crypto.randomUUID(),scene:w.scene??'custom',sourceUrl:w.sourceUrl??'',phonetic:w.phonetic??'',mnemonic:w.mnemonic??''});if(!parsed.success)throw Error(`第 ${i+1} 行：${parsed.error.issues[0].path.join('.')} ${parsed.error.issues[0].message}`);return parsed.data;});setPending(parsed);}catch(e){toast.error(e instanceof Error?e.message:'导入失败');}}

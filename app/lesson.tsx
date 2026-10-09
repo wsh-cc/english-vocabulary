@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { BookOpen, Check, RefreshCw } from 'lucide-react';
 import { allWords, type Word } from '@/lib/learning';
 import { passageParts, readingSummary, type Passage } from '@/lib/reading';
@@ -20,8 +20,8 @@ export function Lesson({ state, save, busy, onWord, onProgress }: AppProps & { o
   const [completedHere, setCompletedHere] = useState<string[]>([]);
   const inFlight = useRef(false);
   const mounted = useRef(true);
-  const words = new Map(allWords(state).map(word => [word.id, word]));
-  const summary = readingSummary(state);
+  const words = useMemo(() => new Map(allWords(state).map(word => [word.id, word])), [state]);
+  const summary = useMemo(() => readingSummary(state), [state]);
   const disabled = busy || !!working || loading;
   const completed = !!passage && (!!state.reading?.completed[passage.id] || completedHere.includes(passage.id));
 

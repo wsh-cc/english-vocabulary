@@ -1,2 +1,2 @@
-﻿import StudyApp from './study-app';
-export default function Home() { return <StudyApp />; }
+import Entry from './entry';
+export default function Home() { return <Entry />; }
