@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import "./auth.css";
 import "./browse.css";
+import { AppearanceProvider } from './theme';
 
 export const metadata: Metadata = {
   title: "词间 · 四六级语境学习",
@@ -18,8 +19,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="zh-CN">
-      <body className="antialiased">{children}</body>
+    <html lang="zh-CN" suppressHydrationWarning>
+      <body className="antialiased"><AppearanceProvider>{children}</AppearanceProvider></body>
     </html>
   );
 }

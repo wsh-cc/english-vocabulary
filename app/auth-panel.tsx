@@ -21,10 +21,9 @@ export function AuthPanel({onAuthenticated}: {onAuthenticated: () => Promise<voi
     finally { setBusy(false); }
   }
   return <div className="auth-experience">
-    <div className="auth-art" aria-hidden="true"><img src="/images/book-sculpture-login.webp" alt="" width={1672} height={941} fetchPriority="high"/></div>
     <div className="auth-composition">
       <div className="auth-editorial">
-        <div className="auth-editorial-heading"><span className="auth-edition">A WORLD BETWEEN WORDS</span><h1>词间<span>Wordweave.</span></h1><p>在字词之间，<br/>遇见更大的世界。</p></div>
+        <div className="auth-editorial-heading"><span className="auth-edition">A WORLD BETWEEN WORDS</span><h1>词间<span>Wordweave.</span></h1><p>在句子中学单词，<br/>在回想中慢慢熟悉。</p><div className="auth-learning-note">你的私人四六级学习空间。<br/>读句子、理解词义，让每一次回忆都有迹可循。</div></div>
       </div>
       <section className="auth-entry" aria-label="账号登录与注册">
         <div className="auth-entry-heading"><span className="auth-entry-number">{mode === 'login' ? '01' : '02'}</span><span>{mode === 'login' ? 'YOUR NEXT CHAPTER' : 'A NEW BEGINNING'}</span></div>

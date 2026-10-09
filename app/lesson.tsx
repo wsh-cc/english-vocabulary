@@ -80,25 +80,25 @@ export function Lesson({ state, save, busy, onWord, onProgress }: AppProps & { o
         const response = await fetch('/api/passages', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'next', afterId: passage.id }) });
         const data = await response.json() as { passage: Passage | null; error?: string };
         if (!response.ok) throw Error(data.error || '下一段加载失败，请重试。');
-        if (mounted.current) { setPassage(data.passage); document.querySelector('.reading-workspace')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+        if (mounted.current) { setPassage(data.passage); document.querySelector('.reading-workspace')?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' }); }
       }
     } catch (e) { if (mounted.current) setError(e instanceof Error ? e.message : '操作未完成，请重试。'); }
     finally { inFlight.current = false; if (mounted.current) setWorking(''); }
   }
 
   return <div className="reading-workspace">
-    <div className="reading-progress" aria-label="语境阅读进度"><div><span>已在句子中读过</span><strong>{summary.covered.toLocaleString()} <small>/ {summary.total.toLocaleString()} 个词条</small></strong></div><div><span>已读段落</span><strong>{completedCount} <small>/ {available} 篇</small></strong></div><p>每段 20～40 个目标词，跟着故事逐步读完当前内置词表。</p></div>
+    <div className="reading-progress" aria-label="语境阅读进度"><div><span>已在句子中读过</span><strong>{summary.covered.toLocaleString()} <small>/ {summary.total.toLocaleString()} 个词条</small></strong></div><div><span>已读段落</span><strong>{completedCount} <small>/ {available} 篇</small></strong></div><p>记忆辅助段落 · 中英混合内容，用语境帮助理解；导入词条暂未编入阅读。</p></div>
     <div className="toolbar reading-toolbar"><Choice label="词义提示" value={state.settings.gloss} onChange={gloss => save({ type: 'settings', settings: { gloss } })} options={ [['click', '点词查看'], ['direct', '随句显示']] } disabled={disabled}/><span className="reading-instruction">先读完整句；不懂的词可以点开。</span></div>
     {error && <div className="error-banner" role="alert">{error}<button className="secondary" disabled={disabled} onClick={() => void open(passage?.id)}>重新加载</button></div>}
     {working && <p className="reading-status" role="status"><RefreshCw size={16} className="reading-spinner"/>{working}</p>}
-    {loading ? <div className="loading-state" role="status">正在打开阅读内容…</div> : passage ? <article className="paper-card lesson reading-paper">
+    {loading ? <div className="loading-state" role="status">正在打开阅读内容…<div className="skeleton-line"/><div className="skeleton-line short"/><div className="skeleton-card"/></div> : passage ? <article className="paper-card lesson reading-paper">
       <div className="section-label"><span>{passage.wordIds.length} 个目标词 · {passage.level === 'CET6' ? '六级' : '四级'}语境阅读</span><span className="pill">{completed ? '已读过 · 可以重读' : '内置故事 · 记忆辅助段落'}</span></div>
       <h2>{passage.title}</h2>
       <div className="story reading-story">{passageParts(passage.text).map((part, index) => {
         if (part.type === 'text') return <span key={index}>{part.text}</span>;
         const word = words.get(part.id);
         if (!word) return <span key={index}>〔词条暂不可用〕</span>;
-        return <span key={index}><button className="word-link" onClick={() => onWord(word)}>{word.word}</button>{state.settings.gloss === 'direct' && <span className="inline-gloss">（{word.meaning}）</span>}</span>;
+        return <span key={index}><button className="word-link" aria-label={"查看单词 " + word.word} onClick={() => onWord(word)}>{word.word}</button>{state.settings.gloss === 'direct' && <span className="inline-gloss">（{word.meaning}）</span>}</span>;
       })}</div>
       <div className="reading-footer"><div className="action-row"><button className="primary" disabled={disabled} onClick={() => void act('next')}><BookOpen size={17}/>{completed ? '继续下一段' : '读完，继续下一段'}</button><button className="secondary" disabled={disabled || completed} onClick={() => void act('complete')}><Check size={17}/>{completed ? '阅读进度已保存' : '读完，保存进度'}</button></div><p>内容已写好，可以随时从目录重读。阅读足迹与测试成绩分别记录。</p></div>
     </article> : <section className="reading-empty"><BookOpen size={28}/><h2>阅读内容暂不可用</h2><p>重新加载后，从当前词表的第一篇未读段落继续。</p><button className="primary" disabled={disabled} onClick={() => void open()}>重新加载</button></section>}
