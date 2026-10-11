@@ -1,22 +1,22 @@
 import { getAccount, validWriteOrigin } from '@/lib/auth';
 import { readState, readRevision, updateState } from '@/db/state';
 import { actionSchema } from '@/lib/validation';
+import { stateEtag } from '@/lib/state-etag';
 
 export const dynamic = 'force-dynamic';
-const json = (body: unknown, status = 200) => Response.json(body, {status, headers: {'Cache-Control': 'no-store'}});
+const json = (body: unknown, status = 200, etag?: string) => Response.json(body, {status, headers: {'Cache-Control': 'no-store', ...(etag ? {ETag: etag} : {})}});
 
 export async function GET(request: Request) {
   try {
     const user = await getAccount();
     if (!user) return json({error: '请登录后继续学习。'}, 401);
-    const tag = (revision: number) => `"wordweave-${user.userId}-${revision}"`;
     // Authenticate first; only a matching account and revision may skip the payload.
     if (request.headers.get('if-none-match')) {
-      const etag = tag(await readRevision(user.userId));
+      const etag = stateEtag(user.userId, await readRevision(user.userId));
       if (request.headers.get('if-none-match') === etag) return new Response(null, {status: 304, headers: {'Cache-Control': 'no-store', ETag: etag}});
     }
     const current = await readState(user.userId);
-    return Response.json({...current, user: {name: user.name}}, {headers: {'Cache-Control': 'no-store', ETag: tag(current.revision)}});
+    return json({...current, user: {name: user.name}}, 200, stateEtag(user.userId, current.revision));
   } catch (error) {
     console.error('load-state', error);
     return json({error: '学习记录加载失败，请检查连接后重试。'}, 503);
@@ -44,7 +44,8 @@ export async function POST(request: Request) {
     for (const part of parts) { bytes.set(part, offset); offset += part.length; }
     const parsed = actionSchema.safeParse(JSON.parse(new TextDecoder().decode(bytes)));
     if (!parsed.success) return json({error: '数据格式不正确：' + parsed.error.issues[0].message}, 400);
-    return json(await updateState(user.userId, parsed.data));
+    const current = await updateState(user.userId, parsed.data);
+    return json(current, 200, stateEtag(user.userId, current.revision));
   } catch (error) {
     console.error('save-state', error);
     return json({error: error instanceof Error && /备份|记录|词汇|设备|编号/.test(error.message) ? error.message : '保存未完成，请保留页面并重试。'}, 409);

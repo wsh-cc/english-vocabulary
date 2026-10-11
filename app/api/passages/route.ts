@@ -3,9 +3,10 @@ import { getAccount, validWriteOrigin } from '@/lib/auth';
 import { readState, updateState } from '@/db/state';
 import { readingSummary } from '@/lib/reading';
 import { coursePassages, nextReading } from '@/lib/curriculum';
+import { stateEtag } from '@/lib/state-etag';
 
 export const dynamic = 'force-dynamic';
-const json = (body: unknown, status = 200) => Response.json(body, {status, headers: {'Cache-Control': 'no-store'}});
+const json = (body: unknown, status = 200, etag?: string) => Response.json(body, {status, headers: {'Cache-Control': 'no-store', ...(etag ? {ETag: etag} : {})}});
 const key = z.string().uuid();
 const inputSchema = z.discriminatedUnion('action', [
   z.object({action: z.literal('next'), afterId: key.optional()}),
@@ -61,7 +62,7 @@ export async function POST(request: Request) {
     const passage = coursePassages(state).find(p => p.id === action.id);
     if (!passage) return json({error: '当前词表中未找到这篇段落。'}, 404);
     const result = await updateState(user.userId, {type: 'reading-complete', operationId: action.operationId, passage});
-    return json({...result, summary: readingSummary(result.state)});
+    return json({...result, summary: readingSummary(result.state)}, 200, stateEtag(user.userId, result.revision));
   } catch {
     return json({error: '阅读记录未保存，请重试。'}, 503);
   }

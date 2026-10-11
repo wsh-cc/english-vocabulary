@@ -1,14 +1,14 @@
 "use client";
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { BookOpen, Check, RefreshCw } from 'lucide-react';
-import { allWords, type Word } from '@/lib/learning';
+import { seedWords, type Word } from '@/lib/learning';
 import { passageParts, readingSummary, type Passage } from '@/lib/reading';
 import { Choice } from './ui';
-import type { AppProps } from './types';
+import type { AppProps, CaptureSnapshot, StateSnapshot } from './types';
 
 type HistoryItem = { id: string; title: string; count: number; completed: boolean };
 type ReadingResponse = { passage: Passage | null; history: HistoryItem[]; nextCursor: string | null; available: number; completedCount: number; error?: string };
-export function Lesson({ state, save, busy, onWord, onProgress }: AppProps & { onWord: (word: Word) => void; onProgress: () => Promise<void> }) {
+export function Lesson({ state, save, busy, onWord, captureSnapshot }: AppProps & { onWord: (word: Word) => void; captureSnapshot: CaptureSnapshot }) {
   const [passage, setPassage] = useState<Passage | null>(null);
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
@@ -20,7 +20,7 @@ export function Lesson({ state, save, busy, onWord, onProgress }: AppProps & { o
   const [completedHere, setCompletedHere] = useState<string[]>([]);
   const inFlight = useRef(false);
   const mounted = useRef(true);
-  const words = useMemo(() => new Map(allWords(state).map(word => [word.id, word])), [state]);
+  const words = useMemo(() => new Map([...seedWords, ...state.custom].map(word => [word.id, word])), [state.custom]);
   const summary = useMemo(() => readingSummary(state), [state]);
   const disabled = busy || !!working || loading;
   const completed = !!passage && (!!state.reading?.completed[passage.id] || completedHere.includes(passage.id));
@@ -64,16 +64,17 @@ export function Lesson({ state, save, busy, onWord, onProgress }: AppProps & { o
 
   async function act(kind: 'next' | 'complete') {
     if (inFlight.current || !passage) return;
+    const receiveSaved = captureSnapshot();
     inFlight.current = true; setError(''); setWorking('正在保存阅读进度…');
     try {
       if (!completed) {
         const response = await fetch('/api/passages', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'complete', id: passage.id, operationId: crypto.randomUUID() }) });
-        const data = await response.json() as { error?: string };
+        const data = await response.json() as StateSnapshot & { error?: string };
         if (!response.ok) throw Error(data.error || '阅读进度未保存，请重试。');
+        if (!receiveSaved(data, response.headers.get('etag'))) return;
         if (!mounted.current) return;
         setCompletedHere(ids => [...ids, passage.id]); setCompletedCount(count => count + 1);
         setHistory(items => items.map(item => item.id === passage.id ? { ...item, completed: true } : item));
-        await onProgress();
       }
       if (kind === 'next' && mounted.current) {
         setWorking('正在打开下一段…');

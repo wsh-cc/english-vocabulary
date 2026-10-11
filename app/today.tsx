@@ -1,9 +1,10 @@
 ﻿"use client";
 import { useMemo, useState } from 'react';
 import { BookOpen, RotateCcw, Layers, BarChart3, Check, Sparkles, CalendarDays } from 'lucide-react';
-import { allWords, dueItems, chinaDay, MODES, modeNames, DAY, availableModes, type State } from '@/lib/learning';
+import { allWords, dueItems, chinaDay, MODES, modeNames, DAY, availableModes, seedWords, type State } from '@/lib/learning';
 import { readingSummary } from '@/lib/reading';
 import { Choice, dateText, useLearningClock } from './ui';
+import { beijingDayBounds } from './learning-day';
 import type { AppProps, QueueItem } from './types';
 
 export function ReviewPlan({ state, compact = false }: { state: State; compact?: boolean }) {
@@ -20,10 +21,11 @@ export function ReviewPlan({ state, compact = false }: { state: State; compact?:
 }
 
 export function RecentPractice({ state, limit = 5 }: { state: State; limit?: number }) {
-  const words = allWords(state);
-  const ids = new Set(words.filter(w => w.tags.includes(state.settings.level)).map(w => w.id));
-  const events = state.events.filter(e => ids.has(e.wordId)).slice(-limit).reverse();
-  return events.length ? <div className="history-list">{events.map(event => <div className="history-row" key={event.id}><strong>{words.find(w => w.id === event.wordId)?.word}</strong><span>{modeNames[event.mode]}</span><span className={`outcome ${event.outcome}`}>{event.outcome === 'correct' ? '独立答对' : event.outcome === 'hinted' ? '借助提示' : '需要重温'}</span><time>{dateText(event.at)}</time></div>)}</div> : <div className="empty-state"><span className="empty-icon"><BookOpen size={23}/></span><h3>每一次回想，都会留下足迹</h3><p>完成练习后，这里会显示训练方向、结果与时间。</p></div>;
+  const words = useMemo(() => [...seedWords, ...state.custom], [state.custom]);
+  const wordMap = useMemo(() => new Map(words.map(word => [word.id, word])), [words]);
+  const ids = useMemo(() => new Set(words.filter(w => w.tags.includes(state.settings.level)).map(w => w.id)), [words, state.settings.level]);
+  const events = useMemo(() => state.events.filter(e => ids.has(e.wordId)).slice(-limit).reverse(), [state.events, ids, limit]);
+  return events.length ? <div className="history-list">{events.map(event => <div className="history-row" key={event.id}><strong>{wordMap.get(event.wordId)?.word}</strong><span>{modeNames[event.mode]}</span><span className={`outcome ${event.outcome}`}>{event.outcome === 'correct' ? '独立答对' : event.outcome === 'hinted' ? '借助提示' : '需要重温'}</span><time>{dateText(event.at)}</time></div>)}</div> : <div className="empty-state"><span className="empty-icon"><BookOpen size={23}/></span><h3>每一次回想，都会留下足迹</h3><p>完成练习后，这里会显示训练方向、结果与时间。</p></div>;
 }
 
 export function Today({ state, save, busy, onLearn, onLibrary, onReview, onStats, username }: AppProps & { onLearn: () => void; onLibrary: () => void; onReview: (items: QueueItem[], browse?: boolean) => void; onStats: () => void; username: string }) {
@@ -32,12 +34,13 @@ export function Today({ state, save, busy, onLearn, onLibrary, onReview, onStats
   const [index, setIndex] = useState(0);
   const [reveal, setReveal] = useState(false);
   const [mode, setMode] = useState('all');
-  const words = useMemo(() => allWords(state).filter(w => w.tags.includes(state.settings.level)), [state]);
+  const words = useMemo(() => [...seedWords, ...state.custom].filter(w => w.tags.includes(state.settings.level)), [state.custom, state.settings.level]);
   const due = useMemo(() => dueItems(state, now), [state, now]);
   const reading = useMemo(() => readingSummary(state), [state]);
   const today = chinaDay(now);
-  const doneToday = useMemo(() => Object.values(state.reading?.completed ?? {}).filter(t => chinaDay(t) === today).length, [state.reading, today]);
-  const reviewed = useMemo(() => state.events.filter(e => chinaDay(e.at) === today).length, [state.events, today]);
+  const [todayStart, todayEnd] = beijingDayBounds(today);
+  const doneToday = useMemo(() => Object.values(state.reading?.completed ?? {}).filter(t => t >= todayStart && t < todayEnd).length, [state.reading, todayStart, todayEnd]);
+  const reviewed = useMemo(() => state.events.filter(e => e.at >= todayStart && e.at < todayEnd).length, [state.events, todayStart, todayEnd]);
   const assessment = words.filter((_, i) => i % Math.max(1, Math.floor(words.length / 5)) === 0).slice(0, 5);
   const word = assessment[index];
   const filtered = due.filter(item => mode === 'all' || item.mode === mode);
