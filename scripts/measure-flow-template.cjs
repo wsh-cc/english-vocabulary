@@ -1,7 +1,9 @@
-/* global __FIXTURE__ */
+/* global __FIXTURE__, saveBenchmark */
 // eslint-disable-next-line @typescript-eslint/no-unused-expressions -- The CLI evaluates this callback template.
 async (page) => {
   const fixture=__FIXTURE__;
+  /* __SAVE_MODULE__ */
+  const {applyAction,createSaveDelta}=saveBenchmark;
   const state=fixture.state, passages=fixture.passages;
   let revision=1, requests=[];
   const tag=()=>`"flow-${revision}"`;
@@ -20,21 +22,24 @@ async (page) => {
   await page.unrouteAll({behavior:'wait'});
   await page.route('**/api/**',async route=>{
     const req=route.request(), url=new URL(req.url()), method=req.method();
-    requests.push({path:url.pathname,method,etag:req.headers()['if-none-match']??'',at:Date.now()});
+    const requestRecord={path:url.pathname,method,etag:req.headers()['if-none-match']??'',at:Date.now()};requests.push(requestRecord);
     await new Promise(resolve=>setTimeout(resolve,120));
-    const respond=(body,status=200,headers={})=>route.fulfill({status,contentType:'application/json',headers,body:status===304?'':JSON.stringify(body)});
+    const respond=(body,status=200,headers={})=>{const text=status===304?'':JSON.stringify(body);requestRecord.responseBytes=Buffer.byteLength(text);return route.fulfill({status,contentType:'application/json',headers,body:text});};
     if(url.pathname==='/api/state'){
       if(method==='GET')return respond({state,revision,user:{name:'流畅度测试'}},req.headers()['if-none-match']===tag()?304:200,{etag:tag()});
-      const a=req.postDataJSON();if(a.type==='settings')state.settings={...state.settings,...a.settings};
-      if(a.type==='note')state.notes[a.wordId]=a.note;
-      if(a.type==='result'){state.events.push({id:a.operationId,wordId:a.wordId,mode:a.mode,outcome:a.outcome,answer:a.answer,at:Date.now(),nextDue:Date.now()+86400000,delayed:true});}
-      revision++;return respond({state,revision},200,{etag:tag()});
+      const a=req.postDataJSON(), baseRevision=revision;
+      const canDelta=req.headers()['x-wordweave-delta-base']===tag()&&!state.operations.includes(a.operationId);
+      if(!state.operations.includes(a.operationId)){applyAction(state,a);revision++;}
+      const delta=canDelta?createSaveDelta(state,a,baseRevision):null;
+      return respond(delta??{state,revision},200,{etag:tag()});
     }
     if(url.pathname==='/api/passages'){
       if(method==='GET')return respond({passage:passages.find(p=>p.id===url.searchParams.get('id'))??passages.find(p=>!state.reading.completed[p.id])??passages[0],history:passages.slice(0,30).map(p=>({id:p.id,title:p.title,count:p.wordIds.length,completed:!!state.reading.completed[p.id]})),nextCursor:null,available:passages.length,completedCount:Object.keys(state.reading.completed).length});
-      const a=req.postDataJSON();if(a.action==='next'){const index=passages.findIndex(p=>p.id===a.afterId);return respond({passage:passages[(index+1)%passages.length]});}
-      state.reading.completed[a.id]=Date.now();for(const id of passages.find(p=>p.id===a.id).wordIds)state.reading.encounters[id]={count:1,last:Date.now()};revision++;
-      return respond({state,revision},200,{etag:tag()});
+      const a=req.postDataJSON();if(a.action==='next'){const index=passages.findIndex(p=>p.id===a.afterId);const ordered=[...passages.slice(index+1),...passages.slice(0,index+1)];return respond({passage:ordered.find(p=>!state.reading.completed[p.id])??ordered[0],completedCount:Object.keys(state.reading.completed).length});}
+      const passage=passages.find(p=>p.id===a.id);
+      if(!state.operations.includes(a.operationId)){applyAction(state,{type:'reading-complete',passage,operationId:a.operationId});revision++;}
+      const index=passages.findIndex(p=>p.id===a.id),ordered=[...passages.slice(index+1),...passages.slice(0,index+1)];
+      return respond({state,revision,...(a.advance?{passage:ordered.find(p=>!state.reading.completed[p.id])??ordered[0],completedCount:Object.keys(state.reading.completed).length}:{})},200,{etag:tag()});
     }
     return respond({error:'Unsupported synthetic request'},400);
   });
@@ -46,17 +51,27 @@ async (page) => {
   async function measure(name,action,feedback,ready,event='pointerdown'){
     const offset=requests.length;
     await page.evaluate(({feedback,ready,event})=>{
-      window.__step={start:0,feedback:null,ready:null,longOffset:window.__flow.longTasks.length};
-      document.addEventListener(event,()=>{window.__step.start=performance.now();},{once:true,capture:true});
+      const step=window.__step={start:0,feedback:null,ready:null,longOffset:window.__flow.longTasks.length};
+      const start=()=>{step.start=performance.now();};
+      document.addEventListener(event,start,{once:true,capture:true});
       window.__done=new Promise(resolve=>{
-        setTimeout(resolve,10000);
+        let frameId=0,finished=false;
+        const finish=()=>{
+          if(finished)return;
+          finished=true;
+          clearTimeout(timerId);
+          cancelAnimationFrame(frameId);
+          document.removeEventListener(event,start,true);
+          resolve();
+        };
+        const timerId=setTimeout(finish,10000);
         const f=new Function('return ('+feedback+')'), r=new Function('return ('+ready+')');
-        function frame(){const step=window.__step;if(step.start){if(step.feedback===null&&f())step.feedback=performance.now()-step.start;if(r()){step.ready=performance.now()-step.start;resolve();return;}}requestAnimationFrame(frame);}requestAnimationFrame(frame);
+        function frame(){if(step.start){if(step.feedback===null&&f())step.feedback=performance.now()-step.start;if(r()){step.ready=performance.now()-step.start;finish();return;}}frameId=requestAnimationFrame(frame);}frameId=requestAnimationFrame(frame);
       });
     },{feedback,ready,event});
     await action();
     const timing=await page.evaluate(async()=>{await window.__done;await new Promise(r=>requestAnimationFrame(r));return {...window.__step,longTasks:window.__flow.longTasks.slice(window.__step.longOffset)};});
-    results.push({name,feedbackMs:Math.round(timing.feedback*10)/10,readyMs:Math.round(timing.ready*10)/10,longTasks:timing.longTasks,requests:requests.slice(offset).map(({path,method,etag})=>({path,method,etag}))});
+    results.push({name,feedbackMs:timing.feedback===null?null:Math.round(timing.feedback*10)/10,readyMs:timing.ready===null?null:Math.round(timing.ready*10)/10,longTasks:timing.longTasks,requests:requests.slice(offset).map(({path,method,etag,responseBytes})=>({path,method,etag,responseBytes}))});
   }
   for(let i=0;i<6;i++){
     const input=page.getByRole('textbox',{name:'搜索单词或中文释义'});
@@ -90,7 +105,7 @@ async (page) => {
   await measure('reading-cold',()=>page.getByRole('button',{name:'句子学习',exact:true}).click(),`!!document.querySelector('.main-nav button.active')?.textContent.includes('句子学习')`,`!!document.querySelector('.reading-story')`);
   for(let i=0;i<5;i++){
     const title=await page.locator('.reading-paper h2').textContent();
-    await measure('reading-next',()=>page.getByRole('button',{name:'读完，继续下一段',exact:true}).click(),`!!document.querySelector('.reading-status')`,`!document.querySelector('.reading-status')&&document.querySelector('.reading-paper h2')?.textContent!==${JSON.stringify(title)}`);
+    await measure('reading-next',()=>page.getByRole('button',{name:'读完，继续下一段',exact:true}).click(),`!!document.querySelector('.reading-status')`,`!document.querySelector('.reading-status')&&!!document.querySelector('.reading-paper h2')&&document.querySelector('.reading-paper h2').textContent!==${JSON.stringify(title)}`);
   }
   await page.evaluate(()=>dispatchEvent(new Event('focus')));
   await page.waitForTimeout(400);

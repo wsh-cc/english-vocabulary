@@ -19,6 +19,7 @@ export function Lesson({ state, save, busy, onWord, captureSnapshot }: AppProps 
   const [error, setError] = useState('');
   const [completedHere, setCompletedHere] = useState<string[]>([]);
   const inFlight = useRef(false);
+  const pendingCompletion = useRef<{ id: string; operationId: string } | null>(null);
   const mounted = useRef(true);
   const words = useMemo(() => new Map([...seedWords, ...state.custom].map(word => [word.id, word])), [state.custom]);
   const summary = useMemo(() => readingSummary(state), [state]);
@@ -67,21 +68,32 @@ export function Lesson({ state, save, busy, onWord, captureSnapshot }: AppProps 
     const receiveSaved = captureSnapshot();
     inFlight.current = true; setError(''); setWorking('正在保存阅读进度…');
     try {
+      let nextPassage: Passage | null | undefined;
       if (!completed) {
-        const response = await fetch('/api/passages', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'complete', id: passage.id, operationId: crypto.randomUUID() }) });
-        const data = await response.json() as StateSnapshot & { error?: string };
+        if (pendingCompletion.current?.id !== passage.id) pendingCompletion.current = { id: passage.id, operationId: crypto.randomUUID() };
+        const response = await fetch('/api/passages', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'complete', id: passage.id, operationId: pendingCompletion.current.operationId, ...(kind === 'next' ? { advance: true } : {}) }) });
+        const data = await response.json() as StateSnapshot & { passage?: Passage | null; completedCount?: number; error?: string };
         if (!response.ok) throw Error(data.error || '阅读进度未保存，请重试。');
-        if (!receiveSaved(data, response.headers.get('etag'))) return;
-        if (!mounted.current) return;
-        setCompletedHere(ids => [...ids, passage.id]); setCompletedCount(count => count + 1);
+        const latest = receiveSaved(data, response.headers.get('etag'));
+        if (!latest || !mounted.current) return;
+        pendingCompletion.current = null;
+        setCompletedHere(ids => ids.includes(passage.id) ? ids : [...ids, passage.id]);
+        setCompletedCount(count => data.completedCount ?? count + 1);
+        if (latest.revision === data.revision && kind === 'next') nextPassage = data.passage;
         setHistory(items => items.map(item => item.id === passage.id ? { ...item, completed: true } : item));
       }
       if (kind === 'next' && mounted.current) {
         setWorking('正在打开下一段…');
-        const response = await fetch('/api/passages', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'next', afterId: passage.id }) });
-        const data = await response.json() as { passage: Passage | null; error?: string };
-        if (!response.ok) throw Error(data.error || '下一段加载失败，请重试。');
-        if (mounted.current) { setPassage(data.passage); document.querySelector('.reading-workspace')?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' }); }
+        // Old servers and newer concurrent snapshots need a fresh next selection.
+        // An explicit null is a valid response, not a reason to request again.
+        if (nextPassage === undefined) {
+          const response = await fetch('/api/passages', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'next', afterId: passage.id }) });
+          const data = await response.json() as { passage: Passage | null; completedCount?: number; error?: string };
+          if (!response.ok) throw Error(data.error || '下一段加载失败，请重试。');
+          nextPassage = data.passage;
+          if (mounted.current && data.completedCount !== undefined) setCompletedCount(data.completedCount);
+        }
+        if (mounted.current) { setPassage(nextPassage); document.querySelector('.reading-workspace')?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' }); }
       }
     } catch (e) { if (mounted.current) setError(e instanceof Error ? e.message : '操作未完成，请重试。'); }
     finally { inFlight.current = false; if (mounted.current) setWorking(''); }
@@ -89,9 +101,8 @@ export function Lesson({ state, save, busy, onWord, captureSnapshot }: AppProps 
 
   return <div className="reading-workspace">
     <div className="reading-progress" aria-label="语境阅读进度"><div><span>已在句子中读过</span><strong>{summary.covered.toLocaleString()} <small>/ {summary.total.toLocaleString()} 个词条</small></strong></div><div><span>已读段落</span><strong>{completedCount} <small>/ {available} 篇</small></strong></div><p>记忆辅助段落 · 中英混合内容，用语境帮助理解；导入词条暂未编入阅读。</p></div>
-    <div className="toolbar reading-toolbar"><Choice label="词义提示" value={state.settings.gloss} onChange={gloss => save({ type: 'settings', settings: { gloss } })} options={ [['click', '点词查看'], ['direct', '随句显示']] } disabled={disabled}/><span className="reading-instruction">先读完整句；不懂的词可以点开。</span></div>
+    <div className="toolbar reading-toolbar"><Choice label="词义提示" value={state.settings.gloss} onChange={gloss => save({ type: 'settings', settings: { gloss } })} options={ [['click', '点词查看'], ['direct', '随句显示']] } disabled={disabled}/>{working ? <p className="reading-status" role="status"><RefreshCw size={16} className="reading-spinner"/>{working}</p> : <span className="reading-instruction">先读完整句；不懂的词可以点开。</span>}</div>
     {error && <div className="error-banner" role="alert">{error}<button className="secondary" disabled={disabled} onClick={() => void open(passage?.id)}>重新加载</button></div>}
-    {working && <p className="reading-status" role="status"><RefreshCw size={16} className="reading-spinner"/>{working}</p>}
     {loading ? <div className="loading-state" role="status">正在打开阅读内容…<div className="skeleton-line"/><div className="skeleton-line short"/><div className="skeleton-card"/></div> : passage ? <article className="paper-card lesson reading-paper">
       <div className="section-label"><span>{passage.wordIds.length} 个目标词 · {passage.level === 'CET6' ? '六级' : '四级'}语境阅读</span><span className="pill">{completed ? '已读过 · 可以重读' : '内置故事 · 记忆辅助段落'}</span></div>
       <h2>{passage.title}</h2>

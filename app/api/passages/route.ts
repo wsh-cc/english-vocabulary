@@ -10,7 +10,7 @@ const json = (body: unknown, status = 200, etag?: string) => Response.json(body,
 const key = z.string().uuid();
 const inputSchema = z.discriminatedUnion('action', [
   z.object({action: z.literal('next'), afterId: key.optional()}),
-  z.object({action: z.literal('complete'), id: key, operationId: key}),
+  z.object({action: z.literal('complete'), id: key, operationId: key, advance: z.boolean().optional()}),
 ]);
 
 export async function GET(request: Request) {
@@ -57,12 +57,16 @@ export async function POST(request: Request) {
     const {state} = await readState(user.userId);
     if (action.action === 'next') {
       if (action.afterId && !coursePassages(state).some(p => p.id === action.afterId)) return json({error: '当前词表中未找到这篇段落。'}, 404);
-      return json({passage: nextReading(state, action.afterId)});
+      return json({passage: nextReading(state, action.afterId), completedCount: coursePassages(state).filter(p => state.reading?.completed[p.id]).length});
     }
     const passage = coursePassages(state).find(p => p.id === action.id);
     if (!passage) return json({error: '当前词表中未找到这篇段落。'}, 404);
     const result = await updateState(user.userId, {type: 'reading-complete', operationId: action.operationId, passage});
-    return json({...result, summary: readingSummary(result.state)}, 200, stateEtag(user.userId, result.revision));
+    // Select from the committed (or deduplicated) snapshot, including CAS retries.
+    return json({...result, summary: readingSummary(result.state), ...(action.advance ? {
+      passage: nextReading(result.state, action.id),
+      completedCount: coursePassages(result.state).filter(p => result.state.reading?.completed[p.id]).length,
+    } : {})}, 200, stateEtag(user.userId, result.revision));
   } catch {
     return json({error: '阅读记录未保存，请重试。'}, 503);
   }

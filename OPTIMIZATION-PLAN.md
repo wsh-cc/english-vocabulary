@@ -6,11 +6,16 @@
 
 继续服务私人四六级学习：优先阅读中英混合记忆辅助段落，按需查词与编辑联想，再用三种回忆方向和延后测试巩固；手机、电脑共享记录。依据[原需求](D:/Python_code/plans/english-vocabulary-plan-2026-10-05.md:7)及其[核心流程](D:/Python_code/plans/english-vocabulary-plan-2026-10-05.md:16)，不默认增加 SEO 引流、公开排名、AI API 或全站重写。
 
+
+## 实施进展（2026-10-12）
+
+项目现位于 `D:\CODE\english-vocabulary`。第一轮搜索、日期计算和重复同步优化见 [第一轮报告](./FLUIDITY-OPTIMIZATION.md)；第二轮完成答题／联想增量保存及并发回退，实测见 [第二轮报告](./FLUIDITY-OPTIMIZATION-PHASE2.md)。第三轮已定位阅读串行请求等待，完成单请求保存并前进、提示布局和重试修正，见 [阅读优化报告](./FLUIDITY-OPTIMIZATION-READING.md)。完整流程下一帧检查中位数约 355 → 252ms，15 项 UI 回归通过。下一批进入 F2 / C1 的登录后首次加载和资源拆分；A/B/D 继续作为独立后续任务。
+
 ## 证据与已有成果
 
 本轮核对源码，并完成合成数据的纯内存验证。在现有本地生产构建上，用浏览器拦截接口提供合成状态并禁止写入，检查了 1440px 桌面、390px 手机的词库页面及联想关闭行为；没有使用真实学习记录。未重新构建应用，线上速度、真实设备体验和学习效果尚未测量。下列条目分别标明证据范围。
 
-[UI-REDESIGN.md](D:/Python_code/english-vocabulary/UI-REDESIGN.md:7)已记录响应式、主题、搜索筛选、分页、导入预览、错误恢复及统一布局；其[性能记录](D:/Python_code/english-vocabulary/UI-REDESIGN.md:46)包含登录入口拆包、条件同步和索引复用。保留这些成果，历史体积与验收结果不作为当前实测。
+[UI-REDESIGN.md](D:/CODE/english-vocabulary/UI-REDESIGN.md:7)已记录响应式、主题、搜索筛选、分页、导入预览、错误恢复及统一布局；其[性能记录](D:/CODE/english-vocabulary/UI-REDESIGN.md:46)包含登录入口拆包、条件同步和索引复用。保留这些成果，历史体积与验收结果不作为当前实测。
 
 以下 P1/P2/P3 保留原问题清单的风险分级：P1 有记录保留风险，P2 是操作缺口或性能候选，P3 需要需求验证。当前轮次以用户指定的流畅度主线执行；具体改动按频率、实测延迟、证据和成本排序。没有复现的卡顿只列为待核实，不能把源码线索写成已测得的性能问题。
 
@@ -33,7 +38,7 @@
 
 ### A1. 统一备份与状态容量边界
 
-**已验证。** [统计页](D:/Python_code/english-vocabulary/app/statistics.tsx:15)限制导入文件为 4,000,000 字节，导出还包含完整 catalog；[下载函数](D:/Python_code/english-vocabulary/app/library.tsx:10)使用缩进 JSON。[写入接口](D:/Python_code/english-vocabulary/app/api/state/route.ts:36)限制请求为 4,000,000 字节，[数据库保存](D:/Python_code/english-vocabulary/db/state.ts:6)却按 3,500,000 字符判断。[恢复校验](D:/Python_code/english-vocabulary/lib/validation.ts:13)限制 custom 为 2,000、events 为 50,000；[普通动作](D:/Python_code/english-vocabulary/lib/learning.ts:30)追加事件、导入词条时未校验这些累计数量。
+**已验证。** [统计页](D:/CODE/english-vocabulary/app/statistics.tsx:15)限制导入文件为 4,000,000 字节，导出还包含完整 catalog；[下载函数](D:/CODE/english-vocabulary/app/library.tsx:10)使用缩进 JSON。[写入接口](D:/CODE/english-vocabulary/app/api/state/route.ts:36)限制请求为 4,000,000 字节，[数据库保存](D:/CODE/english-vocabulary/db/state.ts:6)却按 3,500,000 字符判断。[恢复校验](D:/CODE/english-vocabulary/lib/validation.ts:13)限制 custom 为 2,000、events 为 50,000；[普通动作](D:/CODE/english-vocabulary/lib/learning.ts:30)追加事件、导入词条时未校验这些累计数量。
 
 本轮构造 10,000 条空答案事件，通过实际 stateSchema；紧凑状态为 1,579,134 字符／字节，现有格式导出为 4,313,665 字节，超过自身恢复文件限制。该结果证明存在合法状态无法通过现有文件入口恢复的路径，不代表真实账号已达到边界。
 
@@ -45,7 +50,7 @@
 
 ### A2. 保护未保存的个人联想
 
-**源码与本地浏览器已验证。** [详情关闭](D:/Python_code/english-vocabulary/app/word-detail.tsx:7)直接关闭面板，[联想编辑](D:/Python_code/english-vocabulary/app/word-detail.tsx:8)仅保存在组件状态，缺少未保存检查；[导航和启动复习](D:/Python_code/english-vocabulary/app/study-app.tsx:27)也会清除当前详情。本轮在合成状态下打开 presentation 详情，编辑联想、按 Esc 后重新打开，文本回到原始联想，没有离开确认。该复现证明此操作会丢弃未保存输入，不代表真实账号已发生记录损失；遮罩、切词和启动复习的路径仍需分别验证。
+**源码与本地浏览器已验证。** [详情关闭](D:/CODE/english-vocabulary/app/word-detail.tsx:7)直接关闭面板，[联想编辑](D:/CODE/english-vocabulary/app/word-detail.tsx:8)仅保存在组件状态，缺少未保存检查；[导航和启动复习](D:/CODE/english-vocabulary/app/study-app.tsx:27)也会清除当前详情。本轮在合成状态下打开 presentation 详情，编辑联想、按 Esc 后重新打开，文本回到原始联想，没有离开确认。该复现证明此操作会丢弃未保存输入，不代表真实账号已发生记录损失；遮罩、切词和启动复习的路径仍需分别验证。
 
 **方案与验收。** 使用草稿保留或离开保护覆盖关闭、Esc、遮罩、切词及进入复习。输入不静默丢失，用户能保存、明确放弃或继续编辑；保存失败保留草稿并可重试。未编辑时不增加打断，成功保存后重新打开内容一致。
 
@@ -53,25 +58,25 @@
 
 ### B1. 从常错词进入详情或补练
 
-[常错列表](D:/Python_code/english-vocabulary/app/statistics.tsx:16)是静态展示，缺少直接学习操作。先加对应义项的详情或补练入口，不扩大为推荐算法。验收：从列表直接进入该词，只提供可用训练方向；打开详情不计分，提交继续使用原判定与排程。累计错误次数不是“目前仍不会”的证据，文案应保留这一含义。
+[常错列表](D:/CODE/english-vocabulary/app/statistics.tsx:16)是静态展示，缺少直接学习操作。先加对应义项的详情或补练入口，不扩大为推荐算法。验收：从列表直接进入该词，只提供可用训练方向；打开详情不计分，提交继续使用原判定与排程。累计错误次数不是“目前仍不会”的证据，文案应保留这一含义。
 
 ### B2. 明确历史范围
 
-[首页“查看全部”](D:/Python_code/english-vocabulary/app/today.tsx:64)进入记录页，而[记录列表](D:/Python_code/english-vocabulary/app/statistics.tsx:16)仅显示最近 20 条。补清楚范围，按需增加分批加载。验收：超过 20 条时可看见当前展示量与总量，继续加载无重复、遗漏，词表范围和时间顺序一致。
+[首页“查看全部”](D:/CODE/english-vocabulary/app/today.tsx:64)进入记录页，而[记录列表](D:/CODE/english-vocabulary/app/statistics.tsx:16)仅显示最近 20 条。补清楚范围，按需增加分批加载。验收：超过 20 条时可看见当前展示量与总量，继续加载无重复、遗漏，词表范围和时间顺序一致。
 
 ### B3. 说明新词不可用原因
 
-[词库按钮](D:/Python_code/english-vocabulary/app/library.tsx:15)在额度剩余但没有符合筛选的新词时显示“学习 0 个新词”，原因只放在 title。分开提示额度用完与筛选无新词。验收：不再出现该零数量按钮文案，触屏和键盘都能读到原因，筛选问题有调整入口；每日额度继续只限制词库新词练习。
+[词库按钮](D:/CODE/english-vocabulary/app/library.tsx:15)在额度剩余但没有符合筛选的新词时显示“学习 0 个新词”，原因只放在 title。分开提示额度用完与筛选无新词。验收：不再出现该零数量按钮文案，触屏和键盘都能读到原因，筛选问题有调整入口；每日额度继续只限制词库新词练习。
 
 ### C1. 测量登录后的资源
 
-[学习空间](D:/Python_code/english-vocabulary/app/study-app.tsx:6)静态依赖 learning，[learning](D:/Python_code/english-vocabulary/lib/learning.ts:1)导入完整词库，仍有进一步拆分候选。已有页面懒加载应保留，先测资源瀑布与首次可阅读时间，再决定内容如何分批获取，不通过删除词汇缩小资源。
+[学习空间](D:/CODE/english-vocabulary/app/study-app.tsx:6)静态依赖 learning，[learning](D:/CODE/english-vocabulary/lib/learning.ts:1)导入完整词库，仍有进一步拆分候选。已有页面懒加载应保留，先测资源瀑布与首次可阅读时间，再决定内容如何分批获取，不通过删除词汇缩小资源。
 
 验收：相同生产模式、设备与网络条件下记录资源字节数、请求和首次交互耗时，补已登录首页的预算；词库覆盖与学习行为保持一致。当前没有线上耗时基线，不承诺固定缩短比例。
 
 ### C2. 复用保存响应，减少重复同步
 
-[保存回调](D:/Python_code/english-vocabulary/app/study-app.tsx:26)更新状态和修订号但未更新 ETag，[POST 响应](D:/Python_code/english-vocabulary/app/api/state/route.ts:47)也不携带 ETag；下一次刷新会带旧值，可能再次收到已经保存的全量状态。[阅读完成接口](D:/Python_code/english-vocabulary/app/api/passages/route.ts:63)已返回快照，[阅读页面](D:/Python_code/english-vocabulary/app/lesson.tsx:70)没有接收快照而再次触发状态读取。考虑统一接收 state、revision、ETag，复用结果，同时保留并发与会话保护。
+[保存回调](D:/CODE/english-vocabulary/app/study-app.tsx:26)更新状态和修订号但未更新 ETag，[POST 响应](D:/CODE/english-vocabulary/app/api/state/route.ts:47)也不携带 ETag；下一次刷新会带旧值，可能再次收到已经保存的全量状态。[阅读完成接口](D:/CODE/english-vocabulary/app/api/passages/route.ts:63)已返回快照，[阅读页面](D:/CODE/english-vocabulary/app/lesson.tsx:70)没有接收快照而再次触发状态读取。考虑统一接收 state、revision、ETag，复用结果，同时保留并发与会话保护。
 
 验收：单次成功保存后、无外部更新时，下一次同步返回 304；阅读保存不再追加重复的全量 GET。另一设备更新后仍取得新状态；乱序响应、退出与换账号不会复用错误校验值。以隔离环境请求记录验证，当前尚未做本轮动态请求测量。
 
@@ -79,11 +84,11 @@
 
 ### D1. 本段词汇回忆
 
-[阅读底部](D:/Python_code/english-vocabulary/app/lesson.tsx:103)已有保存与下一段，点词详情也能训练单词；可选增加“回忆本段词汇”。先观察本人使用时是否频繁找不到补练入口。
+[阅读底部](D:/CODE/english-vocabulary/app/lesson.tsx:103)已有保存与下一段，点词详情也能训练单词；可选增加“回忆本段词汇”。先观察本人使用时是否频繁找不到补练入口。
 
 ### D2. 复习中途结束说明
 
-[复习](D:/Python_code/english-vocabulary/app/review.tsx:37)中途结束直接返回，可考虑补本轮提交数量与未完成说明。先核实本人是否误解退出结果。这两项是候选体验改进。
+[复习](D:/CODE/english-vocabulary/app/review.tsx:37)中途结束直接返回，可考虑补本轮提交数量与未完成说明。先核实本人是否误解退出结果。这两项是候选体验改进。
 
 确认需求后再做最小原型。验收：新增入口不阻挡继续阅读；阅读覆盖不被当作掌握；中途退出不会丢失已提交结果或重复记分，未提交内容不进入成绩。暂不默认实现跨次会话续作或自动判分。
 

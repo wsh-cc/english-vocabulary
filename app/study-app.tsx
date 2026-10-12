@@ -19,18 +19,19 @@ import { ThemeControl } from './theme';
 import { Choice, useLearningClock } from './ui';
 import { readingSummary } from '@/lib/reading';
 import { createSnapshotSync } from '@/lib/snapshot-sync';
+import { mergeSaveDelta,type SaveDelta } from '@/lib/save-delta';
 const nav=[{id:'today',label:'今日学习',icon:CalendarDays},{id:'learn',label:'句子学习',icon:BookOpen},{id:'library',label:'我的词库',icon:Layers},{id:'stats',label:'学习记录',icon:BarChart3}];
 const titles:Record<string,[string,string,string]>={today:['OVERVIEW','今日学习',''],learn:['READING','在句子中学单词',''],library:['VOCABULARY','我的词库',''],stats:['INSIGHTS','学习记录',''],review:['REVIEW','词汇复习','']};
 export default function StudyApp({initialSnapshot}:{initialSnapshot:StateSnapshot}){const now=useLearningClock();const [pendingSave,setPendingSave]=useState(false);const [pendingType,setPendingType]=useState('');const [collapsed,setCollapsed]=useState(false);const [settingsOpen,setSettingsOpen]=useState(false);const [username,setUsername]=useState(initialSnapshot.user?.name??'');const [tab,setTab]=useState('today');const [state,setState]=useState<State>(()=>initialSnapshot.state);const [loaded,setLoaded]=useState(true);const [signedIn,setSignedIn]=useState(true);const [busy,setBusy]=useState(false);const [error,setError]=useState('');const [revision,setRevision]=useState(initialSnapshot.revision);const [syncTime,setSyncTime]=useState<number|null>(()=>Date.now());const [word,setWord]=useState<Word|null>(null);const [queue,setQueue]=useState<QueueItem[]>([]);const [reviewKey,setReviewKey]=useState(0);const [browse,setBrowse]=useState(false);const saving=useRef(false);const authChanging=useRef(false);const sync=useRef(createSnapshotSync(initialSnapshot.revision,initialSnapshot.etag??''));const fetching=useRef<number|null>(null);const snapshot=useRef(state);const currentTab=useRef(tab);const pending=useRef<Record<string,unknown>|null>(null);useEffect(()=>{snapshot.current=state;currentTab.current=tab;},[state,tab]);
 const receiveSnapshot=useCallback((epoch:number,data:StateSnapshot,etag:string|null)=>{
   const accepted=sync.current.accept(epoch,data.revision,etag);
   if(!accepted)return false;
-  if(accepted.changed){setState(data.state);setRevision(data.revision);}
+  if(accepted.changed){snapshot.current=data.state;setState(data.state);setRevision(data.revision);}
   setSyncTime(Date.now());
   return true;
 },[]);
 // Capture the session when a request starts, including reading saves owned by Lesson.
-const captureSnapshot=useCallback(()=>{const epoch=sync.current.epoch;return (data:StateSnapshot,etag:string|null)=>{if(epoch!==sync.current.epoch)return false;receiveSnapshot(epoch,data,etag);return true;};},[receiveSnapshot]);
+const captureSnapshot=useCallback(()=>{const epoch=sync.current.epoch;return (data:StateSnapshot,etag:string|null)=>{if(epoch!==sync.current.epoch)return null;receiveSnapshot(epoch,data,etag);return {state:snapshot.current,revision:sync.current.revision};};},[receiveSnapshot]);
 const refresh=useCallback(async()=>{
   const epoch=sync.current.epoch;
   if(saving.current||authChanging.current||fetching.current===epoch)return;
@@ -56,11 +57,27 @@ const save=useCallback(async(action:Record<string,unknown>)=>{
   const prior=pending.current;const comparable=prior?Object.fromEntries(Object.entries(prior).filter(([key])=>key!=='operationId')):null;
   const payload={...action,operationId:action.operationId??(comparable&&JSON.stringify(comparable)===JSON.stringify(action)?prior!.operationId:crypto.randomUUID())};pending.current=payload;
   try{
-    const r=await fetch('/api/state',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-    const data=await r.json() as StateSnapshot&{error?:string};
+    const baseTag=sync.current.etag;
+    const r=await fetch('/api/state',{method:'POST',headers:{'Content-Type':'application/json',...(baseTag?{'X-Wordweave-Delta-Base':baseTag}:{})},body:JSON.stringify(payload)});
+    const data=await r.json() as (StateSnapshot|SaveDelta)&{error?:string};
     if(epoch!==sync.current.epoch)return false;
     if(!r.ok)throw Error(data.error??'保存失败');
-    receiveSnapshot(epoch,data,r.headers.get('etag'));
+    if('state' in data){receiveSnapshot(epoch,data,r.headers.get('etag'));}
+    else if(data.revision>sync.current.revision){
+      const merged=mergeSaveDelta(snapshot.current,sync.current.revision,data);
+      if(merged){receiveSnapshot(epoch,{state:merged,revision:data.revision},r.headers.get('etag'));}
+      else{
+        // An unexpected base needs an authoritative snapshot, not a local replay.
+        // Failed recovery preserves the operation ID for an idempotent retry.
+        const full=await fetch('/api/state',{cache:'no-store'});
+        const latest=await full.json() as StateSnapshot&{error?:string};
+        if(epoch!==sync.current.epoch)return false;
+        if(!full.ok||!latest.state||latest.revision<data.revision)throw Error(latest.error??'记录已保存，同步尚未完成，请重试。');
+        receiveSnapshot(epoch,latest,full.headers.get('etag'));
+      }
+    }
+    // A newer snapshot already includes an older successful save. Do not
+    // reapply its event or downgrade the current validator.
     pending.current=null;setPendingSave(false);return true;
   }catch(e){if(epoch!==sync.current.epoch)return false;setPendingSave(true);setPendingType(String(action.type??''));setError(e instanceof Error?e.message:'保存失败，答案仍在当前页面。');return false;}
   finally{if(epoch===sync.current.epoch){saving.current=false;setBusy(false);}}

@@ -44,8 +44,8 @@ export async function POST(request: Request) {
     for (const part of parts) { bytes.set(part, offset); offset += part.length; }
     const parsed = actionSchema.safeParse(JSON.parse(new TextDecoder().decode(bytes)));
     if (!parsed.success) return json({error: '数据格式不正确：' + parsed.error.issues[0].message}, 400);
-    const current = await updateState(user.userId, parsed.data);
-    return json(current, 200, stateEtag(user.userId, current.revision));
+    const {delta, ...current} = await updateState(user.userId, parsed.data, request.headers.get('x-wordweave-delta-base'));
+    return json(delta ?? current, 200, stateEtag(user.userId, current.revision));
   } catch (error) {
     console.error('save-state', error);
     return json({error: error instanceof Error && /备份|记录|词汇|设备|编号/.test(error.message) ? error.message : '保存未完成，请保留页面并重试。'}, 409);

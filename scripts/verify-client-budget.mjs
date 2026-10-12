@@ -11,3 +11,8 @@ assert.ok(bytes<700000,`Signed-out JavaScript budget exceeded: ${bytes} bytes`);
 assert.ok(!seen.has('app/study-app.tsx'),'Learning must not be a static entry dependency');
 for(const name of ['lesson','library','review','statistics'])assert.ok(manifest['app/study-app.tsx'].dynamicImports.includes(`app/${name}.tsx`),`${name} should load on demand`);
 console.log(`PASS: signed-out static dependency graph is ${bytes} bytes (<700000); learning and secondary views load on demand.`);
+
+visit('app/study-app.tsx');
+const signedInBytes=[...files].reduce((sum,file)=>sum+fs.statSync(path.join(root,file)).size,0);
+assert.ok(signedInBytes<2000000, 'Signed-in initial JavaScript budget exceeded: '+signedInBytes+' bytes');
+console.log('PASS: signed-in initial dependency graph is '+signedInBytes+' bytes (<2000000), including the login entry; secondary views remain deferred.');

@@ -1,6 +1,44 @@
 import { env } from 'cloudflare:workers';
-import { initialState,applyAction,type State } from '@/lib/learning';
-function database(){if(!env.DB)throw Error('学习记录暂时无法连接，请稍后重试。');return env.DB;}
-export async function readRevision(userId:string){const row=await database().prepare('SELECT revision FROM learner_state WHERE user_id = ?').bind(userId).first<{revision:number}>();return row?.revision??0;}
-export async function readState(userId:string){const row=await database().prepare('SELECT payload, revision FROM learner_state WHERE user_id = ?').bind(userId).first<{payload:string;revision:number}>();return {state:row?JSON.parse(row.payload) as State:initialState(),revision:row?.revision??0,exists:!!row};}
-export async function updateState(userId:string,action:any){const db=database();for(let attempt=0;attempt<6;attempt++){const current=await readState(userId);if(current.state.operations.includes(action.operationId))return current;if(action.type==='restore'&&action.revision!==current.revision)throw Error('另一台设备已更新记录，请重新载入后再恢复备份。');const next=applyAction(current.state,action);const payload=JSON.stringify(next);if(payload.length>3500000)throw Error('学习记录过大，请先导出备份。');const now=Date.now();const result=current.exists?await db.prepare('UPDATE learner_state SET payload = ?, revision = revision + 1, updated_at = ? WHERE user_id = ? AND revision = ?').bind(payload,now,userId,current.revision).run():await db.prepare('INSERT OR IGNORE INTO learner_state (user_id, payload, revision, updated_at) VALUES (?, ?, 1, ?)').bind(userId,payload,now).run();if(result.meta.changes)return {state:next,revision:current.revision+1};}throw Error('另一台设备正在保存，请稍后重试。');}
+import { initialState, applyAction, type State } from '@/lib/learning';
+import { createSaveDelta, type SaveDelta } from '@/lib/save-delta';
+import { stateEtag } from '@/lib/state-etag';
+import type { z } from 'zod';
+import type { actionSchema } from '@/lib/validation';
+import type { Passage } from '@/lib/reading';
+
+type PersistedAction = z.infer<typeof actionSchema> | { type: 'reading-complete'; operationId: string; passage: Passage };
+
+function database() { if (!env.DB) throw Error("学习记录暂时无法连接，请稍后重试。"); return env.DB; }
+export async function readRevision(userId: string) {
+  const row = await database().prepare('SELECT revision FROM learner_state WHERE user_id = ?').bind(userId).first<{ revision: number }>();
+  return row?.revision ?? 0;
+}
+export async function readState(userId: string) {
+  const row = await database().prepare('SELECT payload, revision FROM learner_state WHERE user_id = ?').bind(userId).first<{ payload: string; revision: number }>();
+  return { state: row ? JSON.parse(row.payload) as State : initialState(), revision: row?.revision ?? 0, exists: !!row };
+}
+export async function updateState(userId: string, action: PersistedAction, deltaBase?: string | null): Promise<{ state: State; revision: number; exists?: boolean; delta?: SaveDelta }> {
+  const db = database();
+  for (let attempt = 0; attempt < 6; attempt++) {
+    const current = await readState(userId);
+    // A retry may follow a committed save whose response was lost. Always give
+    // that client a full snapshot; do not append its event twice.
+    if (current.state.operations.includes(action.operationId)) return current;
+    if (action.type === 'restore' && action.revision !== current.revision) throw Error("另一台设备已更新记录，请重新载入后再恢复备份。");
+    const next = applyAction(current.state, action);
+    const payload = JSON.stringify(next);
+    if (payload.length > 3500000) throw Error("学习记录过大，请先导出备份。");
+    const now = Date.now();
+    const result = current.exists
+      ? await db.prepare('UPDATE learner_state SET payload = ?, revision = revision + 1, updated_at = ? WHERE user_id = ? AND revision = ?').bind(payload, now, userId, current.revision).run()
+      : await db.prepare('INSERT OR IGNORE INTO learner_state (user_id, payload, revision, updated_at) VALUES (?, ?, 1, ?)').bind(userId, payload, now).run();
+    if (result.meta.changes) {
+      // Check the base of the successful CAS attempt, not the first read:
+      // a concurrent writer can change it while this operation retries.
+      const delta = deltaBase === stateEtag(userId, current.revision)
+        ? createSaveDelta(next, action, current.revision) : null;
+      return { state: next, revision: current.revision + 1, ...(delta ? { delta } : {}) };
+    }
+  }
+  throw Error("另一台设备正在保存，请稍后重试。");
+}
