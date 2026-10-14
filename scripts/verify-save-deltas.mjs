@@ -3,25 +3,13 @@ import fs from 'node:fs';
 import { DatabaseSync } from 'node:sqlite';
 import { gzipSync } from 'node:zlib';
 import { build } from 'esbuild';
+import { isolatedD1 } from './isolated-d1.mjs';
 
 // Actual handlers and merge helpers, isolated SQLite, entirely synthetic data.
 const db = new DatabaseSync(':memory:');
 for (const file of fs.readdirSync('drizzle').filter(file => file.endsWith('.sql')).sort()) db.exec(fs.readFileSync('drizzle/' + file, 'utf8'));
 let beforeWrite;
-const d1 = { prepare(sql) {
-  const statement = db.prepare(sql);
-  let values = [];
-  return {
-    bind(...args) { values = args; return this; },
-    async first() { return statement.get(...values) ?? null; },
-    async run() {
-      if (sql.startsWith('UPDATE learner_state') && beforeWrite) {
-        const hook = beforeWrite; beforeWrite = null; hook();
-      }
-      return { meta: { changes: Number(statement.run(...values).changes) } };
-    },
-  };
-} };
+const d1 = isolatedD1(db, () => { const hook = beforeWrite; beforeWrite = null; hook?.(); });
 globalThis.deltaTestEnv = { DB: d1 };
 globalThis.deltaTestAccount = { userId: 'delta-owner', name: 'Synthetic learner' };
 const originalFetch = globalThis.fetch;
@@ -41,7 +29,11 @@ try {
   });
   const { api, initialState, seedWords, availableModes, applyAction, mergeSaveDelta, stateSchema } = await import('data:text/javascript;base64,' + Buffer.from(bundled.outputFiles[0].text).toString('base64'));
   const now = 1791660000000, wordId = seedWords[0].id;
-  const seed = (state, revision = 1) => db.prepare('INSERT OR REPLACE INTO learner_state (user_id, payload, revision, updated_at) VALUES (?, ?, ?, ?)').run('delta-owner', JSON.stringify(state), revision, now);
+  const seed = (state, revision = 1) => {
+    db.prepare('DELETE FROM mobile_operations WHERE user_id = ?').run('delta-owner');
+    db.prepare('DELETE FROM mobile_sync_meta WHERE user_id = ?').run('delta-owner');
+    db.prepare('INSERT OR REPLACE INTO learner_state (user_id, payload, revision, updated_at) VALUES (?, ?, ?, ?)').run('delta-owner', JSON.stringify(state), revision, now);
+  };
   const request = (body, base, extra = {}) => new Request('http://delta.test/api/state', {
     ...(body ? { method: 'POST', body: JSON.stringify(body) } : {}),
     headers: { Origin: 'http://delta.test', 'Content-Type': 'application/json', ...(base ? { 'X-Wordweave-Delta-Base': base } : {}), ...extra },
@@ -54,7 +46,10 @@ try {
   const post = (action, base) => api.POST(request(action, base)).then(read);
   const action = (type, other = {}) => ({ type, wordId, operationId: crypto.randomUUID(), ...other });
   const evidence = [];
-  for (const count of [0, 1000, 10000]) {
+  // 5000 plus all catalog tracks stays under D1's safe 1.9 MB UTF-8 row budget.
+  // Oversized states are covered by verify-mobile-api instead of pretending
+  // that in-memory SQLite's larger rows are deployable to D1.
+  for (const count of [0, 1000, 5000]) {
     const state = initialState();
     state.operations = Array.from({ length: 1000 }, (_, i) => 'old-op-' + i);
     // Include realistic tracks for the catalog while leaving wordId new to
@@ -164,7 +159,7 @@ try {
 
   fs.mkdirSync('.sites-runtime/flow', { recursive: true });
   fs.writeFileSync('.sites-runtime/flow/save-delta-contract.json', JSON.stringify({ pass: true, evidence }, null, 2));
-  console.log(JSON.stringify({ pass: true, cases: '0/1000/10000 records; exact full-state equivalence; untouched references; operation window; all outcomes; fresh word modes; retries; stale base; CAS race; concurrent writes; restore; legacy clients; authentication; account isolation', representative: evidence.filter(row => row.action === 'result' && row.outcome === 'correct') }, null, 2));
+  console.log(JSON.stringify({ pass: true, cases: '0/1000/5000 records under D1 byte limit; exact full-state equivalence; untouched references; operation window; all outcomes; fresh word modes; retries; stale base; CAS race; concurrent writes; restore; legacy clients; authentication; account isolation', representative: evidence.filter(row => row.action === 'result' && row.outcome === 'correct') }, null, 2));
 } finally {
   globalThis.fetch = originalFetch;
   delete globalThis.deltaTestEnv;

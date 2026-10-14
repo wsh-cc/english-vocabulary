@@ -3,17 +3,13 @@ import fs from 'node:fs';
 import { DatabaseSync } from 'node:sqlite';
 import { build } from 'esbuild';
 import { createHash } from 'node:crypto';
+import { isolatedD1 } from './isolated-d1.mjs';
 
 // Only in-memory SQLite. This test never writes to the learner's database.
 const db = new DatabaseSync(':memory:');
 for (const file of fs.readdirSync('drizzle').filter(file => file.endsWith('.sql')).sort()) db.exec(fs.readFileSync('drizzle/' + file, 'utf8'));
 let beforeWrite = null;
-const d1 = { prepare(sql) { const statement = db.prepare(sql); let values = []; return {
-  bind(...args) { values = args; return this; },
-  async first() { return statement.get(...values) ?? null; },
-  async all() { return { results: statement.all(...values) }; },
-  async run() { const hook=beforeWrite;beforeWrite=null;hook?.();return { meta: { changes: Number(statement.run(...values).changes) } }; },
-}; } };
+const d1 = isolatedD1(db, () => { const hook = beforeWrite; beforeWrite = null; hook?.(); });
 globalThis.readingTestEnv = { DB: d1 };
 globalThis.readingTestCookie = 'a'.repeat(64);
 for (const [userId, token] of [['reader', 'a'.repeat(64)], ['other', 'b'.repeat(64)]]) {

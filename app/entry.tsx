@@ -7,8 +7,10 @@ import { AuthPanel } from './auth-panel';
 import { ThemeControl } from './theme';
 import { ModuleBoundary, ModuleLoading } from './module-boundary';
 import type { StateSnapshot } from './types';
+import { createLazyModule } from '@/lib/lazy-module';
 
-const StudyApp = lazy(() => import('./study-app'));
+const studyModule = createLazyModule(() => import('./study-app'));
+const StudyApp = lazy(studyModule.load);
 
 // Keep the catalogue and learning tools out of the signed-out entry bundle.
 export default function Entry() {
@@ -22,6 +24,8 @@ export default function Entry() {
       try {
         const response = await fetch('/api/state', { cache: 'no-store' });
         if (response.status === 401) { setError(''); return; }
+        // Once authenticated, overlap module loading with the snapshot body.
+        if (response.ok) studyModule.preload();
         const data = await response.json() as StateSnapshot & { error?: string };
         if (!response.ok) throw Error(data.error || '学习记录加载失败，请重试。');
         setSnapshot({ ...data, etag: response.headers.get('etag') });
@@ -41,5 +45,5 @@ export default function Entry() {
   }, [refresh, snapshot]);
 
   if (snapshot) return <ModuleBoundary><Suspense fallback={<ModuleLoading/>}><StudyApp initialSnapshot={snapshot}/></Suspense></ModuleBoundary>;
-  return <div className="app-shell is-guest"><a className="skip-link" href="#learning-content">跳到学习内容</a><header className="site-header"><Link className="brand" href="/" aria-label="词间首页"><span className="brand-mark"><LibraryBig size={23}/></span><span>词间<small>WORDWEAVE</small></span></Link><div className="guest-tools"><span className="header-note">在句子中学单词</span><ThemeControl/></div></header><div className="main-area"><main id="learning-content" tabIndex={-1} className="signed-out">{error && <div className="error-banner" role="alert"><span>{error}</span><button className="secondary" onClick={() => void refresh()}><RefreshCw size={16}/>重新连接</button></div>}{loaded ? <AuthPanel onAuthenticated={async () => { await inFlight.current; await refresh(); }}/> : <div className="loading-state" role="status"><BookOpen size={28}/><p>正在读取学习记录…</p><div className="skeleton-line"/><div className="skeleton-line short"/><div className="skeleton-card"/></div>}</main></div></div>;
+  return <div className="app-shell is-guest"><a className="skip-link" href="#learning-content">跳到学习内容</a><header className="site-header"><Link className="brand" href="/" aria-label="词间首页"><span className="brand-mark"><LibraryBig size={23}/></span><span>词间<small>WORDWEAVE</small></span></Link><div className="guest-tools"><span className="header-note">在句子中学单词</span><ThemeControl/></div></header><div className="main-area"><main id="learning-content" tabIndex={-1} className="signed-out">{error && <div className="error-banner" role="alert"><span>{error}</span><button className="secondary" onClick={() => void refresh()}><RefreshCw size={16}/>重新连接</button></div>}{loaded ? <AuthPanel onAuthenticated={async () => { studyModule.preload(); await inFlight.current; await refresh(); }}/> : <div className="loading-state" role="status"><BookOpen size={28}/><p>正在读取学习记录…</p><div className="skeleton-line"/><div className="skeleton-line short"/><div className="skeleton-card"/></div>}</main></div></div>;
 }

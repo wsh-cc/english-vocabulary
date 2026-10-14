@@ -8,7 +8,7 @@ import { Choice, useLearningClock } from './ui';
 import { beijingDayBounds } from './learning-day';
 import type {AppProps,QueueItem} from './types';
 import { toast } from 'sonner';
-export function download(name:string,data:unknown){const a=document.createElement('a');const url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),2000);}
+import { download } from '@/lib/download';
 export function Library({state,save,busy,onWord,onReview,cancelPending}:AppProps&{onWord:(w:Word)=>void;onReview:(items:QueueItem[],browse?:boolean)=>void}){const now=useLearningClock();const [search,setSearch]=useState('');const [level,setLevel]=useState<string>(state.settings.level);const [status,setStatus]=useState('all');const [pending,setPending]=useState<Word[]|null>(null);const [limit,setLimit]=useState(30);const words=useMemo(()=>[...seedWords,...state.custom],[state.custom]);const searchIndex=useMemo(()=>words.map(word=>({word,text:`${word.word} ${word.meaning}`.toLowerCase()})),[words]);const query=search.toLowerCase();const filtered=useMemo(()=>searchIndex.filter(({word:w,text})=>(level==='all'||w.tags.includes(level))&&(status==='all'||(state.familiar[w.id]??'learning')===status)&&text.includes(query)).map(({word})=>word),[searchIndex,level,status,state.familiar,query]);
 const [todayStart,todayEnd]=beijingDayBounds(chinaDay(now));
 const remaining=useMemo(()=>Math.max(0,state.settings.daily-Object.values(state.learned).filter(t=>t>=todayStart&&t<todayEnd).length),[state.learned,state.settings.daily,todayStart,todayEnd]);

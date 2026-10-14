@@ -6,12 +6,19 @@ import { Toaster } from '@/components/ui/sonner';
 import { initialState,type State,type Word,allWords,dueItems } from '@/lib/learning';
 import { AuthPanel } from './auth-panel';
 import { Today } from './today';
-const Lesson=lazy(()=>import('./lesson').then(module=>({default:module.Lesson})));
-const Review=lazy(()=>import('./review').then(module=>({default:module.Review})));
-const Library=lazy(()=>import('./library').then(module=>({default:module.Library})));
-const Statistics=lazy(()=>import('./statistics').then(module=>({default:module.Statistics})));
+import { createLazyModule } from '@/lib/lazy-module';
+const viewModules={
+  learn:createLazyModule(()=>import('./lesson').then(module=>({default:module.Lesson}))),
+  review:createLazyModule(()=>import('./review').then(module=>({default:module.Review}))),
+  library:createLazyModule(()=>import('./library').then(module=>({default:module.Library}))),
+  stats:createLazyModule(()=>import('./statistics').then(module=>({default:module.Statistics}))),
+};
+const Lesson=lazy(viewModules.learn.load);
+const Review=lazy(viewModules.review.load);
+const Library=lazy(viewModules.library.load);
+const Statistics=lazy(viewModules.stats.load);
 import { WordDetail } from './word-detail';
-import type { QueueItem,StateSnapshot } from './types';
+import type { DeferredView,QueueItem,StateSnapshot } from './types';
 import { ModuleBoundary,ModuleLoading } from './module-boundary';
 import './reading.css';
 import { Settings } from './settings';
@@ -20,6 +27,12 @@ import { Choice, useLearningClock } from './ui';
 import { readingSummary } from '@/lib/reading';
 import { createSnapshotSync } from '@/lib/snapshot-sync';
 import { mergeSaveDelta,type SaveDelta } from '@/lib/save-delta';
+function preloadView(view:string){
+  if(!Object.hasOwn(viewModules,view))return;
+  const connection=(navigator as Navigator&{connection?:{saveData?:boolean;effectiveType?:string}}).connection;
+  if(connection?.saveData||connection?.effectiveType==='slow-2g'||connection?.effectiveType==='2g')return;
+  viewModules[view as DeferredView].preload();
+}
 const nav=[{id:'today',label:'今日学习',icon:CalendarDays},{id:'learn',label:'句子学习',icon:BookOpen},{id:'library',label:'我的词库',icon:Layers},{id:'stats',label:'学习记录',icon:BarChart3}];
 const titles:Record<string,[string,string,string]>={today:['OVERVIEW','今日学习',''],learn:['READING','在句子中学单词',''],library:['VOCABULARY','我的词库',''],stats:['INSIGHTS','学习记录',''],review:['REVIEW','词汇复习','']};
 export default function StudyApp({initialSnapshot}:{initialSnapshot:StateSnapshot}){const now=useLearningClock();const [pendingSave,setPendingSave]=useState(false);const [pendingType,setPendingType]=useState('');const [collapsed,setCollapsed]=useState(false);const [settingsOpen,setSettingsOpen]=useState(false);const [username,setUsername]=useState(initialSnapshot.user?.name??'');const [tab,setTab]=useState('today');const [state,setState]=useState<State>(()=>initialSnapshot.state);const [loaded,setLoaded]=useState(true);const [signedIn,setSignedIn]=useState(true);const [busy,setBusy]=useState(false);const [error,setError]=useState('');const [revision,setRevision]=useState(initialSnapshot.revision);const [syncTime,setSyncTime]=useState<number|null>(()=>Date.now());const [word,setWord]=useState<Word|null>(null);const [queue,setQueue]=useState<QueueItem[]>([]);const [reviewKey,setReviewKey]=useState(0);const [browse,setBrowse]=useState(false);const saving=useRef(false);const authChanging=useRef(false);const sync=useRef(createSnapshotSync(initialSnapshot.revision,initialSnapshot.etag??''));const fetching=useRef<number|null>(null);const snapshot=useRef(state);const currentTab=useRef(tab);const pending=useRef<Record<string,unknown>|null>(null);useEffect(()=>{snapshot.current=state;currentTab.current=tab;},[state,tab]);
@@ -91,15 +104,15 @@ const cancelPending=()=>{if(saving.current)return;pending.current=null;setPendin
 return <div className={'app-shell '+(signedIn?'is-authenticated':'is-guest')+(collapsed?' nav-collapsed':'')}><Toaster position="top-center" richColors/>
 <a className="skip-link" href="#learning-content">跳到学习内容</a>
 <header className="site-header"><Link className="brand" href="/" aria-label="词间首页"><span className="brand-mark"><LibraryBig size={23}/></span><span>词间<small>WORDWEAVE</small></span></Link>
-{signedIn?<><p className="nav-label">你的学习空间</p><nav className="main-nav" aria-label="主导航">{nav.map(({id,label,icon:Icon})=><button key={id} className={tab===id?'active':''} aria-current={tab===id?'page':undefined} disabled={blocked} onClick={()=>navigate(id)} title={label}><Icon size={19}/><span>{label}</span></button>)}</nav>
+{signedIn?<><p className="nav-label">你的学习空间</p><nav className="main-nav" aria-label="主导航">{nav.map(({id,label,icon:Icon})=><button key={id} className={tab===id?'active':''} aria-current={tab===id?'page':undefined} disabled={blocked} onPointerEnter={()=>{if(!blocked)preloadView(id);}} onFocus={()=>preloadView(id)} onClick={()=>navigate(id)} title={label}><Icon size={19}/><span>{label}</span></button>)}</nav>
 <button className={'sidebar-review '+(tab==='review'?'active':'')} disabled={blocked||!due.length} title={due.length?'开始到期复习':'当前没有到期练习'} onClick={()=>review(due.slice(0,30))}><RotateCcw size={18}/><span>到期复习</span><b>{due.length}</b></button>
 <div className="sidebar-progress"><BookOpen size={19}/><span>在句子中学单词</span><p>慢慢读，也在向前。</p><div className="sidebar-track"><i style={{width:Math.min(100,reading.covered/Math.max(1,reading.total)*100)+'%'}}/></div><small>{reading.covered.toLocaleString()} / {reading.total.toLocaleString()} 个词条已接触</small></div>
 <div className="sidebar-bottom"><button className="settings-button" aria-label="学习设置" title={tab==='review'?'结束本轮后可调整学习设置':'学习设置'} disabled={blocked||tab==='review'} onClick={()=>setSettingsOpen(true)}><Settings2 size={18}/><span>学习设置</span></button><button className="collapse-button" title={collapsed?'展开导航':'收起导航'} aria-label={collapsed?'展开导航':'收起导航'} onClick={()=>setCollapsed(!collapsed)}>{collapsed?<PanelLeftOpen size={18}/>:<PanelLeftClose size={18}/>}<span>收起导航</span></button><div className="account"><span className="account-avatar">{username.slice(0,1).toUpperCase()||'我'}</span><div><strong>{username||'我的账号'}</strong><small>私人学习空间</small></div><button className="icon-button" title={pendingSave?'请先重试未保存的操作':'退出登录'} aria-label="退出登录" disabled={blocked} onClick={()=>void logout()}><LogOut size={17}/></button></div></div></>:<div className="guest-tools"><span className="header-note">在句子中学单词</span><ThemeControl/></div>}</header>
-<div className="main-area">{signedIn&&<div className="workspace-bar"><span className="breadcrumbs">我的空间 <span className="breadcrumb-separator">/</span> {titles[tab][1]}</span><div className="workspace-tools"><button className="toolbar-search" aria-label="搜索单词" disabled={blocked} onClick={()=>navigate('library')}><Search size={16}/><span>搜索单词</span></button><div title={tab==='review'?'结束本轮后可切换词表':'切换词表保留学习进度'}><Choice label="学习词表" value={state.settings.level} onChange={level=>void save({type:'settings',settings:{level}})} options={ [['CET4','四级 CET-4'],['CET6','六级 CET-6']] } disabled={blocked||tab==='review'}/></div><ThemeControl/><span className={'sync-status '+(error?'sync-error':'')} title={error?error:syncTime?'上次同步 '+new Date(syncTime).toLocaleTimeString('zh-CN'):'正在连接'} role="status"><Cloud size={16}/><span>{busy?'保存中…':error?'同步失败':syncTime?'已同步':'连接中…'}</span></span></div></div>}
+<div className="main-area">{signedIn&&<div className="workspace-bar"><span className="breadcrumbs">我的空间 <span className="breadcrumb-separator">/</span> {titles[tab][1]}</span><div className="workspace-tools"><button className="toolbar-search" aria-label="搜索单词" disabled={blocked} onPointerEnter={()=>{if(!blocked)preloadView('library');}} onFocus={()=>preloadView('library')} onClick={()=>navigate('library')}><Search size={16}/><span>搜索单词</span></button><div title={tab==='review'?'结束本轮后可切换词表':'切换词表保留学习进度'}><Choice label="学习词表" value={state.settings.level} onChange={level=>void save({type:'settings',settings:{level}})} options={ [['CET4','四级 CET-4'],['CET6','六级 CET-6']] } disabled={blocked||tab==='review'}/></div><ThemeControl/><span className={'sync-status '+(error?'sync-error':'')} title={error?error:syncTime?'上次同步 '+new Date(syncTime).toLocaleTimeString('zh-CN'):'正在连接'} role="status"><Cloud size={16}/><span>{busy?'保存中…':error?'同步失败':syncTime?'已同步':'连接中…'}</span></span></div></div>}
 <main id="learning-content" tabIndex={-1} className={!signedIn?'signed-out':''}>{error&&<div className="error-banner" role="alert"><span>{error}{pendingSave?' 当前输入仍保留，请在原操作处重试保存。':''}</span><button className="secondary" disabled={busy} onClick={()=>{if(pendingSave&&pendingType!=='result')retrySave();else void refresh();}}><RefreshCw size={16}/>{pendingSave&&pendingType!=='result'?'重试保存':'重新连接'}</button></div>}
 {!loaded?<div className="loading-state" role="status"><BookOpen size={28}/><p>正在读取学习记录…</p><div className="skeleton-line"/><div className="skeleton-line short"/><div className="skeleton-card"/></div>:!signedIn?<AuthPanel onAuthenticated={authenticated}/>:<div key={tab} className={'page-content page-'+tab}>
 <div className="page-heading"><div><p className="eyebrow">{title[0]}</p><h1>{title[1]}</h1></div><span className="date-tag"><CalendarDays size={15}/>{new Date(now).toLocaleDateString('zh-CN',{month:'long',day:'numeric',weekday:'long'})}</span></div>
-<ModuleBoundary key={tab}><Suspense fallback={<ModuleLoading/>}>{tab==='today'&&<Today key={state.settings.level} {...props} username={username} onLearn={()=>navigate('learn')} onLibrary={()=>navigate('library')} onReview={review} onStats={()=>navigate('stats')}/>}
+<ModuleBoundary key={tab}><Suspense fallback={<ModuleLoading/>}>{tab==='today'&&<Today key={state.settings.level} {...props} username={username} onPrepare={preloadView} onLearn={()=>navigate('learn')} onLibrary={()=>navigate('library')} onReview={review} onStats={()=>navigate('stats')}/>}
 {tab==='learn'&&<Lesson key={state.settings.level} {...props} onWord={setWord} captureSnapshot={captureSnapshot}/>}
 {tab==='library'&&<Library key={state.settings.level} {...props} onWord={setWord} onReview={review}/>}
 {tab==='stats'&&<Statistics {...props} revision={revision}/>}

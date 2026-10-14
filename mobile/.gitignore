@@ -1,0 +1,13 @@
+/node_modules/
+/dist/
+/.private/
+/.tools/
+/.gradle/
+/release/
+/output/
+/.playwright-cli/
+*.tsbuildinfo
+*.log
+*.jks
+*.keystore
+*.properties.local

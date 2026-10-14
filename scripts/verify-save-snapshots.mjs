@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { DatabaseSync } from 'node:sqlite';
 import { build } from 'esbuild';
+import { isolatedD1 } from './isolated-d1.mjs';
 
 // Runs actual handlers against in-memory SQLite. No cookies, credentials,
 // user database, preview server, or external requests are used.
@@ -10,17 +11,7 @@ const db = new DatabaseSync(':memory:');
 for (const file of fs.readdirSync('drizzle').filter(file => file.endsWith('.sql')).sort()) {
   db.exec(fs.readFileSync('drizzle/' + file, 'utf8'));
 }
-const d1 = {
-  prepare(sql) {
-    const statement = db.prepare(sql);
-    let values = [];
-    return {
-      bind(...args) { values = args; return this; },
-      async first() { return statement.get(...values) ?? null; },
-      async run() { return { meta: { changes: Number(statement.run(...values).changes) } }; },
-    };
-  },
-};
+const d1 = isolatedD1(db);
 globalThis.saveSnapshotTestEnv = { DB: d1 };
 globalThis.saveSnapshotTestAccount = { userId: 'snapshot-owner', name: 'Synthetic learner' };
 const originalFetch = globalThis.fetch;

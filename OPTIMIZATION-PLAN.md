@@ -7,9 +7,11 @@
 继续服务私人四六级学习：优先阅读中英混合记忆辅助段落，按需查词与编辑联想，再用三种回忆方向和延后测试巩固；手机、电脑共享记录。依据[原需求](D:/Python_code/plans/english-vocabulary-plan-2026-10-05.md:7)及其[核心流程](D:/Python_code/plans/english-vocabulary-plan-2026-10-05.md:16)，不默认增加 SEO 引流、公开排名、AI API 或全站重写。
 
 
-## 实施进展（2026-10-12）
+## 实施进展（2026-10-13）
 
-项目现位于 `D:\CODE\english-vocabulary`。第一轮搜索、日期计算和重复同步优化见 [第一轮报告](./FLUIDITY-OPTIMIZATION.md)；第二轮完成答题／联想增量保存及并发回退，实测见 [第二轮报告](./FLUIDITY-OPTIMIZATION-PHASE2.md)。第三轮已定位阅读串行请求等待，完成单请求保存并前进、提示布局和重试修正，见 [阅读优化报告](./FLUIDITY-OPTIMIZATION-READING.md)。完整流程下一帧检查中位数约 355 → 252ms，15 项 UI 回归通过。下一批进入 F2 / C1 的登录后首次加载和资源拆分；A/B/D 继续作为独立后续任务。
+项目现位于 `D:\CODE\english-vocabulary`。第一轮搜索、日期计算和重复同步优化见 [第一轮报告](./FLUIDITY-OPTIMIZATION.md)；第二轮完成答题／联想增量保存及并发回退，实测见 [第二轮报告](./FLUIDITY-OPTIMIZATION-PHASE2.md)。第三轮已定位阅读串行请求等待，完成单请求保存并前进、提示布局和重试修正，见 [阅读优化报告](./FLUIDITY-OPTIMIZATION-READING.md)。第三轮完整流程下一帧检查中位数约 355 → 252ms，15 项 UI 回归通过。
+
+第四轮已在本地实现登录后模块与记录并行加载、按导航意图预加载，以及记录页与词库页的下载工具依赖分离，见 [加载优化说明](./FLUIDITY-OPTIMIZATION-LOADING.md)。按用户最新要求，本轮只实现，测试另行安排；修改后的源码未构建、未验收，也未发布。完整词库内容拆分仍待独立测量后决定，不将 F2 / C1 整体标为完成。A/B/D 继续作为独立后续任务。
 
 ## 证据与已有成果
 

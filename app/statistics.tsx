@@ -6,7 +6,7 @@ import { Progress } from '@/components/ui/progress';
 import { AlertDialog,AlertDialogContent,AlertDialogHeader,AlertDialogTitle,AlertDialogDescription,AlertDialogFooter,AlertDialogCancel,AlertDialogAction } from '@/components/ui/alert-dialog';
 import { MODES,modeNames,chinaDay,seedWords,type State } from '@/lib/learning';
 import { stateSchema } from '@/lib/validation';
-import { download } from './library';
+import { download } from '@/lib/download';
 import { dateText } from './ui';
 import type { AppProps } from './types';
 import { ReviewPlan } from './today';
