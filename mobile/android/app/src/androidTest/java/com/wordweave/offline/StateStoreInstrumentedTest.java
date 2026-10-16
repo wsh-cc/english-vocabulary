@@ -2,6 +2,9 @@ package com.wordweave.offline;
 
 import android.content.Context;
 import androidx.test.platform.app.InstrumentationRegistry;
+import com.getcapacitor.JSObject;
+import com.getcapacitor.PluginCall;
+import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -54,5 +57,30 @@ public class StateStoreInstrumentedTest {
         store = new StateStore(context, TEST_DATABASE);
         assertEquals("{\"state\":\"restored\"}", store.read().stateJson);
         assertEquals(payload, store.read().recoveryJson);
+    }
+
+    private static StateWriteRequest serializedWrite(String stateJson, long revision, boolean keepRecovery) throws Exception {
+        JSONObject options = new JSONObject();
+        options.put("stateJson", stateJson);
+        options.put("expectedRevision", revision);
+        options.put("keepRecovery", keepRecovery);
+        PluginCall call = new PluginCall(null, "WordweaveNative", "test-callback", "writeState", new JSObject(options.toString()));
+        assertTrue(call.getData().opt("expectedRevision") instanceof Integer);
+        return StateWriteRequest.parse(call);
+    }
+
+    @Test public void serializedJavascriptWritesPersistAndStaleRevisionCannotOverwrite() throws Exception {
+        StateWriteRequest first = serializedWrite("{\"pending\":[\"one\"]}", 0, false);
+        assertEquals(1, store.write(first.stateJson, first.expectedRevision, first.keepRecovery));
+        StateWriteRequest second = serializedWrite("{\"pending\":[\"one\",\"two\"]}", 1, true);
+        assertEquals(2, store.write(second.stateJson, second.expectedRevision, second.keepRecovery));
+        StateWriteRequest stale = serializedWrite("{\"pending\":[]}", 0, true);
+        assertThrows(StateStore.RevisionConflict.class, () -> store.write(stale.stateJson, stale.expectedRevision, stale.keepRecovery));
+        store.close();
+        store = new StateStore(context, TEST_DATABASE);
+        StateStore.Snapshot persisted = store.read();
+        assertEquals(2, persisted.revision);
+        assertEquals("{\"pending\":[\"one\",\"two\"]}", persisted.stateJson);
+        assertEquals("{\"pending\":[\"one\"]}", persisted.recoveryJson);
     }
 }

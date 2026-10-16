@@ -9,9 +9,9 @@ const { readingPassages, coursePassages, nextReading } = await import('../.sites
 const now = Date.now();
 const byId = new Map(seedWords.map(word => [word.id, word]));
 
-assert.equal(readingPassages.length, 61);
-assert.equal(new Set(readingPassages.map(p => p.id)).size, 61);
-assert.equal(new Set(readingPassages.map(p => p.title)).size, 61);
+assert.equal(readingPassages.length, 71);
+assert.equal(new Set(readingPassages.map(p => p.id)).size, 71);
+assert.equal(new Set(readingPassages.map(p => p.title)).size, 71);
 assert.equal(new Set(readingPassages.flatMap(p => p.wordIds)).size, seedWords.length);
 for (const passage of readingPassages) {
   assert.ok(passage.wordIds.length >= 20 && passage.wordIds.length <= 40);
@@ -45,6 +45,13 @@ for (const level of ['CET4', 'CET6']) {
 }
 
 const state = initialState(); const first = nextReading(state);
+const upgraded = initialState(); upgraded.settings.level = 'CET4';
+const cet4Course = coursePassages(upgraded);
+assert.equal(cet4Course.length,13);
+for(const passage of cet4Course.slice(0,3))completeReading(upgraded,passage,now);
+assert.equal(readingSummary(upgraded).covered,89,'Legacy CET4 completion retains its original coverage');
+assert.equal(nextReading(upgraded).id,cet4Course[3].id,'An existing completed course continues into the expansion');
+assert.equal(nextReading(upgraded).wordIds.length,30);
 let progress = applyAction(state, { type: 'reading-complete', passage: first, operationId: 'reading-a' }, now);
 progress = applyAction(progress, { type: 'reading-complete', passage: first, operationId: 'reading-b' }, now + 1);
 assert.equal(progress.reading.encounters[first.wordIds[0]].count, 1);
@@ -67,4 +74,4 @@ progress.custom.push(imported);
 assert.equal(readingSummary(progress).total, 2128, 'Imported words do not falsely expand the built-in course');
 assert.equal(seedWords.find(w => w.word === 'sheriff').meaning.includes('县警长'), true);
 assert.equal(seedWords.find(w => w.word === 'arc').meaning.includes('弧线'), true);
-console.log('PASS: 61 real paragraphs, exact targets, full 2163-sense coverage, resume/loop, completion deduplication, backup roundtrip, old backups, untrusted completion rejection and dictionary corrections.');
+console.log('PASS: 71 real paragraphs, exact targets, full 2463-sense coverage, legacy CET4 progress continues into new readings, resume/loop, completion deduplication, backup roundtrip, old backups, untrusted completion rejection and dictionary corrections.');

@@ -87,11 +87,11 @@ public class WordweaveNativePlugin extends Plugin {
     }
 
     @PluginMethod public void writeState(PluginCall call) {
-        String stateJson = call.getString("stateJson");
-        Long revision = call.getLong("expectedRevision");
-        if (stateJson == null || revision == null) { call.reject("缺少本机学习档案或修订号。", "INVALID_INPUT"); return; }
+        final StateWriteRequest input;
+        try { input = StateWriteRequest.parse(call); }
+        catch (IllegalArgumentException error) { call.reject(error.getMessage(), "INVALID_INPUT"); return; }
         storageWorker.execute(() -> {
-            try { call.resolve(result("revision", stateStore.write(stateJson, revision, Boolean.TRUE.equals(call.getBoolean("keepRecovery", false))))); }
+            try { call.resolve(result("revision", stateStore.write(input.stateJson, input.expectedRevision, input.keepRecovery))); }
             catch (StateStore.RevisionConflict error) { call.reject(error.getMessage(), "REVISION_CONFLICT"); }
             catch (Exception error) { call.reject("本机保存失败，请保持当前答案并重试。", "STATE_WRITE", error); }
         });
@@ -203,7 +203,7 @@ public class WordweaveNativePlugin extends Plugin {
                 connection.setReadTimeout(30000);
                 connection.setRequestMethod(method);
                 connection.setRequestProperty("Accept", "application/json");
-                connection.setRequestProperty("User-Agent", "Wordweave-Android/0.1.0");
+                connection.setRequestProperty("User-Agent", "Wordweave-Android/0.1.2");
                 if (token != null && !token.isEmpty()) connection.setRequestProperty("Authorization", "Bearer " + token);
                 if (body != null) {
                     connection.setDoOutput(true);

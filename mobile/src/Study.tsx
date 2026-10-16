@@ -10,6 +10,7 @@ import {
 } from '@/lib/learning';
 import { coursePassages, nextReading } from '@/lib/curriculum';
 import { passageParts, readingSummary } from '@/lib/reading';
+import { ChoicePicker } from './ChoicePicker';
 import './Study.css';
 
 export type QueueItem = { word: Word; mode: Mode };
@@ -29,6 +30,35 @@ const outcomeText = (outcome: Result['outcome']) => outcome === 'correct'
   ? '独立答对' : outcome === 'hinted' ? '借助提示' : '需要重温';
 const sameSense = (left: Word, right: Word) => left.word.toLowerCase() === right.word.toLowerCase() && left.pos === right.pos && left.meaning === right.meaning;
 const dayStart = (time: number) => Date.parse(`${chinaDay(time)}T00:00:00+08:00`);
+type ChoiceTuple = [value: string, label: string, description?: string, icon?: ReactNode];
+const studyChoices: Record<'direction' | 'gloss' | 'level' | 'filterFamiliar' | 'wordFamiliar', ChoiceTuple[]> = {
+  direction: [
+    ['all', '全部方向', '一起复习认义、回忆和已有的语境题', <Layers size={20} />],
+    ['meaning', modeNames.meaning, '看到英文，回忆本轮学习的中文义项', <BookOpen size={20} />],
+    ['recall', modeNames.recall, '从中文义项，主动想起英文单词', <NotebookPen size={20} />],
+    ['context', modeNames.context, '在新的英文句子中理解这个词', <Sparkles size={20} />],
+  ],
+  gloss: [
+    ['click', '点词释义', '先读完整句，遇到不懂的词再轻点查看', <Eye size={20} />],
+    ['direct', '随句释义', '中文释义直接跟在英文目标词后面', <BookOpen size={20} />],
+  ],
+  level: [
+    ['all', '全部词表', '显示四级、六级及已导入的全部义项', <Layers size={20} />],
+    ['CET4', '四级', '只查看带有四级标签的义项', <BookOpen size={20} />],
+    ['CET6', '六级', '只查看带有六级标签的义项', <Target size={20} />],
+  ],
+  filterFamiliar: [
+    ['all', '全部程度', '查看当前词表里所有熟悉程度的词', <Layers size={20} />],
+    ['learning', '正在学习', '查看仍在积累中的词条', <NotebookPen size={20} />],
+    ['unknown', '陌生', '查看自己标记为陌生的词条', <RotateCcw size={20} />],
+    ['familiar', '自评熟悉', '查看自己认为熟悉、仍待测试的词条', <CheckCheck size={20} />],
+  ],
+  wordFamiliar: [
+    ['learning', '正在学习', '继续学习，保持已有的复习安排', <NotebookPen size={20} />],
+    ['unknown', '陌生，加入复习', '加入回想练习，已有的复习进度会保留', <RotateCcw size={20} />],
+    ['familiar', '熟悉，低频抽查', '未测试的方向安排低频抽查，不记为通过', <CheckCheck size={20} />],
+  ],
+};
 
 function useClock() {
   const [now, setNow] = useState(Date.now);
@@ -50,10 +80,11 @@ function Heading({ eyebrow, title, children }: { eyebrow: string; title: string;
   return <header className="ww-page-heading"><div><span className="ww-eyebrow">{eyebrow}</span><h1>{title}</h1></div>{children}</header>;
 }
 
-function Select({ label, value, options, onChange, disabled }: {
-  label: string; value: string; options: [string, string][]; onChange: (value: string) => void; disabled?: boolean;
+function Select({ label, value, options, onChange, disabled, description }: {
+  label: string; value: string; options: ChoiceTuple[];
+  onChange: (value: string) => void; disabled?: boolean; description?: string;
 }) {
-  return <label className="ww-select"><span>{label}</span><select value={value} onChange={event => onChange(event.target.value)} disabled={disabled}>{options.map(([key, text]) => <option key={key} value={key}>{text}</option>)}</select></label>;
+  return <ChoicePicker className="ww-study-picker" label={label} description={description} value={value} disabled={disabled} onChange={onChange} options={options.map(([key, text, detail, icon]) => ({ value: key, label: text, description: detail, icon }))} />;
 }
 
 function Speak({ text, onSpeak }: { text: string; onSpeak: (text: string) => void }) {
@@ -71,20 +102,30 @@ function Empty({ title, children }: { title: string; children: ReactNode }) {
 
 function Modal({ title, onClose, children, wide = false }: { title: string; onClose: () => void; children: ReactNode; wide?: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef(onClose);
   closeRef.current = onClose;
   useEffect(() => {
     const previous = document.activeElement as HTMLElement | null;
     const node = ref.current;
+    const isTopOverlay = () => {
+      const overlays = document.querySelectorAll('[data-ww-overlay]');
+      return overlays.length > 0 && overlays.item(overlays.length - 1) === overlayRef.current;
+    };
     node?.querySelector<HTMLElement>('button, input, select, textarea, [tabindex="0"]')?.focus();
-    const back = (event: Event) => { event.preventDefault(); closeRef.current(); };
+    const back = (event: Event) => {
+      if (event.defaultPrevented || !isTopOverlay()) return;
+      event.preventDefault(); closeRef.current();
+    };
     const keydown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') { event.preventDefault(); closeRef.current(); }
+      if (event.defaultPrevented || !isTopOverlay()) return;
+      if (event.key === 'Escape') { event.preventDefault(); closeRef.current(); return; }
       if (event.key !== 'Tab' || !node) return;
-      const targets = Array.from(node.querySelectorAll<HTMLElement>('button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), a[href], [tabindex="0"]'));
+      const targets = Array.from(node.querySelectorAll<HTMLElement>('button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), a[href], [tabindex="0"]')).filter(target => target.getClientRects().length > 0);
       const first = targets[0], last = targets[targets.length - 1];
       if (!first) { event.preventDefault(); return; }
-      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+      if (!node.contains(document.activeElement)) { event.preventDefault(); (event.shiftKey ? last : first).focus(); }
+      else if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
       else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
     };
     const previousOverflow = document.body.style.overflow;
@@ -98,7 +139,7 @@ function Modal({ title, onClose, children, wide = false }: { title: string; onCl
       if (previous?.isConnected) previous.focus();
     };
   }, []);
-  return <div className="ww-overlay" data-ww-overlay onClick={event => { if (event.target === event.currentTarget) onClose(); }}><div ref={ref} className={`ww-sheet${wide ? ' ww-sheet-wide' : ''}`} role="dialog" aria-modal="true" aria-label={title}><div className="ww-sheet-handle" /><div className="ww-sheet-top"><span className="ww-eyebrow">{title}</span><button className="ww-icon-button" onClick={onClose} aria-label="关闭详情"><X size={22} /></button></div>{children}</div></div>;
+  return <div ref={overlayRef} className="ww-overlay" data-ww-overlay onClick={event => { if (event.target === event.currentTarget) onClose(); }}><div ref={ref} className={`ww-sheet${wide ? ' ww-sheet-wide' : ''}`} role="dialog" aria-modal="true" aria-label={title}><div className="ww-sheet-handle" /><div className="ww-sheet-top"><span className="ww-eyebrow">{title}</span><button className="ww-icon-button" onClick={onClose} aria-label="关闭详情"><X size={22} /></button></div>{children}</div></div>;
 }
 
 function SevenDays({ state, now }: { state: State; now: number }) {
@@ -171,7 +212,7 @@ export function TodayView({ state, dispatch, busy, onSpeak, onPractice, onRead, 
     <Heading eyebrow="A LITTLE EVERY DAY" title={`${greeting}，学习者。`}><span className="ww-tag">{levelName(state.settings.level)}学习</span></Heading>
     <section className="ww-reading-hero"><div className="ww-hero-illustration" aria-hidden="true"><div className="ww-illustration-sun" /><BookOpen size={108} strokeWidth={1.05} /><span className="ww-illustration-leaf" /><span className="ww-illustration-dot" /></div><span className="ww-eyebrow">WORDS IN CONTEXT</span><h2>在故事里，<br />与单词慢慢熟悉。</h2><p>每天读一段，让每一次相遇都有意义。</p><button className="ww-button ww-primary" disabled={busy} onClick={onRead}>{summary.covered ? '继续阅读' : '开始阅读'}<ArrowRight size={18} /></button><div className="ww-hero-progress"><div><span>内置词表阅读覆盖</span><strong>{percent}%</strong></div><Meter value={percent} label="内置词表阅读覆盖" /><small>{summary.covered.toLocaleString()} / {summary.total.toLocaleString()} 个词条 · 接触不等于掌握</small></div></section>
     <div className="ww-today-counts"><div><BookOpen size={19} /><strong>{readToday}<small>段</small></strong><span>今日阅读</span></div><div><NotebookPen size={19} /><strong>{practicedToday}<small>次</small></strong><span>今日回想</span></div><div><RotateCcw size={19} /><strong>{due.length}<small>项</small></strong><span>当前待复习</span></div></div>
-    <section className="ww-card ww-agenda"><div className="ww-section-title"><h2>给记忆一次回响</h2><span className="ww-tag">{due.length} 项到期</span></div><p className="ww-muted">先试着想起来，再核对答案。每个方向独立安排。</p><Select label="训练方向" value={mode} onChange={setMode} options={ [['all', '全部方向'], ...MODES.map(value => [value, modeNames[value]] as [string, string])] } /><button className="ww-button ww-primary ww-full" disabled={busy || !filtered.length} onClick={() => onPractice(filtered.slice(0, 30))}><RotateCcw size={18} />{filtered.length ? `开始复习 · ${Math.min(30, filtered.length)} 项` : '当前没有到期练习'}</button><div className="ww-mode-counts">{MODES.map(value => <button key={value} className={mode === value ? 'ww-selected' : ''} disabled={busy} onClick={() => setMode(value)}><span>{value === 'meaning' ? '认义' : value === 'recall' ? '回忆' : '语境'}</span><strong>{due.filter(item => item.mode === value).length}</strong></button>)}</div></section>
+    <section className="ww-card ww-agenda"><div className="ww-section-title"><h2>给记忆一次回响</h2><span className="ww-tag">{due.length} 项到期</span></div><p className="ww-muted">先试着想起来，再核对答案。每个方向独立安排。</p><Select label="训练方向" value={mode} onChange={setMode} description="选一个方向，给记忆一次有针对性的回响。" options={studyChoices.direction} /><button className="ww-button ww-primary ww-full" disabled={busy || !filtered.length} onClick={() => onPractice(filtered.slice(0, 30))}><RotateCcw size={18} />{filtered.length ? `开始复习 · ${Math.min(30, filtered.length)} 项` : '当前没有到期练习'}</button><div className="ww-mode-counts" role="group" aria-label="按训练方向筛选">{MODES.map(value => <button key={value} className={mode === value ? 'ww-selected' : ''} aria-pressed={mode === value} disabled={busy} onClick={() => setMode(value)}><span>{value === 'meaning' ? '认义' : value === 'recall' ? '回忆' : '语境'}</span><strong>{due.filter(item => item.mode === value).length}</strong></button>)}</div></section>
     {!state.settings.onboarded && <section className="ww-card ww-assessment"><span className="ww-eyebrow">找到学习起点</span><div className="ww-section-title"><h2>{assessmentFinished ? '五个词的自评已保存' : assessing ? '揭晓前，先想一想' : '用五个词，认识你的起点'}</h2><Sparkles size={20} /></div><p className="ww-muted">自评熟悉度，熟悉的词安排低频抽查。初测不计为测试通过。</p>{assessmentFinished ? <button className="ww-button ww-primary ww-full" disabled={busy} onClick={() => void finishAssessment()}>完成初测</button> : assessing && assessmentWord ? <div className="ww-assessment-content"><div className="ww-row"><strong className="ww-large-word">{assessmentWord.word}</strong><Speak text={assessmentWord.word} onSpeak={onSpeak} /><span className="ww-muted">{assessmentIndex + 1} / {assessment.length}</span></div>{revealed ? <><p className="ww-definition">{assessmentWord.pos} {assessmentWord.meaning}</p><div className="ww-row"><button className="ww-button ww-secondary" disabled={busy} onClick={() => void assess(false)}>还不熟悉</button><button className="ww-button ww-primary" disabled={busy} onClick={() => void assess(true)}>原本就知道</button></div></> : <button className="ww-button ww-secondary ww-full" onClick={() => setRevealed(true)}>揭晓词义</button>}<button className="ww-button ww-ghost ww-full" disabled={busy} onClick={() => void finishAssessment()}>结束初测，之后再学习</button></div> : <div className="ww-row"><button className="ww-button ww-secondary" disabled={busy || !assessment.length} onClick={() => { setAssessing(true); setAssessmentIndex(0); setAssessmentFinished(false); setRevealed(false); }}>开始初测</button><button className="ww-button ww-ghost" disabled={busy} onClick={() => void finishAssessment()}>跳过初测</button></div>}{error && <p className="ww-error" role="alert">{error}</p>}</section>}
     <div className="ww-shortcuts"><button onClick={onLibrary} disabled={busy}><span><Layers size={21} /></span><div><strong>我的词库</strong><small>搜索、联想与新词学习</small></div><ChevronRight size={18} /></button><button onClick={onStats} disabled={busy}><span><Target size={21} /></span><div><strong>学习记录</strong><small>看看回想留下的足迹</small></div><ChevronRight size={18} /></button></div>
     <SevenDays state={state} now={now} /><section className="ww-card"><div className="ww-section-title"><h2>最近的回想</h2><button className="ww-button ww-ghost" onClick={onStats}>全部<ChevronRight size={15} /></button></div><History state={state} /></section>
@@ -221,7 +262,7 @@ export function ReadingView({ state, dispatch, busy, onSpeak, onPractice, onWord
   const visiblePassages = passages.filter(item => directoryFilter === 'all' || (directoryFilter === 'unread' ? !state.reading?.completed[item.id] : !!state.reading?.completed[item.id]));
   return <div className="ww-page ww-reading">
     <Heading eyebrow="READ & DISCOVER" title="在句子中学单词"><button className="ww-icon-button ww-bordered" onClick={() => setDirectory(true)} aria-label="打开阅读目录"><List size={22} /></button></Heading>
-    <div className="ww-reading-options"><div className="ww-segments" aria-label="阅读词表">{(['CET4', 'CET6'] as const).map(level => <button key={level} aria-pressed={state.settings.level === level} className={state.settings.level === level ? 'ww-active' : ''} disabled={locked} onClick={() => void dispatch({ type: 'settings', settings: { level } })}>{levelName(level)}阅读</button>)}</div><Select label="词义提示" value={state.settings.gloss} options={ [['click', '点词释义'], ['direct', '随句释义']] } disabled={locked} onChange={gloss => void dispatch({ type: 'settings', settings: { gloss } })} /></div>
+    <div className="ww-reading-options"><div className="ww-segments" role="group" aria-label="阅读词表">{(['CET4', 'CET6'] as const).map(level => <button key={level} aria-pressed={state.settings.level === level} className={state.settings.level === level ? 'ww-active' : ''} disabled={locked} onClick={() => void dispatch({ type: 'settings', settings: { level } })}>{levelName(level)}阅读</button>)}</div><Select label="词义提示" value={state.settings.gloss} description="按你的阅读习惯，决定何时看到中文提示。" options={studyChoices.gloss} disabled={locked} onChange={gloss => void dispatch({ type: 'settings', settings: { gloss } })} /></div>
     <div className="ww-reading-summary"><span><strong>{doneCount}</strong> / {passages.length} 篇已读</span><span><strong>{summary.covered.toLocaleString()}</strong> 个词条已接触</span></div>
     {state.settings.level === 'CET4' && <p className="ww-small ww-content-note">当前四级含 {summary.total} 个带标签义项、{passages.length} 篇辅助段落，内容仍在补充。</p>}
     {error && <p className="ww-error" role="alert">{error}</p>}
@@ -238,7 +279,7 @@ export function ReadingView({ state, dispatch, busy, onSpeak, onPractice, onWord
       <section className="ww-card"><div className="ww-section-title"><h2>这一篇遇见的词</h2><button className="ww-button ww-ghost" disabled={locked || !targetWords.length} onClick={() => onPractice(targetWords.map(word => ({ word, mode: 'meaning' })), true)}>浏览<ArrowRight size={15} /></button></div><div className="ww-target-words">{targetWords.map(word => <button key={word.id} onClick={() => onWord(word)}><strong>{word.word}</strong><span>{word.meaning}</span></button>)}</div></section>
     </> : <Empty title="这个词表暂无阅读内容">可以切换词表，或在词库中开始卡片学习。</Empty>}
     <button className="ww-directory-button" onClick={() => setDirectory(true)}><List size={19} /><span>查看全部阅读目录</span><ChevronRight size={18} /></button>
-    {directory && <Modal title="阅读目录" onClose={() => setDirectory(false)} wide><h2 className="ww-sheet-title">每一篇，都可以再相遇</h2><p className="ww-muted">{levelName(state.settings.level)}辅助阅读 · {doneCount} / {passages.length} 篇已读</p><div className="ww-segments ww-directory-filters">{[['all', '全部'], ['unread', '未读'], ['read', '已读']].map(([value, label]) => <button key={value} className={directoryFilter === value ? 'ww-active' : ''} aria-pressed={directoryFilter === value} onClick={() => setDirectoryFilter(value)}>{label}</button>)}</div><div className="ww-directory-list">{visiblePassages.map(item => <button className={item.id === passage?.id ? 'ww-current-passage' : ''} key={item.id} disabled={locked} onClick={() => { setId(item.id); setDirectory(false); setError(''); window.scrollTo({ top: 0 }); }}><span className="ww-directory-number">{String(passages.findIndex(p => p.id === item.id) + 1).padStart(2, '0')}</span><span><strong>{item.title}</strong><small>{item.wordIds.length} 个目标词 · {state.reading?.completed[item.id] ? '已读 · 可以重读' : '尚未阅读'}</small></span>{state.reading?.completed[item.id] ? <Check size={18} /> : <ChevronRight size={18} />}</button>)}{!visiblePassages.length && <Empty title="这里暂时没有段落">试试其他筛选条件。</Empty>}</div></Modal>}
+    {directory && <Modal title="阅读目录" onClose={() => setDirectory(false)} wide><h2 className="ww-sheet-title">每一篇，都可以再相遇</h2><p className="ww-muted">{levelName(state.settings.level)}辅助阅读 · {doneCount} / {passages.length} 篇已读</p><div className="ww-segments ww-directory-filters" role="group" aria-label="按阅读状态筛选">{[['all', '全部'], ['unread', '未读'], ['read', '已读']].map(([value, label]) => <button key={value} className={directoryFilter === value ? 'ww-active' : ''} aria-pressed={directoryFilter === value} onClick={() => setDirectoryFilter(value)}>{label}</button>)}</div><div className="ww-directory-list">{visiblePassages.map(item => <button className={item.id === passage?.id ? 'ww-current-passage' : ''} key={item.id} disabled={locked} onClick={() => { setId(item.id); setDirectory(false); setError(''); window.scrollTo({ top: 0 }); }}><span className="ww-directory-number">{String(passages.findIndex(p => p.id === item.id) + 1).padStart(2, '0')}</span><span><strong>{item.title}</strong><small>{item.wordIds.length} 个目标词 · {state.reading?.completed[item.id] ? '已读 · 可以重读' : '尚未阅读'}</small></span>{state.reading?.completed[item.id] ? <Check size={18} /> : <ChevronRight size={18} />}</button>)}{!visiblePassages.length && <Empty title="这里暂时没有段落">试试其他筛选条件。</Empty>}</div></Modal>}
   </div>;
 }
 
@@ -262,7 +303,7 @@ export function LibraryView({ state, busy, onPractice, onWord }: StudyProps & { 
   return <div className="ww-page ww-library">
     <Heading eyebrow="YOUR WORD COLLECTION" title="我的词库"><span className="ww-tag">{words.length.toLocaleString()} 义项</span></Heading><p className="ww-intro">查找一个词，留下属于你的联想。</p>
     <label className="ww-search"><Search size={20} /><input type="search" aria-label="搜索英文单词或中文释义" placeholder="搜索单词或中文释义" value={search} onChange={event => changeFilter(setSearch, event.target.value)} />{search && <button className="ww-icon-button" aria-label="清空搜索" onClick={() => changeFilter(setSearch, '')}><X size={18} /></button>}</label>
-    <div className="ww-library-filters"><Select label="词表" value={level} onChange={value => changeFilter(setLevel, value)} options={ [['all', '全部词表'], ['CET4', '四级'], ['CET6', '六级']] } /><Select label="熟悉程度" value={status} onChange={value => changeFilter(setStatus, value)} options={ [['all', '全部程度'], ['learning', '正在学习'], ['unknown', '陌生'], ['familiar', '自评熟悉']] } /></div>
+    <div className="ww-library-filters"><Select label="词表" value={level} onChange={value => changeFilter(setLevel, value)} description="筛选这里显示的词条，不改变学习词表设置。" options={studyChoices.level} /><Select label="熟悉程度" value={status} onChange={value => changeFilter(setStatus, value)} description="按自己的熟悉程度查看词条，不改变复习安排。" options={studyChoices.filterFamiliar} /></div>
     <section className="ww-library-actions"><div className="ww-row"><button className="ww-button ww-primary" disabled={busy || !fresh.length} onClick={() => onPractice(fresh.flatMap(word => availableModes(word).map(mode => ({ word, mode }))))}><Sparkles size={17} />{remaining ? `学习 ${fresh.length} 个新词` : '今日新词额度完成'}</button><button className="ww-button ww-secondary" disabled={busy || !filtered.length} onClick={() => onPractice(filtered.map(word => ({ word, mode: 'meaning' })), true)}><BookOpen size={17} />快速浏览</button></div><p className="ww-small">今日可学 {remaining} 个新词 · 浏览和到期复习不占额度</p></section>
     <div className="ww-section-title ww-list-heading"><span className="ww-muted">{filtered.length.toLocaleString()} 个匹配义项</span><span className="ww-small">重叠标签合并显示</span></div>
     <div className="ww-word-list">{filtered.slice(0, limit).map(word => {
@@ -364,7 +405,7 @@ export function WordSheet({ word: requestedWord, onClose, state, dispatch, busy,
   return <Modal title="词条详情" onClose={onClose}><div className="ww-word-detail"><div className="ww-detail-title"><h1>{word.word}</h1><Speak text={word.word} onSpeak={onSpeak} /></div>{word.phonetic && <p className="ww-phonetic">/{word.phonetic}/</p>}<p className="ww-detail-meaning"><span>{word.pos}</span>{word.meaning}</p><div className="ww-row">{word.tags.map(tag => <span className="ww-tag" key={tag}>{levelName(tag)}</span>)}<span className="ww-small">{word.example && word.test ? '完整语境材料' : '基础词条'}{encounters ? ` · 阅读接触 ${encounters.count} 次` : ''}</span></div><div className="ww-detail-practice"><button className="ww-button ww-primary ww-full" disabled={busy} onClick={() => onPractice(modes.map(mode => ({ word, mode })))}>开始回想练习<ArrowRight size={18} /></button><div className="ww-mode-links">{modes.map(mode => <button key={mode} className="ww-button ww-ghost" disabled={busy} onClick={() => onPractice([{ word, mode }])}>{modeNames[mode]}</button>)}</div></div>
       {word.example ? <section className="ww-detail-section"><h2>在英文中遇见</h2><div className="ww-example"><div className="ww-row"><p className="ww-english">{word.example}</p><Speak text={word.example} onSpeak={onSpeak} /></div><p>{word.translation}</p>{word.collocation && <p className="ww-collocation">常用搭配 · {word.collocation}</p>}</div></section> : <p className="ww-notice">基础词条提供英文认义与中文回忆；独立英文例句仍在补充。</p>}
       <section className="ww-detail-section"><div className="ww-section-title"><h2>我的联想</h2><NotebookPen size={18} /></div><label className="ww-field" htmlFor="ww-personal-note"><span className="ww-sr-only">这个词的个人联想</span><textarea id="ww-personal-note" value={note} rows={4} maxLength={1000} disabled={busy} placeholder="记录让你记住它的画面、故事或联系…" onChange={event => { setNote(event.target.value); setStatus(''); }} /></label><div className="ww-row ww-note-save"><span className="ww-small">{note.length} / 1000</span><button className="ww-button ww-secondary" disabled={busy || note === (state.notes[word.id] ?? word.mnemonic ?? '')} onClick={() => void saveNote()}>{busy ? '保存中…' : '保存联想'}</button></div></section>
-      <section className="ww-detail-section"><h2>自己的熟悉程度</h2><Select label="不计为测试通过" value={state.familiar[word.id] ?? 'learning'} onChange={value => void changeFamiliar(value)} disabled={busy} options={ [['learning', '正在学习'], ['unknown', '陌生，加入复习'], ['familiar', '熟悉，低频抽查']] } /><p className="ww-small">“陌生”会安排回想，“熟悉”仍需要间隔后的独立测试。</p>{status && <p className={error ? 'ww-error' : 'ww-save-status'} role={error ? 'alert' : 'status'}>{status}</p>}</section>
+      <section className="ww-detail-section"><h2>自己的熟悉程度</h2><Select label="熟悉程度" value={state.familiar[word.id] ?? 'learning'} onChange={value => void changeFamiliar(value)} disabled={busy} description="记录自己的感觉；真正掌握还需要间隔后的独立测试。" options={studyChoices.wordFamiliar} /><p className="ww-small">“陌生”会安排回想，“熟悉”仍需要间隔后的独立测试。</p>{status && <p className={error ? 'ww-error' : 'ww-save-status'} role={error ? 'alert' : 'status'}>{status}</p>}</section>
       <section className="ww-detail-section"><h2>每个方向的进度</h2><div className="ww-word-tracks">{modes.map(mode => { const track = state.progress[word.id]?.[mode]; return <div key={mode}><span>{modeNames[mode]}</span><strong>{track?.attempts ? `${track.correct} 次独立答对` : '尚未独立测试'}</strong><small><Clock3 size={12} />{track ? `下次 ${dateText(track.due)}` : '练习后安排复习'}</small></div>; })}</div></section>
       <details className="ww-source"><summary>词条来源与材料说明</summary><p>{word.source} · 版本 {word.version.slice(0, 16)}</p>{word.sourceUrl && <p><a href={word.sourceUrl} target="_blank" rel="noreferrer">查看原始来源<ArrowRight size={13} /></a></p>}{word.references?.filter(reference => reference.url !== word.sourceUrl).map(reference => <p key={`${reference.source}-${reference.url}`}><a href={reference.url} target="_blank" rel="noreferrer">{reference.source}</a> · {reference.version.slice(0, 16)}</p>)}<p>{seedWords.some(item => item.id === word.id) ? '内置义项已编入记忆辅助阅读。' : '导入词条暂未编入阅读段落。'}词表标签来自整理材料，已提供的阅读、例句与联想为本站编写。</p></details>
     </div></Modal>;

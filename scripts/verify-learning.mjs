@@ -13,8 +13,22 @@ let s=initialState();const id=seedWords[0].id;s=applyAction(s,{type:'familiar',w
 s=applyAction(s,{type:'result',wordId:id,mode:'meaning',outcome:'correct',answer:'展示',operationId:'b'},now);assert.equal(s.progress[id].recall.attempts,0);assert.equal(s.events[0].delayed,false);
 s=applyAction(s,{type:'result',wordId:id,mode:'meaning',outcome:'correct',answer:'展示',operationId:'c'},now+DAY);assert.equal(s.events[1].delayed,true);
 const count=s.events.length;s=applyAction(s,{type:'result',wordId:id,mode:'meaning',outcome:'correct',answer:'展示',operationId:'c'},now+DAY);assert.equal(s.events.length,count);
-assert.equal(seedWords.length,2163);assert.equal(scenes.length,10);for(const w of seedWords.filter(w=>w.materialStatus==='complete')){assert.ok(w.tags.length);assert.ok(w.phonetic);assert.notEqual(w.example,w.test);assert.ok(w.sourceUrl.includes(w.version));assert.ok(scenes.find(x=>x.id===w.scene)?.words.includes(w.word));assert.ok(w.example.toLowerCase().includes(w.word)||['research','rehearsal','conserve'].includes(w.word),w.word);}
-console.log('PASS: independent ability tracks, same-day scheduling, spaced intervals, hinted/wrong outcomes, baseline not mastery, delayed-test classification, idempotency, 100 sourced units and 10 scene mappings.');
+assert.equal(seedWords.length,2463);assert.equal(scenes.length,20);for(const w of seedWords.filter(w=>w.materialStatus==='complete')){assert.ok(w.tags.length);assert.ok(w.phonetic);assert.notEqual(w.example,w.test);assert.ok(w.sourceUrl.includes(w.version));assert.ok(scenes.find(x=>x.id===w.scene)?.words.includes(w.word));assert.ok(w.example.toLowerCase().includes(w.word)||['research','rehearsal','conserve'].includes(w.word),w.word);}
+console.log('PASS: independent ability tracks, same-day scheduling, spaced intervals, hinted/wrong outcomes, baseline not mastery, delayed-test classification, idempotency and complete-content scene mappings.');
+const added=seedWords.filter(w=>w.id.startsWith('cet4-common-'));
+assert.equal(added.length,300);
+assert.equal(seedWords.filter(w=>w.tags.includes('CET4')).length,389);
+assert.equal(new Set(added.map(w=>w.word.toLowerCase())).size,300);
+assert.equal(new Set(added.flatMap(w=>[w.example,w.test]).map(text=>text.toLowerCase().replace(/[^a-z0-9]+/g,' '))).size,600,'New examples must not repeat');
+for(const word of added){
+ assert.equal(seedWords.filter(w=>w.word.toLowerCase()===word.word.toLowerCase()).length,1,word.word+' duplicates an existing spelling');
+ assert.deepEqual(word.tags,['CET4']);
+ assert.deepEqual(availableModes(word),['meaning','recall','context']);
+ for(const field of ['meaning','translation','testTranslation'])assert.match(word[field],/[\u3400-\u9fff]/,word.word+' '+field);
+ for(const field of ['example','test'])assert.ok(word[field].toLowerCase().includes(word.word),word.word+' '+field);
+ assert.ok(!Object.values(word).filter(value=>typeof value==='string').some(value=>value.includes('\ufffd')||/\?{3}/.test(value)),word.word+' contains damaged text');
+}
+console.log('PASS: 300 common CET4 additions, no repeated spellings, 600 distinct bilingual examples and all three practice directions.');
 const index=JSON.parse(fs.readFileSync('content/sources/koolearn-cet6-index.json','utf8'));
 assert.equal(index.entries.length,2085);
 for(const entry of index.entries)assert.ok(seedWords.some(w=>w.word.toLowerCase()===entry.word.toLowerCase()&&w.tags.includes('CET6')),entry.word);
@@ -25,4 +39,4 @@ s=applyAction(initialState(),{type:'introduce',ids:[basic.id],operationId:'basic
 assert.equal(s.progress[basic.id].context,undefined);
 assert.equal(dueItems(s,now).length,2);
 assert.throws(()=>applyAction(s,{type:'result',wordId:basic.id,mode:'context',outcome:'correct',answer:'',operationId:'bad-context'},now),/训练方向/);
-console.log('PASS: all 2085 source words included, original IDs preserved, 2163 unique IDs, basic entries use two directions only.');
+console.log('PASS: all 2085 source words included, original IDs preserved, 2463 unique IDs, basic entries use two directions only.');

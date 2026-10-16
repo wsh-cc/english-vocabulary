@@ -6,4 +6,6 @@ const words=fs.readFileSync('content/words.tsv','utf8').trim().split(/\r?\n/).ma
 if(words.length!==100||new Set(words.map(w=>w.id)).size!==100)throw Error('Expected 100 unique units');
 fs.writeFileSync('content/catalog.json',JSON.stringify({source,words,scenes},null,2));
 await import('./merge-cet6.mjs');
+await import('./merge-cet4.mjs');
+await import('./prepare-runtime-content.mjs');
 console.log(JSON.stringify({words:words.length,scenes:scenes.length,cet4:words.filter(w=>w.tags.includes('CET4')).length,cet6:words.filter(w=>w.tags.includes('CET6')).length,source:source.sha}));

@@ -8,16 +8,18 @@ const db = new DatabaseSync(':memory:');
 for (const file of fs.readdirSync('drizzle').filter(file => file.endsWith('.sql')).sort()) db.exec(fs.readFileSync(`drizzle/${file}`, 'utf8'));
 let failStateWrite = false;
 let queryCount = 0;
+let capturedQueries = null;
 let forceOneRacePerOperation = false;
 const racedOperations = new Set();
+function countQuery(sql) { queryCount++; capturedQueries?.push(sql); }
 function prepare(sql) {
   let values = [];
   const execute = () => {
-    queryCount++;
+    countQuery(sql);
     if (failStateWrite && sql.startsWith('UPDATE learner_state')) { failStateWrite = false; throw Error('Injected disk failure'); }
     return { meta: { changes: Number(db.prepare(sql).run(...values).changes) } };
   };
-  return { sql, get values() { return values; }, bind(...args) { values = args; return this; }, async first() { queryCount++; return db.prepare(sql).get(...values) ?? null; }, async all() { queryCount++; return { results: db.prepare(sql).all(...values) }; }, async run() { return execute(); }, execute };
+  return { sql, get values() { return values; }, bind(...args) { values = args; return this; }, async first() { countQuery(sql); return db.prepare(sql).get(...values) ?? null; }, async all() { countQuery(sql); return { results: db.prepare(sql).all(...values) }; }, async run() { return execute(); }, execute };
 }
 const d1 = { prepare, async batch(statements) {
   if (forceOneRacePerOperation && statements.some(s => s.sql.startsWith('UPDATE learner_state'))) {
@@ -39,7 +41,7 @@ let clock = 1791800000000;
 Date.now = () => clock;
 try {
   const bundled = await build({
-    stdin: { contents: "export * as auth from './app/api/mobile/auth/route'; export * as bootstrap from './app/api/mobile/bootstrap/route'; export * as sync from './app/api/mobile/sync/route'; export * as restore from './app/api/mobile/restore/route'; export * as web from './app/api/state/route'; export * as ledger from './db/mobile-sync'; export { initialState, seedWords, applyAction, DAY } from './lib/learning'; export { readingPassages } from './lib/curriculum'; export { passwordHash, digest } from './lib/auth-crypto'; export { mergeSaveDelta } from './lib/save-delta'; export { MOBILE_CONTENT_VERSION, MOBILE_STATE_MAX_BYTES, MOBILE_SYNC_BATCH_SIZE } from './lib/mobile-protocol';", resolveDir: process.cwd(), loader: 'ts' },
+    stdin: { contents: "export * as auth from './app/api/mobile/auth/route'; export * as bootstrap from './app/api/mobile/bootstrap/route'; export * as version from './app/api/mobile/version/route'; export * as sync from './app/api/mobile/sync/route'; export * as restore from './app/api/mobile/restore/route'; export * as web from './app/api/state/route'; export * as ledger from './db/mobile-sync'; export { initialState, seedWords, applyAction, DAY } from './lib/learning'; export { readingPassages } from './lib/curriculum'; export { passwordHash, digest } from './lib/auth-crypto'; export { mergeSaveDelta } from './lib/save-delta'; export { MOBILE_CONTENT_VERSION, MOBILE_STATE_MAX_BYTES, MOBILE_SYNC_BATCH_SIZE } from './lib/mobile-protocol';", resolveDir: process.cwd(), loader: 'ts' },
     bundle: true, platform: 'node', format: 'esm', write: false,
     plugins: [{ name: 'isolated-mobile-handlers', setup(builder) {
       builder.onResolve({ filter: /^(cloudflare:workers|@\/lib\/auth)$/ }, args => ({ path: args.path, namespace: 'mobile-test' }));
@@ -58,6 +60,30 @@ try {
   };
   const tokenA = await login('device-a'), tokenB = await login('device-b');
   const boot = token => api.bootstrap.GET(request('mobile/bootstrap', undefined, token)).then(read);
+  const versionQueryCounts = [];
+  const version = async (token, extra = {}) => {
+    const changesBefore = db.prepare('SELECT total_changes() AS n').get().n;
+    capturedQueries = []; queryCount = 0;
+    try {
+      const result = await api.version.GET(request('mobile/version', undefined, token, extra));
+      assert.equal(result.headers.get('cache-control'), 'no-store');
+      const response = await read(result);
+      assert.ok(capturedQueries.every(sql => /^SELECT\b/i.test(sql)), 'version probe never writes or initializes state');
+      assert.ok(capturedQueries.every(sql => !/\b(?:payload|baseline_payload)\b|SELECT\s+(?:\w+\.)?\*/i.test(sql)), 'version probe never selects a snapshot');
+      assert.equal(db.prepare('SELECT total_changes() AS n').get().n, changesBefore);
+      assert.ok(queryCount <= 2, `version probe used ${queryCount} queries`);
+      if (response.status === 200) {
+        assert.equal(queryCount, 2, 'one identity query and one version query');
+        assert.deepEqual(Object.keys(response.body).sort(), ['contentVersion', 'generation', 'protocolVersion', 'revision', 'serverTime', 'user']);
+        assert.equal(response.body.contentVersion, api.MOBILE_CONTENT_VERSION);
+        assert.equal(response.body.protocolVersion, 1);
+        assert.equal(response.body.serverTime, clock);
+        assert.ok(Buffer.byteLength(JSON.stringify(response.body)) < 1024, 'version response stays small');
+      }
+      versionQueryCounts.push(queryCount);
+      return response;
+    } finally { capturedQueries = null; }
+  };
   const requestQueryCounts = [];
   const sync = async (operations, token = tokenA) => {
     queryCount = 0;
@@ -70,8 +96,21 @@ try {
   let sequenceA = 0, sequenceB = 0;
   const operation = (action, options = {}) => ({ operationId: crypto.randomUUID(), deviceId: 'device-a', deviceSequence: ++sequenceA, occurredAt: clock, generation: 1, action, ...options });
   const operationB = (action, options = {}) => operation(action, { deviceId: 'device-b', deviceSequence: ++sequenceB, ...options });
+  assert.equal((await version()).status, 401);
+  assert.equal((await version(undefined, { Cookie: 'wordweave_session=fake' })).status, 401, 'cookie never authenticates a version probe');
+  const uninitialized = await version(tokenA);
+  assert.equal(uninitialized.status, 200); assert.equal(uninitialized.body.revision, 0); assert.equal(uninitialized.body.generation, 1);
+  assert.deepEqual(uninitialized.body.user, { userId, name: 'Tester' });
+  assert.deepEqual((await version(tokenB)).body, uninitialized.body, 'both devices observe the same account version');
+  assert.equal(db.prepare('SELECT COUNT(*) AS n FROM learner_state').get().n, 0);
+  assert.equal(db.prepare('SELECT COUNT(*) AS n FROM mobile_sync_meta').get().n, 0);
+  const legacyVersionUser = 'version-without-mobile-metadata';
+  db.prepare('INSERT INTO learner_state(user_id,payload,revision,updated_at) VALUES(?,?,?,?)').run(legacyVersionUser, JSON.stringify(initialState()), 7, clock);
+  assert.deepEqual({ ...await api.ledger.readMobileVersion(legacyVersionUser) }, { revision: 7, generation: 1 });
+  assert.equal(db.prepare('SELECT COUNT(*) AS n FROM mobile_sync_meta WHERE user_id = ?').get(legacyVersionUser).n, 0, 'legacy version lookup does not initialize metadata');
   const first = await boot(tokenA);
   assert.equal(first.status, 200); assert.equal(first.body.generation, 1); assert.equal(first.body.protocolVersion, 1);
+  assert.equal(first.body.contentVersion, api.MOBILE_CONTENT_VERSION);
   assert.equal((await boot()).status, 401);
   assert.equal((await api.bootstrap.GET(request('mobile/bootstrap', undefined, undefined, { Cookie: 'wordweave_session=fake' })).then(read)).status, 401, 'cookie never authenticates mobile API');
   assert.equal((await api.auth.POST(request('mobile/auth', { action: 'register', username: 'NewUser', password, deviceId: 'device-a' })).then(read)).status, 400);
@@ -83,7 +122,12 @@ try {
   const older = operation({ type: 'result', wordId, mode: 'meaning', outcome: 'correct', answer: 'old' }, { occurredAt: started + 2 * DAY });
   const newer = operation({ type: 'result', wordId, mode: 'meaning', outcome: 'correct', answer: 'new' }, { occurredAt: started + 4 * DAY });
   clock = started + 4 * DAY;
-  assert.deepEqual((await sync([newer])).body.accepted, [newer.operationId]);
+  const firstMobileSave = await sync([newer]);
+  assert.deepEqual(firstMobileSave.body.accepted, [newer.operationId]);
+  const afterMobileVersion = await version(tokenB);
+  assert.equal(afterMobileVersion.body.revision, firstMobileSave.body.revision);
+  assert.ok(afterMobileVersion.body.revision > first.body.revision, 'mobile writes advance the visible version');
+  assert.deepEqual((await version(tokenA)).body, afterMobileVersion.body);
   let response = await sync([familiar, introduce, older]);
   assert.equal(response.body.conflicts.length, 0);
   const expected = initialState();
@@ -106,7 +150,11 @@ try {
   assert.equal((await sync([resolved], tokenB)).body.state.notes[wordId], '两者合并');
 
   const custom = { ...seedWords[0], id: 'custom-canonical', word: 'wordweavetest', meaning: '合成词义' };
-  assert.equal((await web({ type: 'import', words: [custom] })).status, 200);
+  const beforeWebVersion = await version(tokenA);
+  const webImport = await web({ type: 'import', words: [custom] });
+  assert.equal(webImport.status, 200);
+  assert.equal((await version(tokenB)).body.revision, webImport.body.revision);
+  assert.ok(webImport.body.revision > beforeWebVersion.body.revision, 'website writes advance the mobile-visible version');
   const imported = operation({ type: 'import', words: [{ ...custom, id: 'custom-device' }] });
   const practiceCustom = operation({ type: 'result', wordId: 'custom-device', mode: 'meaning', outcome: 'correct', answer: '' });
   response = await sync([imported, practiceCustom]);
@@ -131,6 +179,38 @@ try {
   assert.equal(response.body.state.settings.level, 'CET4');
   const readingAgain = operation({ ...reading.action });
   assert.deepEqual((await sync([readingAgain])).body.state.reading, response.body.state.reading);
+
+  // An APK update must replay old offline completions without changing their
+  // immutable request payload; appended CET4 passages use the new version.
+  const legacyPassage = api.readingPassages.find(p => p.level === 'CET4' && !p.wordIds.some(id => id.startsWith('cet4-common-')));
+  const expandedPassage = api.readingPassages.find(p => p.level === 'CET4' && p.wordIds.some(id => id.startsWith('cet4-common-')));
+  assert.ok(legacyPassage && expandedPassage, 'both original and expanded CET4 readings remain available');
+  const oldReading = operation({ type: 'reading-complete', passageId: legacyPassage.id, contentVersion: 'wordweave-2026-10-v1' }, { occurredAt: clock - 1000 });
+  const oldReadingWire = JSON.stringify(oldReading);
+  const oldReadingSaved = await sync([oldReading]);
+  assert.deepEqual(oldReadingSaved.body.accepted, [oldReading.operationId]);
+  assert.deepEqual(oldReadingSaved.body.conflicts, []);
+  assert.equal(oldReadingSaved.body.contentVersion, api.MOBILE_CONTENT_VERSION);
+  assert.equal(oldReadingSaved.body.state.reading.completed[legacyPassage.id], oldReading.occurredAt);
+  assert.deepEqual(oldReadingSaved.body.state.reading.encounters[legacyPassage.wordIds[0]], { count: 1, last: oldReading.occurredAt });
+  const oldReadingRetry = await sync([JSON.parse(oldReadingWire)]);
+  assert.deepEqual(oldReadingRetry.body.accepted, [oldReading.operationId]);
+  assert.equal(oldReadingRetry.body.revision, oldReadingSaved.body.revision);
+  assert.deepEqual(oldReadingRetry.body.state.reading, oldReadingSaved.body.state.reading);
+  const changedVersionRetry = await sync([{ ...oldReading, action: { ...oldReading.action, contentVersion: api.MOBILE_CONTENT_VERSION } }]);
+  assert.equal(changedVersionRetry.body.conflicts[0].code, 'operation_mismatch');
+  const expandedReading = operation({ type: 'reading-complete', passageId: expandedPassage.id, contentVersion: api.MOBILE_CONTENT_VERSION });
+  const expandedReadingSaved = await sync([expandedReading]);
+  assert.deepEqual(expandedReadingSaved.body.accepted, [expandedReading.operationId]);
+  assert.equal(expandedReadingSaved.body.state.reading.completed[expandedPassage.id], expandedReading.occurredAt);
+  assert.ok(expandedReadingSaved.body.state.reading.encounters[expandedPassage.wordIds.find(id => id.startsWith('cet4-common-'))]);
+  assert.deepEqual(expandedReadingSaved.body.state.events, oldReadingSaved.body.state.events, 'reading completions never create practice scores');
+  const unknownVersion = operation({ type: 'reading-complete', passageId: expandedPassage.id, contentVersion: 'wordweave-unknown-content' });
+  const unknownVersionResult = await sync([unknownVersion]);
+  assert.deepEqual(unknownVersionResult.body.accepted, []);
+  assert.equal(unknownVersionResult.body.conflicts[0].code, 'content_version');
+  assert.equal(unknownVersionResult.body.revision, expandedReadingSaved.body.revision);
+  assert.deepEqual(unknownVersionResult.body.state, expandedReadingSaved.body.state);
 
   const beforeFailure = await boot(tokenA);
   const failing = operation({ type: 'result', wordId, mode: 'recall', outcome: 'wrong', answer: 'preserve' });
@@ -180,6 +260,9 @@ try {
   const restoreRequest = { operationId: crypto.randomUUID(), revision: longOffline.body.revision, generation: 1, backup };
   const restored = await api.restore.POST(request('mobile/restore', restoreRequest, tokenA)).then(read);
   assert.equal(restored.status, 200); assert.equal(restored.body.generation, 2);
+  const afterRestoreVersion = await version(tokenB);
+  assert.equal(afterRestoreVersion.body.generation, restored.body.generation);
+  assert.equal(afterRestoreVersion.body.revision, restored.body.revision);
   assert.ok(db.prepare('SELECT payload FROM mobile_recovery WHERE user_id = ?').get(userId).payload);
   assert.equal((await api.restore.POST(request('mobile/restore', restoreRequest, tokenA)).then(read)).body.revision, restored.body.revision);
   assert.equal((await sync([pendingOld])).body.conflicts[0].code, 'generation_changed');
@@ -187,6 +270,7 @@ try {
   assert.equal((await api.restore.POST(request('mobile/restore', { ...restoreRequest, backup: { ...backup, version: 99 } }, tokenA)).then(read)).status, 400);
   const webRestore = await web({ type: 'restore', backup: initialState(), revision: restored.body.revision });
   assert.equal(webRestore.status, 200); assert.equal((await boot(tokenA)).body.generation, 3);
+  assert.equal((await version(tokenA)).body.generation, 3, 'website restores also advance the observed generation');
 
   // Migration preserves full history. A retried baseline event must not be
   // replayed a second time when a later practice event rebuilds the schedule.
@@ -239,14 +323,16 @@ try {
 
   assert.equal((await api.auth.POST(request('mobile/auth', { action: 'logout' }, tokenA)).then(read)).status, 200);
   assert.equal((await boot(tokenA)).status, 401); assert.equal((await boot(tokenB)).status, 200);
+  assert.equal((await version(tokenA)).status, 401); assert.equal((await version(tokenB)).status, 200);
   clock += 15 * DAY;
   assert.equal((await boot(tokenB)).status, 401); assert.ok(db.prepare('SELECT payload FROM learner_state WHERE user_id = ?').get(userId));
+  assert.equal((await version(tokenB)).status, 401, 'expired bearer cannot probe account state');
   db.prepare('DELETE FROM auth_attempts').run();
   let limited;
   for (let i = 0; i < 11; i++) limited = await api.auth.POST(request('mobile/auth', { action: 'login', username: 'Tester', password: 'WrongPassword123', deviceId: 'device-a' })).then(read);
   assert.equal(limited.status, 429);
   assert.equal(db.prepare('SELECT COUNT(*) AS n FROM mobile_sessions WHERE token_hash = ?').get(tokenA).n, 0, 'raw token never stored');
-  console.log(JSON.stringify({ pass: true, maximumSyncQueries: Math.max(...requestQueryCounts), threePracticeWithThreeCasRacesQueries: worstCaseQueries, cases: ['bearer-only auth and no registration', 'shared login rate limit', 'original-time deterministic practice replay', 'durable dedupe after 1101 writes', 'operation payload mismatch', 'note two-version conflicts', 'durable canonical aliases across batches and lost replies', 'reading after level switch', 'atomic rollback and retries', 'concurrent website/mobile writes', 'v1 save-delta and origin protection', 'restore generations and separate recovery rows', 'UTF8 state byte limit and no migration truncation', 'migrated baseline event dedupe', 'logout and expiry preserve learning records'] }, null, 2));
+  console.log(JSON.stringify({ pass: true, maximumVersionQueries: Math.max(...versionQueryCounts), maximumSyncQueries: Math.max(...requestQueryCounts), threePracticeWithThreeCasRacesQueries: worstCaseQueries, cases: ['bearer-only auth and no registration', 'read-only version probes without snapshot reads or initialization', 'shared device version after web/mobile writes and restores', 'version probes reject missing, revoked and expired credentials', 'shared login rate limit', 'original-time deterministic practice replay', 'durable dedupe after 1101 writes', 'operation payload mismatch', 'note two-version conflicts', 'durable canonical aliases across batches and lost replies', 'reading after level switch', 'legacy offline reading replay with immutable retries and expanded CET4 content', 'unknown reading versions preserve account state', 'atomic rollback and retries', 'concurrent website/mobile writes', 'v1 save-delta and origin protection', 'restore generations and separate recovery rows', 'UTF8 state byte limit and no migration truncation', 'migrated baseline event dedupe', 'logout and expiry preserve learning records'] }, null, 2));
 } finally {
   globalThis.fetch = originalFetch; Date.now = originalNow;
   delete globalThis.mobileTestEnv; delete globalThis.mobileTestWebAccount;

@@ -1,7 +1,7 @@
 import { initialState, applyAction, allWords, chinaDay, type State, type Word } from '@/lib/learning';
 import { readingPassages } from '@/lib/curriculum';
 import { actionSchema, stateSchema, wordSchema } from '@/lib/validation';
-import { MOBILE_CONTENT_VERSION, MOBILE_PROTOCOL_VERSION, MOBILE_STATE_MAX_BYTES, MOBILE_SYNC_BATCH_SIZE, type MobileOperation, type MobileSnapshot, type MobileSyncResponse, type MobileConflict, type MobileLoginResponse, type MobileRestoreRequest } from '@/lib/mobile-protocol';
+import { MOBILE_CONTENT_VERSION, MOBILE_READING_CONTENT_VERSIONS, MOBILE_PROTOCOL_VERSION, MOBILE_STATE_MAX_BYTES, MOBILE_SYNC_BATCH_SIZE, type MobileOperation, type MobileSnapshot, type MobileSyncResponse, type MobileConflict, type MobileLoginResponse, type MobileRestoreRequest } from '@/lib/mobile-protocol';
 import { native, type StatePersistence } from './native';
 
 const ORIGIN = 'https://wordweave-cet-study.shiw36663.chatgpt.site';
@@ -24,11 +24,19 @@ export interface Remote {
   writeToken(token: string | null): Promise<void>;
 }
 export class RemoteError extends Error { constructor(message: string, public status: number, public code?: string) { super(message); } }
+function invalidResponse(status: number): RemoteError {
+  if (status === 403) return new RemoteError('网站入口拒绝了连接（HTTP 403）。请确认手机网络可访问词间网站，再重试登录或同步。', status, 'access_blocked');
+  if (status >= 300 && status < 400) return new RemoteError(`连接被转到了其他页面（HTTP ${status}）。请确认手机网络可访问词间网站后重试。`, status, 'unexpected_redirect');
+  if (status >= 500) return new RemoteError(`网站暂时返回错误页面（HTTP ${status}），请稍后重试。`, status, 'invalid_response');
+  return new RemoteError(`同步响应格式异常（HTTP ${status}），请重试。`, status, 'invalid_response');
+}
 export const remote: Remote = {
   async request(path, method, body, token) {
     const response = await native.request({url: ORIGIN + '/api/mobile/' + path, method, ...(body === undefined ? {} : {body: JSON.stringify(body)}), ...(token ? {token} : {})});
-    let data: any; try { data = JSON.parse(response.body); } catch { throw new RemoteError('同步服务暂时不可用，请稍后重试。', response.status); }
-    if (response.status < 200 || response.status >= 300) throw new RemoteError(data.error || '同步未完成，请重试。', response.status, data.code);
+    let data: unknown; try { data = JSON.parse(response.body); } catch { throw invalidResponse(response.status); }
+    if (data === null || typeof data !== 'object' || Array.isArray(data)) throw invalidResponse(response.status);
+    const failure = data as {error?: unknown; code?: unknown};
+    if (response.status < 200 || response.status >= 300) throw new RemoteError(typeof failure.error === 'string' ? failure.error : '同步未完成，请重试。', response.status, typeof failure.code === 'string' ? failure.code : undefined);
     return data;
   },
   async readToken() { return (await native.readCredential()).token; },
@@ -45,7 +53,7 @@ function materialize(action: Record<string, unknown>, state: State): Record<stri
     const id = action.passageId ?? (action.passage as {id?: string})?.id;
     const passage = readingPassages.find(item => item.id === id);
     if (!passage) throw Error('未找到内置阅读段落。');
-    if (action.contentVersion && action.contentVersion !== MOBILE_CONTENT_VERSION) throw Error('阅读内容版本不匹配。');
+    if (action.contentVersion && !MOBILE_READING_CONTENT_VERSIONS.some(version => version === action.contentVersion)) throw Error('阅读内容版本不匹配。');
     return {type: 'reading-complete', passage};
   }
   const parsed = actionSchema.parse({...action, operationId: action.operationId ?? 'validation'});
@@ -212,7 +220,7 @@ export class LearningRepository {
           this.status.lastSync = this.now(); this.status.needsLogin = false;
           this.syncFailures=0;this.retryAfter=0;
         });
-        if (this.envelope.incoming || !operations.length || !result.accepted.length || !this.envelope.outbox.some(op => !this.envelope.conflicts.some(c => c.operationId === op.operationId))) break;
+        if (this.envelope.incoming || (operations.length > 0 && !result.accepted.length) || !this.envelope.outbox.some(op => !this.envelope.conflicts.some(c => c.operationId === op.operationId))) break;
       }
     } catch (error) {
       if (error instanceof RemoteError && error.status === 401) this.status.needsLogin = true;

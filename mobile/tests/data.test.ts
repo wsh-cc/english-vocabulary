@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { LearningRepository, RemoteError, type Remote } from '../src/data';
 import { createBrowserPersistence, type StatePersistence, type StoredState } from '../src/native';
-import { initialState, applyAction, seedWords, DAY } from '@/lib/learning';
+import { initialState, applyAction, seedWords, DAY, type State } from '@/lib/learning';
 import { readingPassages } from '@/lib/curriculum';
 import { MOBILE_CONTENT_VERSION, type MobileSnapshot, type MobileOperation } from '@/lib/mobile-protocol';
 
@@ -25,7 +25,8 @@ class Cloud implements Remote {
   gate:(()=>Promise<void>)|null=null;
   async readToken(){return this.token;}
   async writeToken(token:string|null){this.token=token;}
-  async request(path:string,_method:string,body?:any){
+  async request(path:string,_method:string,input?:unknown){
+    const body=input as {backup:State;operations:MobileOperation[]};
     if(this.fail)throw new RemoteError('network unavailable',this.fail);
     if(path==='auth')return {token:'a'.repeat(64),user:this.current.user,expiresAt:baseTime+14*DAY};
     if(path==='bootstrap')return structuredClone(this.current);
@@ -90,6 +91,55 @@ describe('offline account repository',()=>{
     const {repo}=await fixture();const p=readingPassages[0];await repo.dispatch({type:'reading-complete',passage:{...p,wordIds:['malicious']}});
     expect(repo.snapshot.state!.reading!.completed[p.id]).toBe(baseTime);expect(repo.snapshot.state!.events).toHaveLength(0);expect(repo.snapshot.state!.reading!.encounters[p.wordIds[0]]).toBeDefined();
     await expect(repo.dispatch({type:'reading-complete',passageId:'missing'})).rejects.toThrow();
+  });
+  it('reopens an old offline reading queue, replays it on current content and preserves its wire version',async()=>{
+    const {disk,cloud,repo,setTime}=await fixture();
+    const oldPassage=readingPassages[0];
+    const newPassage=readingPassages.find(p=>p.level==='CET4'&&p.wordIds.some(id=>id.startsWith('cet4-common-')));
+    expect(newPassage,'the expanded CET4 reading content is bundled').toBeDefined();
+    setTime(baseTime+DAY);
+    await repo.dispatch({type:'reading-complete',passageId:oldPassage.id,operationId:'old-apk-reading'});
+    const saved=JSON.parse(disk.value.stateJson!);
+    saved.outbox[0].action.contentVersion='wordweave-2026-10-v1';
+    disk.value.stateJson=JSON.stringify(saved);
+    const legacyWire=structuredClone(saved.outbox[0]);
+    const reopened=new LearningRepository(disk,cloud,()=>baseTime+DAY,()=> 'new-apk-reading');
+    await reopened.read();
+    expect(reopened.snapshot.pending).toBe(1);
+    cloud.current.serverTime=baseTime+DAY;
+    await reopened.login('owner','password-password');
+    expect(reopened.snapshot.error).toBe('');
+    expect(reopened.snapshot.pending).toBe(0);
+    expect(cloud.calls.flat().find(op=>op.operationId==='old-apk-reading')).toEqual(legacyWire);
+    expect(reopened.snapshot.state!.reading!.completed[oldPassage.id]).toBe(baseTime+DAY);
+    expect(reopened.snapshot.state!.reading!.encounters[oldPassage.wordIds[0]]).toEqual({count:1,last:baseTime+DAY});
+    await reopened.dispatch({type:'reading-complete',passageId:newPassage!.id});
+    await reopened.sync(true);
+    expect(reopened.snapshot.pending).toBe(0);
+    expect(cloud.calls.flat().find(op=>op.operationId==='new-apk-reading')!.action.contentVersion).toBe(MOBILE_CONTENT_VERSION);
+    expect(reopened.snapshot.state!.reading!.completed[newPassage!.id]).toBe(baseTime+DAY);
+    expect(reopened.snapshot.state!.events).toHaveLength(0);
+  });
+  it('rejects an unknown queued reading version without replacing the saved offline accomplishments',async()=>{
+    const {disk,cloud,repo}=await fixture();
+    await repo.dispatch({type:'reading-complete',passageId:readingPassages[0].id});
+    const saved=JSON.parse(disk.value.stateJson!);
+    saved.outbox[0].action.contentVersion='wordweave-unknown-content';
+    disk.value.stateJson=JSON.stringify(saved);
+    const before=structuredClone(disk.value);
+    const reopened=new LearningRepository(disk,cloud,()=>baseTime);
+    await expect(reopened.login('owner','password-password')).rejects.toThrow('阅读内容版本不匹配');
+    expect(disk.value).toEqual(before);
+    expect(reopened.snapshot.pending).toBe(1);
+    expect(reopened.snapshot.state!.reading!.completed[readingPassages[0].id]).toBe(baseTime);
+  });
+  it.each(['wordweave-2026-10-v1','wordweave-unknown-content'])('rejects a login snapshot with outdated or unknown content version %s',async(contentVersion)=>{
+    const disk=new Disk(),cloud=new Cloud();
+    cloud.current.contentVersion=contentVersion;
+    const repo=new LearningRepository(disk,cloud,()=>baseTime);
+    await expect(repo.login('owner','password-password')).rejects.toThrow('安装最新版本');
+    expect(disk.value.stateJson).toBeNull();
+    expect(cloud.token).toBeNull();
   });
   it('generation change protects pending local accomplishments until deliberate reload',async()=>{
     const {repo,cloud,disk}=await fixture();await repo.dispatch({type:'note',wordId:seedWords[0].id,note:'offline accomplishment'});

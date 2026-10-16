@@ -113,7 +113,7 @@ try {
   const row = db.prepare('SELECT payload FROM learner_state WHERE user_id=?').get('reader');
   const state = JSON.parse(row.payload); state.settings.level = 'CET4';
   db.prepare('UPDATE learner_state SET payload=? WHERE user_id=?').run(JSON.stringify(state),'reader');
-  const cet4 = await get(); assert.equal(cet4.body.available,3); assert.equal(cet4.body.completedCount,0);
+  const cet4 = await get(); assert.equal(cet4.body.available,13); assert.equal(cet4.body.completedCount,0);
   assert.equal(cet4.body.passage.level,'CET4'); assert.equal(cet4.body.nextCursor,null);
   assert.equal((await post({...complete,operationId:crypto.randomUUID()})).status,404);
   assert.equal((await get('?id='+first.body.passage.id)).status,404);

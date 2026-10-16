@@ -4,7 +4,7 @@ import { allWords, applyAction, initialState, type State, type Word } from '@/li
 import { readingPassages } from '@/lib/curriculum';
 import { actionSchema, stateSchema } from '@/lib/validation';
 import { digest } from '@/lib/auth-crypto';
-import { MOBILE_CONTENT_VERSION, MOBILE_STATE_MAX_BYTES, type MobileConflict, type MobileOperation } from '@/lib/mobile-protocol';
+import { MOBILE_READING_CONTENT_VERSIONS, MOBILE_STATE_MAX_BYTES, type MobileConflict, type MobileOperation } from '@/lib/mobile-protocol';
 import { MobileHttpError } from '@/lib/mobile-auth';
 import type { Passage } from '@/lib/reading';
 
@@ -16,7 +16,7 @@ type StoredOperation = { operation_id: string; action_payload: string; occurred_
 type ApplyResult = { state: State; revision: number; generation: number; accepted: boolean; conflict?: MobileConflict; idMap: Record<string, string>; changed: boolean; baseRevision: number };
 const safeId = z.string().regex(/^[a-zA-Z0-9_-]{1,120}$/).refine(v => !['__proto__', 'constructor', 'prototype'].includes(v));
 export const mobileOperationSchema = z.object({ operationId: safeId, deviceId: safeId, deviceSequence: z.number().int().min(1).max(Number.MAX_SAFE_INTEGER), occurredAt: z.number().int().min(0).max(8640000000000000), generation: z.number().int().min(1), action: z.record(z.unknown()), baseNote: z.string().max(1000).optional() }).strict();
-const readingActionSchema = z.object({ type: z.literal('reading-complete'), passageId: z.string().uuid(), contentVersion: z.literal(MOBILE_CONTENT_VERSION) }).strict();
+const readingActionSchema = z.object({ type: z.literal('reading-complete'), passageId: z.string().uuid(), contentVersion: z.enum(MOBILE_READING_CONTENT_VERSIONS) }).strict();
 const practiceTypes = new Set(['introduce', 'familiar', 'result']);
 function database() { if (!env.DB) throw Error('学习记录暂时无法连接，请稍后重试。'); return env.DB; }
 const copy = <T>(value: T): T => JSON.parse(JSON.stringify(value));
@@ -24,6 +24,12 @@ function stable(value: unknown): string {
   if (Array.isArray(value)) return '[' + value.map(stable).join(',') + ']';
   if (value && typeof value === 'object') return '{' + Object.entries(value).filter(([, v]) => v !== undefined).sort(([a], [b]) => a.localeCompare(b)).map(([k, v]) => JSON.stringify(k) + ':' + stable(v)).join(',') + '}';
   return JSON.stringify(value);
+}
+export async function readMobileVersion(userId: string): Promise<{ revision: number; generation: number }> {
+  // A probe must not initialize an account or load either of its JSON snapshots.
+  const row = await database().prepare('SELECT l.revision, COALESCE(m.generation, 1) AS generation FROM learner_state l LEFT JOIN mobile_sync_meta m ON m.user_id = l.user_id WHERE l.user_id = ?')
+    .bind(userId).first<{ revision: number; generation: number }>();
+  return row ?? { revision: 0, generation: 1 };
 }
 export async function readMobileState(userId: string): Promise<Snapshot> {
   const db = database();

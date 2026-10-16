@@ -1,4 +1,4 @@
-import catalog from '@/content/catalog.json';
+import catalog from '@/content/runtime-catalog';
 import corrections from '@/content/reading-corrections.json';
 import type { ReadingProgress } from './reading';
 import { completeReading } from './reading';
