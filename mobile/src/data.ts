@@ -3,17 +3,20 @@ import { readingPassages } from '@/lib/curriculum';
 import { actionSchema, stateSchema, wordSchema } from '@/lib/validation';
 import { MOBILE_CONTENT_VERSION, MOBILE_READING_CONTENT_VERSIONS, MOBILE_PROTOCOL_VERSION, MOBILE_STATE_MAX_BYTES, MOBILE_SYNC_BATCH_SIZE, type MobileOperation, type MobileSnapshot, type MobileSyncResponse, type MobileConflict, type MobileLoginResponse, type MobileRestoreRequest } from '@/lib/mobile-protocol';
 import { native, type StatePersistence } from './native';
+import { defaultProfile, profileSchema, readStoredProfile, type PersonalProfile, type StoredProfile } from './profile';
 
 const ORIGIN = 'https://wordweave-cet-study.shiw36663.chatgpt.site';
 const copy = <T,>(value: T): T => structuredClone(value);
 type Envelope = {
   version: 2; user: MobileSnapshot['user'] | null; locked: boolean;
+  localProfile?: StoredProfile;
   deviceId: string; nextSequence: number; base: State | null; state: State | null;
   serverRevision: number; generation: number; serverTime: number; deviceTime: number;
   outbox: MobileOperation[]; conflicts: MobileConflict[]; incoming?: MobileSnapshot; idMap?: Record<string,string>; restoreRequest?: MobileRestoreRequest;
 };
 export type LearningSnapshot = {
   state: State | null; user: Envelope['user']; locked: boolean; revision: number;
+  profile: PersonalProfile;
   pending: number; conflicts: MobileConflict[]; needsLogin: boolean;
   syncing: boolean; lastSync: number; error: string; hasRecovery: boolean; restorePending?: boolean;
 };
@@ -94,7 +97,9 @@ export class LearningRepository {
     this.envelope = {version: 2,user: null,locked: false,deviceId: this.uuid(),nextSequence: 1,base: null,state: null,serverRevision: 0,generation: 1,serverTime: 0,deviceTime: 0,outbox: [],conflicts: []};
   }
   get snapshot(): LearningSnapshot {
-    return {state: this.envelope.state, user: this.envelope.user, locked: this.envelope.locked, revision: this.revision, pending: this.envelope.outbox.length, conflicts: this.envelope.conflicts, hasRecovery: !!this.recovery,restorePending:!!this.envelope.restoreRequest,...this.status};
+    const saved = !this.envelope.locked && this.envelope.localProfile?.userId === this.envelope.user?.userId ? this.envelope.localProfile : undefined;
+    const profile = saved ? {nickname: saved.nickname, signature: saved.signature, avatar: saved.avatar, ...(saved.avatarDataUrl ? {avatarDataUrl:saved.avatarDataUrl} : {})} : defaultProfile();
+    return {state: this.envelope.state, user: this.envelope.user, profile, locked: this.envelope.locked, revision: this.revision, pending: this.envelope.outbox.length, conflicts: this.envelope.conflicts, hasRecovery: !!this.recovery,restorePending:!!this.envelope.restoreRequest,...this.status};
   }
   subscribe(listener: (snapshot: LearningSnapshot) => void) { this.listeners.add(listener); return () => {this.listeners.delete(listener);}; }
   private notify() { for (const listener of this.listeners) listener(this.snapshot); }
@@ -108,7 +113,7 @@ export class LearningRepository {
         if (raw.version !== 2 || typeof raw.deviceId !== 'string' || !Array.isArray(raw.outbox) || !Array.isArray(raw.conflicts) || !Number.isSafeInteger(raw.nextSequence) || raw.nextSequence < 1) throw Error('本机档案格式无效，请保留数据并联系维护者。');
         if (raw.state) stateSchema.parse(raw.state);
         if (raw.base) stateSchema.parse(raw.base);
-        this.envelope = raw;
+        this.envelope = {...raw, localProfile: readStoredProfile(raw.localProfile, raw.user?.userId)};
       }
       this.revision = saved.revision; this.recovery = saved.recoveryJson;
       this.token = await this.transport.readToken();
@@ -122,6 +127,19 @@ export class LearningRepository {
     const result = await this.persistence.writeState({stateJson: text, expectedRevision: this.revision, keepRecovery});
     if (keepRecovery) this.recovery = JSON.stringify(this.envelope);
     this.envelope = next; this.revision = result.revision; this.notify();
+  }
+  async saveProfile(input: PersonalProfile): Promise<void> {
+    await this.read();
+    const userId = this.envelope.user?.userId;
+    if (!userId || !this.envelope.state || this.envelope.locked) throw Error('请先登录，再编辑个人资料。');
+    const parsed = profileSchema.safeParse(input);
+    if (!parsed.success) throw Error(parsed.error.issues[0].message);
+    await this.exclusive(async () => {
+      if (this.envelope.user?.userId !== userId || this.envelope.locked) throw Error('账号状态已变化，请重新打开个人资料。');
+      // The durable transaction must finish before subscribers see a new
+      // profile, just as for local learning results. No sync work is queued.
+      await this.commit({...this.envelope, localProfile: {userId, ...parsed.data}});
+    });
   }
   async login(username: string, password: string) {
     await this.read();
@@ -138,7 +156,7 @@ export class LearningRepository {
           await this.commit({...this.envelope, locked: false, incoming: bootstrap, conflicts: this.envelope.outbox.map(op => ({operationId: op.operationId,code: 'generation',message: '其他设备恢复了备份，请先导出本机成果，再载入云端记录。'}))});
         } else {
           const pending = same ? this.envelope.outbox : [];
-          await this.commit({...this.envelope,user: bootstrap.user,locked: false,base: bootstrap.state,state: project(bootstrap.state,pending,same?this.envelope.idMap:{}),serverRevision: bootstrap.revision,generation: bootstrap.generation,serverTime: bootstrap.serverTime,deviceTime: this.now(),outbox: pending,conflicts: same ? this.envelope.conflicts : [],incoming: undefined,idMap:same?this.envelope.idMap:{}});
+          await this.commit({...this.envelope,user: bootstrap.user,localProfile: same ? this.envelope.localProfile : undefined,locked: false,base: bootstrap.state,state: project(bootstrap.state,pending,same?this.envelope.idMap:{}),serverRevision: bootstrap.revision,generation: bootstrap.generation,serverTime: bootstrap.serverTime,deviceTime: this.now(),outbox: pending,conflicts: same ? this.envelope.conflicts : [],incoming: undefined,idMap:same?this.envelope.idMap:{}});
         }
       } catch (error) { await this.transport.writeToken(priorToken); throw error; }
       this.token = logged.token; this.preview = false; this.status.needsLogin = false; this.status.error = ''; this.status.lastSync = this.now(); this.notify();

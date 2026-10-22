@@ -2,6 +2,7 @@ import { useEffect, useId, useLayoutEffect, useRef, useState, type KeyboardEvent
 import { createPortal } from 'react-dom';
 import { Check, ChevronDown, ChevronRight, SlidersHorizontal, X } from 'lucide-react';
 import './ChoicePicker.css';
+import { usePresence } from './Motion';
 
 export type ChoiceOption = {
   value: string;
@@ -29,6 +30,7 @@ export function ChoicePicker({
 }: ChoicePickerProps) {
   const id = useId();
   const [open, setOpen] = useState(false);
+  const { present, ref: presenceRef } = usePresence(open);
   const [draft, setDraft] = useState(value);
   const draftRef = useRef(draft);
   draftRef.current = draft;
@@ -74,14 +76,14 @@ export function ChoicePicker({
   }, [open, unavailable, value, options, draft]);
 
   useEffect(() => {
-    if (!disabled && !open && restoreWhenEnabled.current) {
+    if (!disabled && !present && restoreWhenEnabled.current) {
       restoreWhenEnabled.current = false;
       if (!document.activeElement || document.activeElement === document.body) triggerRef.current?.focus({ preventScroll: true });
     }
-  }, [disabled, open]);
+  }, [disabled, present]);
 
   useLayoutEffect(() => {
-    if (!open) return;
+    if (!present) return;
     const trigger = triggerRef.current;
     const previousFocus = document.activeElement as HTMLElement | null;
     const overlay = overlayRef.current;
@@ -145,7 +147,7 @@ export function ChoicePicker({
       else if (trigger?.isConnected) restoreWhenEnabled.current = true;
       if (window.scrollX !== scrollX || window.scrollY !== scrollY) window.scrollTo({ left: scrollX, top: scrollY, behavior: 'instant' });
     };
-  }, [open]);
+  }, [present]);
 
   function moveOption(event: KeyboardEvent<HTMLDivElement>) {
     if (!['ArrowDown', 'ArrowRight', 'ArrowUp', 'ArrowLeft', 'Home', 'End'].includes(event.key) || !isTopOverlay()) return;
@@ -170,7 +172,7 @@ export function ChoicePicker({
       <span className="ww-choice-trigger-value">{current?.label ?? '请选择'}</span>
       {variant === 'setting' ? <ChevronRight size={16} aria-hidden="true" /> : <ChevronDown size={16} aria-hidden="true" />}
     </button>
-    {open && createPortal(<div ref={overlayRef} className="ww-choice-overlay" data-ww-overlay data-ww-choice-overlay
+    {present && createPortal(<div className="app-presence" ref={presenceRef} inert={!open} data-closing={!open || undefined}><div ref={overlayRef} className="ww-choice-overlay" data-ww-overlay data-ww-choice-overlay
       onClick={event => { if (event.target === event.currentTarget && isTopOverlay()) close(); }}>
       <section ref={panelRef} className="ww-choice-panel" id={`${id}-panel`} role="dialog" aria-modal="true"
         aria-labelledby={`${id}-title`} aria-describedby={description ? `${id}-description` : undefined} tabIndex={-1}>
@@ -192,6 +194,6 @@ export function ChoicePicker({
         </div>
         <footer className="ww-choice-footer"><p className="ww-choice-footnote">{draft === value ? '选择适合你的安排' : '确认后保存这次选择'}</p><div className="ww-choice-actions"><button type="button" className="ww-choice-cancel" onClick={close}>取消</button><button type="button" className="ww-choice-confirm" disabled={!canConfirm} onClick={confirm}>确认选择<Check size={17} /></button></div></footer>
       </section>
-    </div>, document.body)}
+    </div></div>, document.body)}
   </div>;
 }

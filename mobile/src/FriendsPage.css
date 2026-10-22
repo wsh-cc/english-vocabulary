@@ -1,0 +1,136 @@
+.friends-page { display: grid; gap: 16px; width: 100%; max-width: 760px; min-width: 0; margin: 0 auto; color: var(--app-ink); font-family: var(--ww-sans); overflow-wrap: anywhere; }
+.friends-heading { display: flex; align-items: center; gap: 12px; }
+.friends-heading > div { flex: 1; min-width: 0; }
+.friends-heading .ww-eyebrow { font-size: .55rem; letter-spacing: .13em; }
+.friends-heading h1 { margin: 6px 0 4px; font-size: 1.5rem; font-weight: 600; line-height: 1.4; letter-spacing: -.035em; }
+.friends-heading p { margin: 0; color: var(--app-muted); font-size: .69rem; line-height: 1.75; }
+.friends-refresh { display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; gap: 4px; min-width: 44px; min-height: 48px; padding: 5px; border: 0; border-radius: 12px; background: transparent; color: var(--app-green); font-size: .62rem; }
+.friends-tabs { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 4px; padding: 5px; border: 1px solid var(--app-line); border-radius: 16px; background: var(--app-paper); }
+.friends-tabs > button { display: inline-flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 4px; min-width: 0; min-height: 44px; border: 0; border-radius: 11px; padding: 9px 3px; background: transparent; color: var(--app-muted); font: inherit; font-size: .74rem; line-height: 1.5; }
+.friends-tabs > button[aria-selected='true'] { background: var(--app-tint); color: var(--app-green); font-weight: 600; }
+.friends-count { display: inline-grid; place-items: center; min-width: 17px; min-height: 17px; padding: 0 4px; border-radius: 20px; background: var(--app-green); color: var(--app-paper); font-size: .56rem; font-variant-numeric: tabular-nums; }
+.friends-panel { display: grid; gap: 16px; min-width: 0; }
+.friends-card { min-width: 0; padding: 19px; border: 1px solid var(--app-line); border-radius: 20px; background: var(--app-paper); }
+.friends-section-title { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+.friends-section-title h2, .friends-section-title h3 { margin: 0; font-size: .89rem; font-weight: 600; line-height: 1.7; }
+.friends-section-title h3 { font-size: .8rem; }
+.friends-section-title > span { color: var(--app-muted); font-size: .66rem; line-height: 1.7; }
+.friends-section-title > svg { color: var(--app-green); }
+.friends-note, .friends-quiet, .friends-loading { margin: 10px 0; color: var(--app-muted); font-size: .7rem; line-height: 1.85; }
+.friends-quiet { padding: 14px 0 4px; }
+.friends-loading { padding: 26px 0; text-align: center; }
+.friends-empty { padding: 27px 8px 20px; text-align: center; }
+.friends-empty > span { display: inline-flex; align-items: center; justify-content: center; width: 60px; height: 60px; margin-bottom: 14px; border-radius: 20px; background: var(--app-tint); color: var(--app-green); }
+.friends-empty h2 { margin: 0 0 9px; font-size: .91rem; font-weight: 550; line-height: 1.8; }
+.friends-empty p { max-width: 28em; margin: 0 auto; color: var(--app-muted); font-size: .74rem; line-height: 1.9; }
+.friends-page .ww-button, .friends-detail .ww-button { min-height: 44px; max-width: 100%; font-size: .76rem !important; }
+.friends-full { width: 100%; justify-content: center; }
+.friends-list, .friends-invites { list-style: none; margin: 12px 0 0; padding: 0; }
+.friends-list > li { min-width: 0; border-top: 1px solid var(--app-line); }
+.friends-list > li:first-child { border-top: 0; }
+.friends-person-button { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; min-height: 76px; border: 0; border-radius: 10px; padding: 14px 0; background: transparent; color: inherit; text-align: left; }
+.friends-person-button > svg { flex-shrink: 0; color: var(--app-muted); }
+.friends-identity { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.friends-avatar { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 46px; height: 46px; overflow: hidden; border: 1px solid color-mix(in srgb,var(--app-green) 14%,var(--app-line)); border-radius: 16px; background: var(--app-tint); color: var(--app-green); font-family: var(--ww-serif); font-size: 1.35rem; line-height: 1; }
+.friends-avatar > img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.friends-identity-copy { min-width: 0; }
+.friends-identity-copy > strong { display: block; font-size: .86rem; font-weight: 550; line-height: 1.6; }
+.friends-identity-copy > small { display: block; margin-top: 2px; color: var(--app-muted); font-size: .66rem; line-height: 1.7; }
+.friends-identity-copy > p { margin: 5px 0 0; color: var(--app-muted); font-size: .68rem; line-height: 1.75; white-space: pre-wrap; }
+.friends-request { padding: 16px 0; }
+.friends-row-actions { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 8px; margin-top: 13px; }
+.friends-tag { display: inline-flex; align-items: center; padding: 5px 8px; border-radius: 8px; background: var(--app-tint); color: var(--app-green) !important; font-size: .64rem; line-height: 1.7; }
+.friends-search { display: flex; align-items: stretch; gap: 8px; margin: 16px 0 4px; }
+.friends-search > input { flex: 1; width: 0; }
+.friends-search > .ww-button { flex-shrink: 0; padding-left: 15px; padding-right: 15px; }
+.friends-search input, .friends-profile-form > input, .friends-profile-form > textarea, .friends-invite-created input { min-width: 0; min-height: 48px; max-width: 100%; border: 1px solid var(--app-line); border-radius: 12px; padding: 11px 12px; background: var(--app-bg); color: var(--app-ink); font: inherit; font-size: .84rem; line-height: 1.8; -webkit-appearance: none; }
+.friends-search input::placeholder, .friends-profile-form input::placeholder, .friends-profile-form textarea::placeholder { color: var(--app-muted); opacity: .9; }
+.friends-search-result { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--app-line); }
+.friends-site-link { display: inline-flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 5px; min-height: 44px; width: 100%; margin-top: 9px; color: var(--app-green); font-size: .74rem; line-height: 1.7; }
+.friends-invite-created { margin-top: 16px; padding: 14px; border-radius: 14px; background: var(--app-tint); }
+.friends-invite-created > label { display: block; margin-bottom: 9px; color: var(--app-green); font-size: .68rem; line-height: 1.8; }
+.friends-invite-created > div { display: flex; align-items: stretch; gap: 5px; }
+.friends-invite-created input { width: 100%; flex: 1; background: var(--app-paper); font-family: monospace; font-size: .86rem; user-select: text; -webkit-user-select: text; }
+.friends-copy { display: grid; place-items: center; flex-shrink: 0; min-width: 44px; min-height: 44px; border: 1px solid var(--app-line); border-radius: 12px; background: var(--app-paper); color: var(--app-green); }
+.friends-invite-created > p { margin: 9px 0 0; color: var(--app-muted); font-size: .63rem; line-height: 1.8; }
+.friends-invite-heading { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--app-line); }
+.friends-text-button { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; border: 0; border-radius: 10px; padding: 8px; color: var(--app-green); background: transparent; font-size: .71rem; line-height: 1.6; }
+.friends-invites { margin-top: 2px; }
+.friends-invites > li { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 9px 0; border-top: 1px solid var(--app-line); }
+.friends-invites > li:first-child { border-top: 0; }
+.friends-invites > li > div { min-width: 0; }
+.friends-invites strong { display: block; font-size: .72rem; font-weight: 500; line-height: 1.7; }
+.friends-invites small { display: block; margin-top: 3px; color: var(--app-muted); font-size: .63rem; line-height: 1.7; }
+.friends-profile-preview { display: flex; align-items: center; gap: 13px; margin: 20px 0 16px; }
+.friends-profile-preview > div { min-width: 0; }
+.friends-profile-preview strong { display: block; font-size: .87rem; font-weight: 550; line-height: 1.7; }
+.friends-profile-preview p { margin: 5px 0 0; color: var(--app-muted); font-size: .72rem; line-height: 1.75; white-space: pre-wrap; }
+.friends-profile-preview .friends-avatar { width: 56px; height: 56px; border-radius: 19px; }
+.friends-profile-form > label:not(.friends-share-toggle) { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin: 19px 0 8px; font-size: .8rem; line-height: 1.7; }
+.friends-profile-form > label > span:not(:only-child) { color: var(--app-muted); font-size: .65rem; }
+.friends-profile-form > input, .friends-profile-form > textarea { display: block; width: 100%; }
+.friends-profile-form > textarea { min-height: 108px; resize: vertical; }
+.friends-avatar-picker { min-width: 0; margin: 20px 0 12px; padding: 0; border: 0; }
+.friends-avatar-picker legend { margin-bottom: 10px; font-size: .8rem; line-height: 1.7; }
+.friends-avatar-picker > div { display: grid; grid-template-columns: repeat(6,minmax(0,1fr)); gap: 7px; }
+.friends-avatar-picker button { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; min-width: 44px; min-height: 67px; border: 1px solid var(--app-line); border-radius: 12px; padding: 9px 3px; background: var(--app-bg); color: var(--app-muted); }
+.friends-avatar-picker button[aria-checked='true'] { border-color: var(--app-green); color: var(--app-green); background: var(--app-tint); }
+.friends-avatar-picker button > span { display: grid; place-items: center; min-height: 22px; color: var(--app-green); font-family: var(--ww-serif); font-size: 1.2rem; }
+.friends-avatar-picker button > small { font-size: .64rem; line-height: 1.5; }
+.friends-avatar-picker button > img { width: 25px; height: 25px; object-fit: cover; border-radius: 8px; }
+.friends-share-toggle { display: flex; align-items: flex-start; gap: 11px; min-height: 44px; margin: 22px 0; padding: 17px 0; border-top: 1px solid var(--app-line); border-bottom: 1px solid var(--app-line); cursor: pointer; }
+.friends-share-toggle > input { flex-shrink: 0; width: 20px; height: 20px; margin: 2px 0 0; accent-color: var(--app-green); }
+.friends-share-toggle > span { min-width: 0; }
+.friends-share-toggle strong { display: block; color: var(--app-ink); font-size: .79rem; font-weight: 550; line-height: 1.7; }
+.friends-share-toggle small { display: block; margin-top: 5px; color: var(--app-muted); font-size: .67rem; line-height: 1.8; }
+.friends-status { padding: 13px 15px; border: 1px solid var(--app-line); border-radius: 13px; background: var(--app-paper); }
+.friends-status p { margin: 0; color: var(--ww-danger); font-size: .75rem; line-height: 1.8; }
+.friends-status small { display: block; margin-top: 7px; color: var(--app-muted); font-size: .66rem; line-height: 1.8; }
+.friends-status > button { min-width: 44px; min-height: 44px; margin-top: 5px; border: 0; border-radius: 8px; padding: 6px 0; background: transparent; color: var(--app-green); font-size: .72rem; }
+.friends-notice { display: flex; align-items: flex-start; gap: 7px; margin: 0; padding: 11px 13px; border-radius: 12px; background: var(--app-tint); color: var(--app-green); font-size: .72rem; line-height: 1.8; }
+.friends-notice > svg { flex-shrink: 0; margin-top: 3px; }
+.friends-footer { margin: 0; color: var(--app-muted); font-size: .62rem; line-height: 1.8; text-align: center; }
+.friends-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+.friends-detail { min-width: 0; color: var(--ww-ink); overflow-wrap: anywhere; }
+.friends-detail > .friends-identity { margin: 12px 0 17px; }
+.friends-detail > .friends-identity .friends-avatar { width: 58px; height: 58px; border-radius: 20px; }
+.friends-detail-signature { margin: 0 0 11px; font-size: .85rem; line-height: 1.9; white-space: pre-wrap; }
+.friends-detail-stats { margin-top: 24px; padding: 18px 15px; border: 1px solid var(--ww-line); border-radius: 17px; background: var(--ww-bg); }
+.friends-detail-stats > h2 { margin: 0 0 18px; font-size: .87rem; font-weight: 550; line-height: 1.7; }
+.friends-detail-stats > dl { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); margin: 0 0 18px; }
+.friends-detail-stats > dl > div { display: flex; flex-direction: column-reverse; gap: 7px; min-width: 0; padding: 0 5px; border-right: 1px solid var(--ww-line); text-align: center; }
+.friends-detail-stats > dl > div:last-child { border: 0; }
+.friends-detail-stats dt { color: var(--ww-muted); font-size: .64rem; line-height: 1.7; }
+.friends-detail-stats dd { margin: 0; color: var(--ww-green); font-size: 1.55rem; line-height: 1.25; font-variant-numeric: tabular-nums; letter-spacing: -.035em; }
+.friends-detail-stats > p { margin: 10px 0 0; font-size: .71rem; line-height: 1.8; }
+.friends-detail-stats > .friends-note { color: var(--ww-muted); font-size: .66rem; }
+.friends-detail-stats > .friends-note > svg { display: inline; margin-right: 6px; vertical-align: middle; }
+.friends-remove { width: 100%; min-height: 44px; margin-top: 22px; border: 0; border-radius: 12px; padding: 11px; background: transparent; color: var(--ww-muted); font-size: .72rem; }
+.friends-remove-confirm { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--ww-line); }
+.friends-remove-confirm h3 { margin: 0 0 7px; font-size: .9rem; font-weight: 550; line-height: 1.7; }
+.friends-remove-confirm p { margin: 0; color: var(--ww-muted); font-size: .74rem; line-height: 1.85; }
+.friends-danger { border: 1px solid color-mix(in srgb,var(--ww-danger) 25%,var(--ww-line)); background: color-mix(in srgb,var(--ww-danger) 8%,var(--ww-paper)); color: var(--ww-danger); }
+.friends-page button:disabled, .friends-detail button:disabled { cursor: default; opacity: .52; }
+@media (max-width: 420px) {
+  .friends-avatar-picker > div { grid-template-columns: repeat(3,minmax(0,1fr)); }
+  .friends-card { padding: 16px; }
+}
+@media (max-width: 359px) {
+  .friends-heading { gap: 8px; }
+  .friends-heading .ww-eyebrow { letter-spacing: .06em; font-size: .5rem; }
+  .friends-heading h1 { font-size: 1.35rem; }
+  .friends-heading p { font-size: .65rem; }
+  .friends-tabs { gap: 2px; padding: 4px; }
+  .friends-tabs > button { font-size: .68rem; }
+  .friends-card { padding: 14px; }
+  .friends-search { flex-wrap: wrap; }
+  .friends-search > input { flex-basis: 140px; }
+  .friends-search > .ww-button { flex: 1 0 auto; }
+  .friends-identity { gap: 10px; }
+  .friends-detail-stats { padding: 15px 10px; }
+}
+@media (min-width: 700px) {
+  .friends-card { padding: 24px; }
+  .friends-heading h1 { font-size: 1.75rem; }
+  .friends-empty { padding: 34px 15px 26px; }
+}

@@ -4,6 +4,7 @@ import { createBrowserPersistence, type StatePersistence, type StoredState } fro
 import { initialState, applyAction, seedWords, DAY, type State } from '@/lib/learning';
 import { readingPassages } from '@/lib/curriculum';
 import { MOBILE_CONTENT_VERSION, type MobileSnapshot, type MobileOperation } from '@/lib/mobile-protocol';
+import { defaultProfile, type PersonalProfile } from '../src/profile';
 
 class Disk implements StatePersistence {
   value: StoredState={stateJson:null,revision:0,recoveryJson:null};
@@ -159,5 +160,115 @@ describe('offline account repository',()=>{
     const store=createBrowserPersistence(storage);await store.writeState({stateJson:'first',expectedRevision:0});await store.writeState({stateJson:'second',expectedRevision:1,keepRecovery:true});
     expect(await store.readState()).toEqual({stateJson:'second',revision:2,recoveryJson:'first'});await expect(store.writeState({stateJson:'third',expectedRevision:1})).rejects.toThrow();
     map.set('wordweave-mobile-state-v1','{"revision":-1}');await expect(store.readState()).rejects.toThrow();
+  });
+});
+
+describe('account-scoped local personal profile', () => {
+  const profile: PersonalProfile = {nickname: '林间读者', signature: '每天读一点。', avatar: 'sprout'};
+
+  it('opens an older account envelope with default presentation without rewriting its learning data', async () => {
+    const {disk, cloud} = await fixture();
+    const before = structuredClone(disk.value);
+    const reopened = new LearningRepository(disk, cloud);
+    await reopened.read();
+    expect(reopened.snapshot.profile).toEqual(defaultProfile());
+    expect(disk.value).toEqual(before);
+  });
+
+  it('persists offline, normalizes input and leaves learning sync and backup formats untouched', async () => {
+    const {disk, cloud, repo} = await fixture();
+    const state = repo.snapshot.state;
+    const calls = cloud.calls.length;
+    cloud.fail = 503;
+    await repo.saveProfile({...profile, nickname: '  林间读者  ', signature: '  每天读一点。  '});
+    expect(repo.snapshot.profile).toEqual(profile);
+    expect(repo.snapshot.state).toBe(state);
+    expect(repo.snapshot.pending).toBe(0);
+    expect(cloud.calls).toHaveLength(calls);
+    expect(JSON.parse(repo.exportBackup().text)).toEqual({app: 'wordweave', schema: 1, exportedAt: new Date(baseTime).toISOString(), state});
+    const reopened = new LearningRepository(disk, cloud);
+    await reopened.read();
+    expect(reopened.snapshot.profile).toEqual(profile);
+    const exposed = reopened.snapshot.profile;
+    exposed.nickname = 'accidental mutation';
+    expect(reopened.snapshot.profile).toEqual(profile);
+  });
+
+  it('does not publish success on disk failure and retries without losing the previous profile', async () => {
+    const {disk, repo} = await fixture();
+    await repo.saveProfile(profile);
+    const before = structuredClone(disk.value);
+    let notifications = 0;
+    const unsubscribe = repo.subscribe(() => notifications++);
+    disk.fail = true;
+    await expect(repo.saveProfile({...profile, nickname: '新的昵称'})).rejects.toThrow('disk full');
+    expect(repo.snapshot.profile).toEqual(profile);
+    expect(disk.value).toEqual(before);
+    expect(notifications).toBe(0);
+    disk.fail = false;
+    await repo.saveProfile({...profile, nickname: '新的昵称'});
+    expect(repo.snapshot.profile.nickname).toBe('新的昵称');
+    expect(notifications).toBe(1);
+    unsubscribe();
+  });
+
+  it('preserves profile edits committed while a learning sync response is in flight', async () => {
+    const {cloud, repo} = await fixture();
+    let release!: () => void;
+    let entered!: () => void;
+    const entry = new Promise<void>(resolve => { entered = resolve; });
+    cloud.gate = () => { cloud.gate = null; entered(); return new Promise<void>(resolve => { release = resolve; }); };
+    const syncing = repo.sync(true);
+    await entry;
+    await repo.saveProfile(profile);
+    release();
+    await syncing;
+    expect(repo.snapshot.profile).toEqual(profile);
+  });
+
+  it('locks presentation on logout, rejects writes, and restores it on same-account login and learning restore', async () => {
+    const {repo} = await fixture();
+    await repo.saveProfile(profile);
+    await repo.logout();
+    expect(repo.snapshot.profile).toEqual(defaultProfile());
+    await expect(repo.saveProfile({...profile, nickname: 'blocked'})).rejects.toThrow('请先登录');
+    await repo.login('owner', 'password-password');
+    expect(repo.snapshot.profile).toEqual(profile);
+    await repo.restore(repo.previewBackup(JSON.stringify({app: 'wordweave', schema: 1, state: initialState()})));
+    expect(repo.snapshot.profile).toEqual(profile);
+  });
+
+  it.each([
+    {...profile, userId: 'another-account'},
+    {...profile, userId: 'owner', nickname: 'x'.repeat(25)},
+    {...profile, userId: 'owner', avatar: 'https://untrusted.example/avatar'},
+  ])('ignores a foreign or invalid optional profile without blocking saved learning', async (localProfile) => {
+    const {disk, cloud, repo} = await fixture();
+    await repo.dispatch({type: 'note', wordId: seedWords[0].id, note: '保留的学习记录'});
+    disk.value.stateJson = JSON.stringify({...JSON.parse(disk.value.stateJson!), localProfile});
+    const reopened = new LearningRepository(disk, cloud);
+    await reopened.read();
+    expect(reopened.snapshot.profile).toEqual(defaultProfile());
+    expect(reopened.snapshot.state!.notes[seedWords[0].id]).toBe('保留的学习记录');
+    await reopened.saveProfile(profile);
+    expect(JSON.parse(disk.value.stateJson!).localProfile).toEqual({userId: 'owner', ...profile});
+  });
+
+  it.each([
+    {...profile, nickname: 'x'.repeat(25)},
+    {...profile, signature: 'x'.repeat(81)},
+  ])('rejects oversized edits without changing disk or snapshot', async input => {
+    const {disk, repo} = await fixture();
+    const before = structuredClone(disk.value);
+    await expect(repo.saveProfile(input)).rejects.toThrow('最多');
+    expect(disk.value).toEqual(before);
+    expect(repo.snapshot.profile).toEqual(defaultProfile());
+  });
+
+  it('rejects profile writes before the first account has been downloaded', async () => {
+    const disk = new Disk(), cloud = new Cloud();
+    const repo = new LearningRepository(disk, cloud);
+    await expect(repo.saveProfile(profile)).rejects.toThrow('请先登录');
+    expect(disk.value.stateJson).toBeNull();
   });
 });

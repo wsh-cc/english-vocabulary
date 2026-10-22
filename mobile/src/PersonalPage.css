@@ -1,0 +1,146 @@
+.personal-home,
+.personal-detail {
+  width: 100%;
+  max-width: 760px;
+  min-width: 0;
+  margin: 0 auto;
+  color: var(--app-ink);
+  font-family: var(--ww-sans);
+  overflow-wrap: anywhere;
+}
+
+.personal-home { display: grid; gap: 18px; }
+.personal-heading h1 { margin: 8px 0 6px; font-size: 1.6rem; font-weight: 600; letter-spacing: -.04em; line-height: 1.4; }
+.personal-heading p { margin: 0; color: var(--app-muted); font-size: .75rem; line-height: 1.75; }
+.personal-heading .ww-eyebrow { font-size: .6rem; letter-spacing: .16em; }
+
+.personal-identity {
+  padding: 20px;
+  border: 1px solid color-mix(in srgb, var(--app-green) 14%, var(--app-line));
+  border-radius: 22px;
+  background: color-mix(in srgb, var(--app-tint) 60%, var(--app-paper));
+}
+.personal-identity-top { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 13px; }
+.personal-avatar { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 56px; height: 56px; border: 1px solid color-mix(in srgb, var(--app-green) 16%, transparent); border-radius: 19px; background: var(--app-paper); color: var(--app-green); font-family: var(--ww-serif); font-size: 1.7rem; line-height: 1; }
+.personal-name { min-width: 0; }
+.personal-avatar { overflow: hidden; }
+.personal-avatar > img { width: 100%; height: 100%; object-fit: cover; }
+.personal-photo-button { width: 100%; justify-content: center; }
+.personal-form .personal-avatar-picker { margin-top: 20px; }
+.personal-name h2 { margin: 0; font-size: 1.13rem; line-height: 1.5; font-weight: 600; }
+.personal-name > span { display: block; margin-top: 3px; color: var(--app-muted); font-size: .66rem; line-height: 1.6; }
+.personal-edit { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-width: 44px; min-height: 44px; padding: 8px 10px; border: 1px solid color-mix(in srgb, var(--app-green) 16%, transparent); border-radius: 13px; background: color-mix(in srgb, var(--app-paper) 65%, transparent); color: var(--app-green); font-size: .72rem; line-height: 1.5; }
+.personal-signature { margin: 17px 0 15px; font-size: .82rem; line-height: 1.85; white-space: pre-wrap; }
+.personal-identity-foot { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px 12px; padding-top: 12px; border-top: 1px solid color-mix(in srgb, var(--app-green) 12%, transparent); color: var(--app-muted); }
+.personal-identity-foot > span { display: inline-flex; align-items: center; gap: 6px; font-size: .63rem; line-height: 1.6; }
+.personal-identity-foot > span > svg { flex-shrink: 0; color: var(--app-green); }
+.personal-identity-foot > small { color: var(--app-green); font-size: .63rem; line-height: 1.6; }
+
+.personal-progress { padding: 15px 18px; border: 1px solid var(--app-line); border-radius: 20px; background: var(--app-paper); }
+.personal-section-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0 12px; }
+.personal-section-heading h2 { margin: 0; font-size: .85rem; font-weight: 600; line-height: 1.6; }
+.personal-section-heading > button,
+.personal-empty > button { display: inline-flex; align-items: center; justify-content: center; gap: 4px; min-height: 44px; min-width: 44px; border: 0; padding: 8px 0; background: transparent; color: var(--app-green); font-size: .7rem; line-height: 1.5; }
+.personal-totals { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 10px 0 14px; }
+.personal-totals > div { display: flex; flex-direction: column-reverse; align-items: center; gap: 5px; min-width: 0; padding: 0 7px; border-right: 1px solid var(--app-line); text-align: center; }
+.personal-totals > div:last-child { border-right: 0; }
+.personal-totals dt { color: var(--app-muted); font-size: .65rem; line-height: 1.6; }
+.personal-totals dd { margin: 0; max-width: 100%; color: var(--app-green); font-size: 1.6rem; font-weight: 500; line-height: 1.2; letter-spacing: -.035em; font-variant-numeric: tabular-nums; }
+.personal-caption { margin: 0; padding-top: 12px; border-top: 1px solid var(--app-line); color: var(--app-muted); font-size: .61rem; line-height: 1.7; }
+.personal-empty { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0 10px; padding-top: 6px; border-top: 1px solid var(--app-line); }
+.personal-empty > p { flex: 1 1 150px; margin: 6px 0; color: var(--app-muted); font-size: .67rem; line-height: 1.7; }
+
+.personal-entries { padding: 0 16px; border: 1px solid var(--app-line); border-radius: 20px; background: var(--app-paper); }
+.personal-entry { display: grid; grid-template-columns: 36px minmax(0, 1fr) auto 18px; align-items: center; gap: 4px 11px; width: 100%; min-height: 76px; padding: 15px 0; border: 0; border-bottom: 1px solid var(--app-line); border-radius: 0; color: var(--app-ink); background: transparent; text-align: left; }
+.personal-entry:last-child { border-bottom: 0; }
+.personal-entry-icon { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 12px; color: var(--app-green); background: var(--app-tint); }
+.personal-entry-copy { min-width: 0; }
+.personal-entry-copy > strong { display: block; font-size: .82rem; font-weight: 550; line-height: 1.6; }
+.personal-entry-copy > small { display: block; margin-top: 3px; color: var(--app-muted); font-size: .65rem; line-height: 1.65; }
+.personal-entry-badge { max-width: 8em; padding: 5px 7px; border-radius: 8px; color: var(--app-green); background: var(--app-tint); font-size: .6rem; line-height: 1.5; text-align: center; }
+.personal-entry > svg { grid-column: 4; grid-row: 1; color: var(--app-muted); }
+.personal-home-note { margin: 0; color: var(--app-muted); font-size: .67rem; line-height: 1.8; text-align: center; }
+
+.personal-detail-heading { display: flex; align-items: center; gap: 13px; margin: 0 0 25px; }
+.personal-detail-heading > div { min-width: 0; }
+.personal-detail-heading h1 { margin: 0; font-size: 1.45rem; font-weight: 600; line-height: 1.5; letter-spacing: -.035em; }
+.personal-detail-heading p { margin: 4px 0 0; color: var(--app-muted); font-size: .72rem; line-height: 1.8; }
+.personal-detail-content { display: grid; gap: 16px; }
+.personal-detail-content > .ww-card { min-width: 0; margin: 0; padding: 20px; }
+.personal-detail-content .app-section-title { flex-wrap: wrap; }
+.personal-detail-content .app-section-title h2 { min-width: 0; font-size: 1rem; line-height: 1.6; }
+.personal-detail-content p { margin: 10px 0; color: var(--app-muted); font-size: .8rem; line-height: 1.85; }
+.personal-detail-content .app-setting { flex-wrap: wrap; padding: 15px 0; font-size: .82rem; }
+.personal-detail-content .app-setting:last-child { border-bottom: 0; padding-bottom: 0; }
+.personal-detail-content .app-setting > span { flex: 1 1 125px; min-width: 0; }
+.personal-detail-content .app-setting small { font-size: .66rem; line-height: 1.7; }
+.personal-detail-content .ww-choice-setting { margin-left: auto; max-width: 100%; }
+.personal-detail-content .ww-choice-setting .ww-choice-trigger { font-size: .75rem; }
+.personal-detail-content .app-actions > .ww-button { max-width: 100%; }
+.personal-detail-content .app-logout { font-size: .8rem; }
+.personal-detail-content .ww-error { color: var(--ww-danger); }
+.personal-detail-content .ww-tag { max-width: 100%; white-space: normal; text-align: center; }
+.personal-account { display: flex; align-items: flex-start; gap: 12px; }
+.personal-account > svg { flex-shrink: 0; margin-top: 3px; color: var(--app-green); }
+.personal-account > div { min-width: 0; }
+.personal-account h2 { margin: 0; font-size: .85rem; line-height: 1.7; font-weight: 600; }
+.personal-account p { margin: 6px 0; color: var(--app-ink); font-size: 1rem; }
+.personal-account small { color: var(--app-muted); font-size: .66rem; line-height: 1.7; }
+.personal-detail-content .app-about { padding: 28px 20px; }
+.personal-detail-content .app-about h2 { font-size: 1.05rem; }
+.personal-detail-content .app-about small { font-size: .66rem; line-height: 1.8; }
+.personal-detail-content .app-about a { min-height: 44px; font-size: .75rem; }
+
+.personal-form { min-width: 0; color: var(--ww-ink); overflow-wrap: anywhere; }
+.personal-form-intro { display: flex; align-items: center; gap: 13px; margin: 8px 0 24px; }
+.personal-form-intro > div { min-width: 0; }
+.personal-form-intro .personal-avatar { width: 50px; height: 50px; border-radius: 17px; background: var(--ww-soft); }
+.personal-form .personal-form-intro h2 { margin: 0; font-size: .95rem; font-weight: 550; line-height: 1.7; }
+.personal-form .personal-form-intro p { margin: 4px 0 0; color: var(--ww-muted); font-size: .68rem; line-height: 1.7; }
+.personal-avatar-picker { min-width: 0; margin: 0 0 24px; padding: 0; border: 0; }
+.personal-avatar-picker legend { padding: 0; margin-bottom: 10px; font-size: .8rem; line-height: 1.6; }
+.personal-avatar-picker > div { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; }
+.personal-avatar-picker button { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 7px; min-width: 44px; min-height: 70px; padding: 10px 3px; border: 1px solid var(--ww-line); border-radius: 13px; background: var(--ww-bg); color: var(--ww-muted); }
+.personal-avatar-picker button > span { display: grid; place-items: center; min-height: 23px; color: var(--ww-green); font-family: var(--ww-serif); font-size: 1.25rem; }
+.personal-avatar-picker button > small { font-size: .65rem; line-height: 1.5; }
+.personal-avatar-picker button[aria-checked='true'] { border-color: var(--ww-green); background: var(--ww-soft); color: var(--ww-green); }
+.personal-avatar-check { position: absolute; top: 3px; right: 3px; width: 15px; height: 15px; padding: 2px; border-radius: 50%; background: var(--ww-green); color: var(--ww-paper); }
+.personal-form > label { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin: 18px 0 8px; font-size: .8rem; line-height: 1.6; }
+.personal-form > label > span { color: var(--ww-muted); font-size: .65rem; font-variant-numeric: tabular-nums; }
+.personal-form > input,
+.personal-form > textarea { display: block; width: 100%; min-width: 0; min-height: 48px; padding: 12px 13px; border: 1px solid var(--ww-line); border-radius: 12px; background: var(--ww-bg); color: var(--ww-ink); font: inherit; font-size: .9rem; line-height: 1.8; -webkit-appearance: none; }
+.personal-form > textarea { min-height: 112px; resize: vertical; }
+.personal-form > input::placeholder,
+.personal-form > textarea::placeholder { color: var(--ww-muted); opacity: .9; }
+.personal-form > input:disabled,
+.personal-form > textarea:disabled { opacity: .65; }
+.personal-form > .personal-field-hint { margin: 8px 0 0; color: var(--ww-muted); font-size: .67rem; line-height: 1.8; }
+.personal-form-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; margin-top: 23px; padding-top: 17px; border-top: 1px solid var(--ww-line); }
+.personal-form-actions > .ww-button { max-width: 100%; font-size: .8rem !important; }
+
+@media (max-width: 420px) {
+  .personal-entry { grid-template-columns: 34px minmax(0, 1fr) 18px; gap: 5px 10px; }
+  .personal-entry > svg { grid-column: 3; }
+  .personal-entry-badge { grid-column: 2; grid-row: 2; justify-self: start; max-width: 100%; }
+  .personal-avatar-picker > div { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+}
+
+@media (max-width: 359px) {
+  .personal-home { gap: 15px; }
+  .personal-identity { padding: 16px; }
+  .personal-identity-top { gap: 9px; }
+  .personal-avatar { width: 48px; height: 48px; border-radius: 16px; }
+  .personal-edit { padding: 8px; flex-direction: column; gap: 3px; }
+  .personal-progress { padding: 12px; }
+  .personal-entries { padding: 0 12px; }
+  .personal-detail-content > .ww-card { padding: 16px; }
+}
+
+@media (min-width: 700px) {
+  .personal-identity { padding: 24px; }
+  .personal-heading h1 { font-size: 1.85rem; }
+  .personal-progress { padding: 18px 24px; }
+  .personal-totals dd { font-size: 1.85rem; }
+  .personal-entries { padding: 0 24px; }
+  .personal-entry { min-height: 82px; }
+}

@@ -277,7 +277,8 @@
 
 /* Native-sized bottom sheets also work with a desktop mouse and keyboard. */
 .ww-overlay { position: fixed; inset: 0; z-index: 1000; display: flex; justify-content: center; align-items: flex-end; background: #0f211873; backdrop-filter: blur(4px); padding-top: max(30px, env(safe-area-inset-top)); }
-.ww-sheet { width: 100%; max-width: 540px; background: var(--ww-paper); border-radius: 25px 25px 0 0; padding: 10px 24px max(28px, env(safe-area-inset-bottom)); max-height: 92dvh; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; animation: ww-sheet-enter .2s ease-out; box-shadow: 0 -10px 80px #10251b25; }
+.ww-sheet { width: 100%; max-width: 540px; background: var(--ww-paper); border-radius: 25px 25px 0 0; max-height: 92dvh; overflow: hidden; display: flex; flex-direction: column; isolation: isolate; contain: paint; animation: ww-sheet-enter .2s ease-out; box-shadow: 0 -10px 80px #10251b25; }
+.ww-sheet-scroll { min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 10px 24px max(28px, env(safe-area-inset-bottom)); }
 .ww-sheet-wide { max-width: 640px; }
 .ww-sheet-handle { width: 36px; height: 4px; border-radius: 4px; background: var(--ww-line); margin: 0 auto 9px; }
 .ww-sheet-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 10px; }
@@ -352,7 +353,7 @@
   .ww-reading-options > .ww-segments { margin-bottom: 0; }
   .ww-burden-chart { gap: 9px; }
   .ww-self-assess { grid-template-columns: 1fr; }
-  .ww-sheet { padding-inline: 19px; }
+  .ww-sheet-scroll { padding-inline: 19px; }
   .ww-history-row > div > span { font-size: 8px; }
 }
 @media (min-width: 650px) {

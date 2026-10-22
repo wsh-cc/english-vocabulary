@@ -59,7 +59,7 @@ const browser: WordweaveNativePlugin = {
   async request({ url, method, body, token }) {
     const parsed = new URL(url);
     if (parsed.origin !== 'https://wordweave-cet-study.shiw36663.chatgpt.site' || !parsed.pathname.startsWith('/api/mobile/')) throw Error('无效的同步地址。');
-    const response = await fetch(import.meta.env.DEV ? parsed.pathname : url, {
+    const response = await fetch(import.meta.env.DEV ? parsed.pathname + parsed.search : url, {
       method, body, credentials: 'omit',
       headers: { ...(body ? {'Content-Type': 'application/json'} : {}), ...(token ? {Authorization: 'Bearer ' + token} : {}) },
       signal: AbortSignal.timeout(30000),

@@ -68,8 +68,8 @@ try {
     $secret = Get-Content -Encoding UTF8 -LiteralPath $secretsPath -Raw | ConvertFrom-Json
     $env:WORDWEAVE_SIGNING_PASSWORD = $secret.password
     $unsigned = Join-Path $androidRoot 'app/build/outputs/apk/release/app-release-unsigned.apk'
-    $aligned = Join-Path $releaseRoot 'wordweave-0.1.3-aligned.apk'
-    $signed = Join-Path $releaseRoot 'wordweave-0.1.3.apk'
+    $aligned = Join-Path $releaseRoot 'wordweave-0.1.8-aligned.apk'
+    $signed = Join-Path $releaseRoot 'wordweave-0.1.8.apk'
     & (Join-Path $buildTools 'zipalign.exe') -f -p 4 $unsigned $aligned
     if ($LASTEXITCODE -ne 0) { throw 'APK alignment failed.' }
     & (Join-Path $buildTools 'apksigner.bat') sign --ks $keystore --ks-key-alias $secret.alias --ks-pass 'env:WORDWEAVE_SIGNING_PASSWORD' --key-pass 'env:WORDWEAVE_SIGNING_PASSWORD' --v2-signing-enabled true --v3-signing-enabled true --out $signed $aligned
@@ -77,7 +77,7 @@ try {
     & (Join-Path $buildTools 'apksigner.bat') verify --verbose --print-certs $signed
     if ($LASTEXITCODE -ne 0) { throw 'APK signature verification failed.' }
     $hash = (Get-FileHash -Algorithm SHA256 -LiteralPath $signed).Hash.ToLowerInvariant()
-    [IO.File]::WriteAllText((Join-Path $releaseRoot 'wordweave-0.1.3.apk.sha256'), ($hash + '  wordweave-0.1.3.apk' + [Environment]::NewLine), $utf8)
+    [IO.File]::WriteAllText((Join-Path $releaseRoot 'wordweave-0.1.8.apk.sha256'), ($hash + '  wordweave-0.1.8.apk' + [Environment]::NewLine), $utf8)
     Get-Item -LiteralPath $signed | Select-Object FullName,Length
     Write-Output ('SHA-256: ' + $hash)
 } finally {

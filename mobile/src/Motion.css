@@ -1,0 +1,36 @@
+:root {
+  --motion-press: 90ms;
+  --motion-feedback: 140ms;
+  --motion-page: 320ms;
+  --motion-overlay: 240ms;
+  --motion-exit: 180ms;
+  --motion-ease: cubic-bezier(.22, .61, .36, 1);
+}
+
+.app-presence { display: contents; }
+.app-view-stack { position: relative; isolation: isolate; overflow-anchor: none; }
+/* The underlying style must match the final animation frame. React may hide a
+   cached page on a later frame after WAAPI has released its fill effect. */
+.app-view { position: relative; opacity: 0; }
+.app-view[data-active] { z-index: 1; opacity: 1; }
+.app-view[data-exiting] { position: absolute; inset: 0; overflow: clip; pointer-events: none; }
+.app-view[data-exiting] > .app-view-content { transform: translateY(var(--page-scroll-offset, 0px)); }
+.app-shell { overflow-x: clip; }
+
+/* Feedback starts on touch-down, independently of React and storage/network work. */
+button, a, input, select, textarea { touch-action: manipulation; }
+button:not(:disabled) {
+  transition: transform var(--motion-feedback) var(--motion-ease), opacity var(--motion-feedback) var(--motion-ease), background-color var(--motion-feedback) var(--motion-ease), border-color var(--motion-feedback) var(--motion-ease);
+}
+button:not(:disabled):active { transform: scale(.975); opacity: .76; transition-duration: var(--motion-press); }
+.app-bottom-nav button span { transition: background-color var(--motion-feedback) var(--motion-ease), transform var(--motion-feedback) var(--motion-ease); }
+.app-bottom-nav button:active span { transform: scale(.92); }
+
+/* Presence owns both directions, including interrupted openings. */
+.ww-sheet, .ww-choice-panel, .ww-choice-overlay { animation: none; }
+.app-presence[data-closing] { pointer-events: none; }
+.app-presence[data-closing] :is(.ww-sheet, .ww-choice-panel, .ww-choice-overlay, .ww-overlay, .app-modal, .app-modal-backdrop, .app-toast) { opacity: 0; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+  button:not(:disabled):active, .app-bottom-nav button:active span { transform: none; }
+}

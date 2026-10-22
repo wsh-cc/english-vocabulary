@@ -2,6 +2,8 @@ import { z } from 'zod';
 import { cookies } from 'next/headers';
 import { authConfig, authDatabase, SESSION_COOKIE, SESSION_SECONDS, sessionCookie, validWriteOrigin } from '@/lib/auth';
 import { digest, equalHash, passwordHash, randomToken } from '@/lib/auth-crypto';
+import { registerWithFriendInvite } from '@/lib/friend-invites';
+import { MobileHttpError } from '@/lib/mobile-auth';
 
 export const dynamic = 'force-dynamic';
 const json = (body: unknown, status = 200, cookie?: string) => Response.json(body, {status, headers: {'Cache-Control': 'no-store', ...(cookie ? {'Set-Cookie': cookie} : {})}});
@@ -44,14 +46,18 @@ export async function POST(request: Request) {
     const {inviteHash, pepper} = authConfig();
     let userId: string;
     if (action === 'register') {
-      if (!equalHash(await digest((invitation ?? '').trim()), inviteHash)) return json({error: '注册密钥不正确。'}, 403);
+      const code = (invitation ?? '').trim();
       const salt = randomToken();
       userId = 'local-' + crypto.randomUUID();
       const hash = await passwordHash(password, salt, pepper);
-      // The singleton primary key makes simultaneous registration attempts atomic.
-      const result = await db.prepare('INSERT OR IGNORE INTO app_accounts (slot, user_id, username, username_normalized, password_hash, salt, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)')
-        .bind('owner', userId, username, normalized, hash, salt, Date.now()).run();
-      if (!result.meta.changes) return json({error: '私人账号已经注册，请切换到登录。'}, 409);
+      if (equalHash(await digest(code), inviteHash)) {
+        // The original private key can still create only the singleton owner.
+        const result = await db.prepare('INSERT OR IGNORE INTO app_accounts (slot, user_id, username, username_normalized, password_hash, salt, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)')
+          .bind('owner', userId, username, normalized, hash, salt, Date.now()).run();
+        if (!result.meta.changes) return json({error: '私人账号已经注册，请切换到登录。'}, 409);
+      } else {
+        await registerWithFriendInvite(code, { userId, username, normalized, passwordHash: hash, salt });
+      }
     } else {
       const account = await db.prepare('SELECT user_id, password_hash, salt FROM app_accounts WHERE username_normalized = ?').bind(normalized).first<{user_id: string; password_hash: string; salt: string}>();
       const actual = await passwordHash(password, account?.salt ?? 'unregistered-account', pepper);
@@ -65,7 +71,8 @@ export async function POST(request: Request) {
       db.prepare('INSERT INTO app_sessions (token_hash, user_id, expires_at) VALUES (?, ?, ?)').bind(await digest(token), userId, Date.now() + SESSION_SECONDS * 1000),
     ]);
     return json({ok: true}, 200, sessionCookie(token, request));
-  } catch {
+  } catch (error) {
+    if (error instanceof MobileHttpError) return json({error: error.message, code: error.code}, error.status);
     return json({error: '账号服务暂时不可用，请稍后重试。'}, 503);
   }
 }

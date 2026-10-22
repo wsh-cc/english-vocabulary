@@ -1,16 +1,17 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { memo, useDeferredValue, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import {
   ArrowDown, ArrowRight, BookOpen, Check, CheckCheck, ChevronLeft, ChevronRight,
   CircleHelp, Clock3, Eye, Layers, List, NotebookPen, RotateCcw, Search,
   SkipForward, Sparkles, Target, Volume2, X,
 } from 'lucide-react';
 import {
-  allWords, availableModes, chinaDay, DAY, dueItems, MODES, modeNames, seedWords,
+  availableModes, chinaDay, DAY, MODES, modeNames, seedWords,
   type Mode, type Result, type State, type Word,
 } from '@/lib/learning';
 import { coursePassages, nextReading } from '@/lib/curriculum';
-import { passageParts, readingSummary } from '@/lib/reading';
 import { ChoicePicker } from './ChoicePicker';
+import { Presence } from './Motion';
+import { useStudyCache, warmWhenIdle } from './StudyCache';
 import './Study.css';
 
 export type QueueItem = { word: Word; mode: Mode };
@@ -23,12 +24,12 @@ export type StudyProps = {
 };
 
 const levelName = (level: string) => level === 'CET4' ? '四级' : '六级';
-const dateText = (time: number) => new Date(time).toLocaleString('zh-CN', {
+const dateFormatter = new Intl.DateTimeFormat('zh-CN', {
   timeZone: 'Asia/Shanghai', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit',
 });
+const dateText = (time: number) => dateFormatter.format(time);
 const outcomeText = (outcome: Result['outcome']) => outcome === 'correct'
   ? '独立答对' : outcome === 'hinted' ? '借助提示' : '需要重温';
-const sameSense = (left: Word, right: Word) => left.word.toLowerCase() === right.word.toLowerCase() && left.pos === right.pos && left.meaning === right.meaning;
 const dayStart = (time: number) => Date.parse(`${chinaDay(time)}T00:00:00+08:00`);
 type ChoiceTuple = [value: string, label: string, description?: string, icon?: ReactNode];
 const studyChoices: Record<'direction' | 'gloss' | 'level' | 'filterFamiliar' | 'wordFamiliar', ChoiceTuple[]> = {
@@ -63,14 +64,19 @@ const studyChoices: Record<'direction' | 'gloss' | 'level' | 'filterFamiliar' | 
 function useClock() {
   const [now, setNow] = useState(Date.now);
   useEffect(() => {
-    const tick = () => setNow(Date.now());
-    const timer = window.setInterval(tick, 30_000);
+    const tick = () => { if (!document.hidden) setNow(Date.now()); };
+    let timer = 0;
+    const resume = () => {
+      window.clearInterval(timer);
+      if (!document.hidden) { tick(); timer = window.setInterval(tick, 30_000); }
+    };
+    resume();
     window.addEventListener('focus', tick);
-    document.addEventListener('visibilitychange', tick);
+    document.addEventListener('visibilitychange', resume);
     return () => {
       window.clearInterval(timer);
       window.removeEventListener('focus', tick);
-      document.removeEventListener('visibilitychange', tick);
+      document.removeEventListener('visibilitychange', resume);
     };
   }, []);
   return now;
@@ -100,7 +106,7 @@ function Empty({ title, children }: { title: string; children: ReactNode }) {
   return <div className="ww-empty"><BookOpen size={28} strokeWidth={1.5} /><h3>{title}</h3><p>{children}</p></div>;
 }
 
-function Modal({ title, onClose, children, wide = false }: { title: string; onClose: () => void; children: ReactNode; wide?: boolean }) {
+export function Modal({ title, onClose, children, wide = false }: { title: string; onClose: () => void; children: ReactNode; wide?: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef(onClose);
@@ -112,7 +118,7 @@ function Modal({ title, onClose, children, wide = false }: { title: string; onCl
       const overlays = document.querySelectorAll('[data-ww-overlay]');
       return overlays.length > 0 && overlays.item(overlays.length - 1) === overlayRef.current;
     };
-    node?.querySelector<HTMLElement>('button, input, select, textarea, [tabindex="0"]')?.focus();
+    node?.querySelector<HTMLElement>('button, input, select, textarea, [tabindex="0"]')?.focus({ preventScroll: true });
     const back = (event: Event) => {
       if (event.defaultPrevented || !isTopOverlay()) return;
       event.preventDefault(); closeRef.current();
@@ -136,29 +142,22 @@ function Modal({ title, onClose, children, wide = false }: { title: string; onCl
       document.body.style.overflow = previousOverflow;
       document.removeEventListener('keydown', keydown);
       window.removeEventListener('ww:back', back);
-      if (previous?.isConnected) previous.focus();
+      if (previous?.isConnected) previous.focus({ preventScroll: true });
     };
   }, []);
-  return <div ref={overlayRef} className="ww-overlay" data-ww-overlay onClick={event => { if (event.target === event.currentTarget) onClose(); }}><div ref={ref} className={`ww-sheet${wide ? ' ww-sheet-wide' : ''}`} role="dialog" aria-modal="true" aria-label={title}><div className="ww-sheet-handle" /><div className="ww-sheet-top"><span className="ww-eyebrow">{title}</span><button className="ww-icon-button" onClick={onClose} aria-label="关闭详情"><X size={22} /></button></div>{children}</div></div>;
+    return <div ref={overlayRef} className="ww-overlay" data-ww-overlay onClick={event => { if (event.target === event.currentTarget) onClose(); }}><div ref={ref} className={`ww-sheet${wide ? ' ww-sheet-wide' : ''}`} role="dialog" aria-modal="true" aria-label={title}><div className="ww-sheet-scroll"><div className="ww-sheet-handle" /><div className="ww-sheet-top"><span className="ww-eyebrow">{title}</span><button className="ww-icon-button" onClick={onClose} aria-label="关闭详情"><X size={22} /></button></div>{children}</div></div></div>;
 }
 
 function SevenDays({ state, now }: { state: State; now: number }) {
-  const start = dayStart(now);
-  const days = Array.from({ length: 7 }, (_, i) => ({ day: chinaDay(start + i * DAY), count: 0 }));
-  const lookup = new Map(days.map(day => [day.day, day]));
-  for (const word of allWords(state).filter(word => word.tags.includes(state.settings.level))) {
-    for (const mode of availableModes(word)) {
-      const track = state.progress[word.id]?.[mode];
-      if (track) { const day = lookup.get(chinaDay(track.due)); if (day) day.count++; }
-    }
-  }
+  const days = useStudyCache().sevenDays(state, now);
   const max = Math.max(1, ...days.map(day => day.count));
   return <section className="ww-card ww-burden"><div className="ww-section-title"><h2>未来七天</h2><span className="ww-muted">复习安排</span></div><div className="ww-burden-chart" aria-label="未来七天每天计划到期练习数，不含此前逾期练习">{days.map((day, index) => <div key={day.day}><strong>{day.count}</strong><div className="ww-bar-track"><span style={{ height: `${day.count ? Math.max(6, day.count / max * 100) : 0}%` }} /></div><span>{index === 0 ? '今天' : day.day.slice(5).replace('-', '/')}</span></div>)}</div><p className="ww-small">按北京时间安排 · 逾期练习已计入待复习</p></section>;
 }
 
 function History({ state, limit = 5 }: { state: State; limit?: number }) {
-  const wordMap = new Map(allWords(state).map(word => [word.id, word]));
-  const events = state.events.filter(event => wordMap.get(event.wordId)?.tags.includes(state.settings.level)).slice(-limit).reverse();
+  const cache = useStudyCache();
+  const wordMap = cache.index(state).byId;
+  const events = cache.stats(state).events.slice(-limit).reverse();
   return events.length ? <div className="ww-history">{events.map(event => <div className="ww-history-row" key={event.id}><div><strong>{wordMap.get(event.wordId)?.word ?? '词条'}</strong><span>{modeNames[event.mode]} · {dateText(event.at)}{event.delayed ? ' · 延后测试' : ''}</span></div><span className={`ww-outcome ww-outcome-${event.outcome}`}>{outcomeText(event.outcome)}</span></div>)}</div> : <Empty title="回想，也是一种积累">完成练习后，这里会留下训练方向、结果和时间。</Empty>;
 }
 
@@ -166,11 +165,12 @@ export function TodayView({ state, dispatch, busy, onSpeak, onPractice, onRead, 
   onRead: () => void; onLibrary: () => void; onStats: () => void;
 }) {
   const now = useClock();
-  const due = useMemo(() => dueItems(state, now), [state, now]);
-  const summary = readingSummary(state);
+  const cache = useStudyCache();
+  const due = cache.due(state, now);
+  const summary = cache.summary(state);
   const start = dayStart(now);
-  const readToday = Object.values(state.reading?.completed ?? {}).filter(time => time >= start && time < start + DAY).length;
-  const practicedToday = state.events.filter(event => event.at >= start && event.at < start + DAY).length;
+  const readToday = useMemo(() => Object.values(state.reading?.completed ?? {}).filter(time => time >= start && time < start + DAY).length, [state.reading?.completed, start]);
+  const practicedToday = useMemo(() => state.events.filter(event => event.at >= start && event.at < start + DAY).length, [state.events, start]);
   const percent = Math.round(summary.covered / Math.max(1, summary.total) * 100);
   const [mode, setMode] = useState('all');
   const [assessing, setAssessing] = useState(false);
@@ -179,13 +179,18 @@ export function TodayView({ state, dispatch, busy, onSpeak, onPractice, onRead, 
   const [revealed, setRevealed] = useState(false);
   const [error, setError] = useState('');
   const saving = useRef(false);
-  const words = useMemo(() => allWords(state).filter(word => word.tags.includes(state.settings.level)), [state.custom, state.settings.level]);
+  const words = cache.index(state).byLevel[state.settings.level];
   const assessment = useMemo(() => words.filter((_, index) => index % Math.max(1, Math.floor(words.length / 5)) === 0).slice(0, 5), [words]);
   const assessmentWord = assessment[assessmentIndex];
   const filtered = due.filter(item => mode === 'all' || item.mode === mode);
   const beijingHour = new Date(now + 8 * 3_600_000).getUTCHours();
   const greeting = beijingHour < 6 ? '夜深了' : beijingHour < 11 ? '早上好' : beijingHour < 14 ? '中午好' : beijingHour < 18 ? '下午好' : '晚上好';
-  useEffect(() => { setAssessing(false); setAssessmentIndex(0); setAssessmentFinished(false); setRevealed(false); }, [state.settings.level]);
+  const assessmentLevel = useRef(state.settings.level);
+  useEffect(() => {
+    if(assessmentLevel.current===state.settings.level)return;
+    assessmentLevel.current=state.settings.level;
+    setAssessing(false); setAssessmentIndex(0); setAssessmentFinished(false); setRevealed(false);
+  }, [state.settings.level]);
   async function finishAssessment() {
     if (busy || saving.current) return;
     saving.current = true;
@@ -221,6 +226,7 @@ export function TodayView({ state, dispatch, busy, onSpeak, onPractice, onRead, 
 }
 
 export function ReadingView({ state, dispatch, busy, onSpeak, onPractice, onWord }: StudyProps & { onWord: (word: Word) => void }) {
+  const cache = useStudyCache();
   const passages = useMemo(() => coursePassages(state), [state.settings.level]);
   const [id, setId] = useState(() => nextReading(state)?.id ?? '');
   const [directory, setDirectory] = useState(false);
@@ -228,9 +234,13 @@ export function ReadingView({ state, dispatch, busy, onSpeak, onPractice, onWord
   const [working, setWorking] = useState(false);
   const [error, setError] = useState('');
   const saving = useRef(false);
-  const words = useMemo(() => new Map(allWords(state).map(word => [word.id, word])), [state.custom]);
-  const summary = readingSummary(state);
+  const words = cache.index(state).byId;
+  const summary = cache.summary(state);
   const passage = passages.find(item => item.id === id) ?? passages.find(item => !state.reading?.completed[item.id]) ?? passages[0];
+  useEffect(() => {
+    const index = passages.findIndex(item => item.id === passage?.id);
+    return warmWhenIdle(passages.slice(index + 1, index + 3).map(item => () => { cache.parts(item.text); }));
+  }, [cache, passages, passage?.id]);
   const completed = !!passage && !!state.reading?.completed[passage.id];
   const doneCount = passages.filter(item => state.reading?.completed[item.id]).length;
   const locked = busy || working;
@@ -269,7 +279,7 @@ export function ReadingView({ state, dispatch, busy, onSpeak, onPractice, onWord
     {passage ? <>
       <article className="ww-reading-paper" key={passage.id}>
         <div className="ww-reading-paper-top"><span className="ww-eyebrow">STORY {String(passages.findIndex(item => item.id === passage.id) + 1).padStart(2, '0')}</span><span className={`ww-tag ${completed ? 'ww-tag-done' : ''}`}>{completed ? <><Check size={12} />已读 · 可重读</> : `${passage.wordIds.length} 个目标词`}</span></div>
-        <h2>{passage.title}</h2><div className="ww-reading-rule" /><div className="ww-story">{passageParts(passage.text).map((part, index) => {
+        <h2>{passage.title}</h2><div className="ww-reading-rule" /><div className="ww-story">{cache.parts(passage.text).map((part, index) => {
           if (part.type === 'text') return <span key={index}>{part.text}</span>;
           const word = words.get(part.id);
           return word ? <span key={index}><button className="ww-word-link" onClick={() => onWord(word)} aria-label={`查看 ${word.word} 的释义`}>{word.word}</button>{state.settings.gloss === 'direct' && <span className="ww-inline-gloss">（{word.meaning}）</span>}</span> : <span key={index}>〔词条暂不可用〕</span>;
@@ -279,26 +289,44 @@ export function ReadingView({ state, dispatch, busy, onSpeak, onPractice, onWord
       <section className="ww-card"><div className="ww-section-title"><h2>这一篇遇见的词</h2><button className="ww-button ww-ghost" disabled={locked || !targetWords.length} onClick={() => onPractice(targetWords.map(word => ({ word, mode: 'meaning' })), true)}>浏览<ArrowRight size={15} /></button></div><div className="ww-target-words">{targetWords.map(word => <button key={word.id} onClick={() => onWord(word)}><strong>{word.word}</strong><span>{word.meaning}</span></button>)}</div></section>
     </> : <Empty title="这个词表暂无阅读内容">可以切换词表，或在词库中开始卡片学习。</Empty>}
     <button className="ww-directory-button" onClick={() => setDirectory(true)}><List size={19} /><span>查看全部阅读目录</span><ChevronRight size={18} /></button>
-    {directory && <Modal title="阅读目录" onClose={() => setDirectory(false)} wide><h2 className="ww-sheet-title">每一篇，都可以再相遇</h2><p className="ww-muted">{levelName(state.settings.level)}辅助阅读 · {doneCount} / {passages.length} 篇已读</p><div className="ww-segments ww-directory-filters" role="group" aria-label="按阅读状态筛选">{[['all', '全部'], ['unread', '未读'], ['read', '已读']].map(([value, label]) => <button key={value} className={directoryFilter === value ? 'ww-active' : ''} aria-pressed={directoryFilter === value} onClick={() => setDirectoryFilter(value)}>{label}</button>)}</div><div className="ww-directory-list">{visiblePassages.map(item => <button className={item.id === passage?.id ? 'ww-current-passage' : ''} key={item.id} disabled={locked} onClick={() => { setId(item.id); setDirectory(false); setError(''); window.scrollTo({ top: 0 }); }}><span className="ww-directory-number">{String(passages.findIndex(p => p.id === item.id) + 1).padStart(2, '0')}</span><span><strong>{item.title}</strong><small>{item.wordIds.length} 个目标词 · {state.reading?.completed[item.id] ? '已读 · 可以重读' : '尚未阅读'}</small></span>{state.reading?.completed[item.id] ? <Check size={18} /> : <ChevronRight size={18} />}</button>)}{!visiblePassages.length && <Empty title="这里暂时没有段落">试试其他筛选条件。</Empty>}</div></Modal>}
+    <Presence show={directory} portal><Modal title="阅读目录" onClose={() => setDirectory(false)} wide><h2 className="ww-sheet-title">每一篇，都可以再相遇</h2><p className="ww-muted">{levelName(state.settings.level)}辅助阅读 · {doneCount} / {passages.length} 篇已读</p><div className="ww-segments ww-directory-filters" role="group" aria-label="按阅读状态筛选">{[['all', '全部'], ['unread', '未读'], ['read', '已读']].map(([value, label]) => <button key={value} className={directoryFilter === value ? 'ww-active' : ''} aria-pressed={directoryFilter === value} onClick={() => setDirectoryFilter(value)}>{label}</button>)}</div><div className="ww-directory-list">{visiblePassages.map(item => <button className={item.id === passage?.id ? 'ww-current-passage' : ''} key={item.id} disabled={locked} onClick={() => { setId(item.id); setDirectory(false); setError(''); window.scrollTo({ top: 0 }); }}><span className="ww-directory-number">{String(passages.findIndex(p => p.id === item.id) + 1).padStart(2, '0')}</span><span><strong>{item.title}</strong><small>{item.wordIds.length} 个目标词 · {state.reading?.completed[item.id] ? '已读 · 可以重读' : '尚未阅读'}</small></span>{state.reading?.completed[item.id] ? <Check size={18} /> : <ChevronRight size={18} />}</button>)}{!visiblePassages.length && <Empty title="这里暂时没有段落">试试其他筛选条件。</Empty>}</div></Modal></Presence>
   </div>;
 }
 
+const LibraryWords = memo(function LibraryWords({state, words, limit, onWord}: {state: State; words: Word[]; limit: number; onWord: (word: Word) => void}) {
+  return <div className="ww-word-list">{words.slice(0, limit).map(word => {
+      const familiar = state.familiar[word.id];
+      const wrong = Object.values(state.progress[word.id] ?? {}).some(track => track.wrong > 0);
+      return <button className="ww-word-card" key={word.id} onClick={() => onWord(word)}><div className="ww-word-card-top"><strong>{word.word}</strong><span className="ww-mini-tag">{word.tags.map(levelName).join(' / ')}</span></div><p><span>{word.pos}</span> {word.meaning}</p><div className="ww-word-card-bottom"><span className={familiar === 'familiar' ? 'ww-status-familiar' : ''}>{familiar === 'familiar' ? '自评熟悉 · 待抽查' : familiar === 'unknown' ? '陌生 · 已加入复习' : wrong ? '需要巩固' : state.learned[word.id] ? '已加入学习' : state.reading?.encounters[word.id] ? '已在阅读中接触' : '尚未学习'}</span><ChevronRight size={17} /></div></button>;
+    })}</div>;
+});
+
 export function LibraryView({ state, busy, onPractice, onWord }: StudyProps & { onWord: (word: Word) => void }) {
+  const cache = useStudyCache();
   const now = useClock();
   const [search, setSearch] = useState('');
   const [level, setLevel] = useState<string>(state.settings.level);
   const [status, setStatus] = useState('all');
   const [limit, setLimit] = useState(30);
-  useEffect(() => { setLevel(state.settings.level); setLimit(30); }, [state.settings.level]);
-  const words = useMemo(() => allWords(state), [state.custom]);
-  const query = search.trim().toLowerCase();
-  const filtered = useMemo(() => words.filter(word =>
-    (level === 'all' || word.tags.includes(level)) &&
-    (status === 'all' || (state.familiar[word.id] ?? 'learning') === status) &&
-    `${word.word} ${word.meaning} ${word.pos}`.toLowerCase().includes(query)), [words, level, status, state.familiar, query]);
+  const learningLevel = useRef(state.settings.level);
+  useEffect(() => {
+    if(learningLevel.current===state.settings.level)return;
+    learningLevel.current=state.settings.level;
+    setLevel(state.settings.level); setLimit(30);
+  }, [state.settings.level]);
+  const words = cache.index(state).words;
+  const query = useDeferredValue(search.trim().toLowerCase());
+  const filtered = cache.search(state, query, level, status);
   const start = dayStart(now);
-  const remaining = Math.max(0, state.settings.daily - Object.values(state.learned).filter(time => time >= start && time < start + DAY).length);
-  const fresh = filtered.filter(word => !state.learned[word.id] && state.familiar[word.id] !== 'familiar').slice(0, Math.min(10, remaining));
+  const remaining = useMemo(() => Math.max(0, state.settings.daily - Object.values(state.learned).filter(time => time >= start && time < start + DAY).length), [state.settings.daily, state.learned, start]);
+  const fresh = useMemo(() => {
+    const result: Word[] = [], count = Math.min(10, remaining);
+    for (const word of filtered) {
+      if (result.length >= count) break;
+      if (!state.learned[word.id] && state.familiar[word.id] !== 'familiar') result.push(word);
+    }
+    return result;
+  }, [filtered, state.learned, state.familiar, remaining]);
   function changeFilter(setter: (value: string) => void, value: string) { setter(value); setLimit(30); }
   return <div className="ww-page ww-library">
     <Heading eyebrow="YOUR WORD COLLECTION" title="我的词库"><span className="ww-tag">{words.length.toLocaleString()} 义项</span></Heading><p className="ww-intro">查找一个词，留下属于你的联想。</p>
@@ -306,11 +334,7 @@ export function LibraryView({ state, busy, onPractice, onWord }: StudyProps & { 
     <div className="ww-library-filters"><Select label="词表" value={level} onChange={value => changeFilter(setLevel, value)} description="筛选这里显示的词条，不改变学习词表设置。" options={studyChoices.level} /><Select label="熟悉程度" value={status} onChange={value => changeFilter(setStatus, value)} description="按自己的熟悉程度查看词条，不改变复习安排。" options={studyChoices.filterFamiliar} /></div>
     <section className="ww-library-actions"><div className="ww-row"><button className="ww-button ww-primary" disabled={busy || !fresh.length} onClick={() => onPractice(fresh.flatMap(word => availableModes(word).map(mode => ({ word, mode }))))}><Sparkles size={17} />{remaining ? `学习 ${fresh.length} 个新词` : '今日新词额度完成'}</button><button className="ww-button ww-secondary" disabled={busy || !filtered.length} onClick={() => onPractice(filtered.map(word => ({ word, mode: 'meaning' })), true)}><BookOpen size={17} />快速浏览</button></div><p className="ww-small">今日可学 {remaining} 个新词 · 浏览和到期复习不占额度</p></section>
     <div className="ww-section-title ww-list-heading"><span className="ww-muted">{filtered.length.toLocaleString()} 个匹配义项</span><span className="ww-small">重叠标签合并显示</span></div>
-    <div className="ww-word-list">{filtered.slice(0, limit).map(word => {
-      const familiar = state.familiar[word.id];
-      const wrong = Object.values(state.progress[word.id] ?? {}).some(track => track.wrong > 0);
-      return <button className="ww-word-card" key={word.id} onClick={() => onWord(word)}><div className="ww-word-card-top"><strong>{word.word}</strong><span className="ww-mini-tag">{word.tags.map(levelName).join(' / ')}</span></div><p><span>{word.pos}</span> {word.meaning}</p><div className="ww-word-card-bottom"><span className={familiar === 'familiar' ? 'ww-status-familiar' : ''}>{familiar === 'familiar' ? '自评熟悉 · 待抽查' : familiar === 'unknown' ? '陌生 · 已加入复习' : wrong ? '需要巩固' : state.learned[word.id] ? '已加入学习' : state.reading?.encounters[word.id] ? '已在阅读中接触' : '尚未学习'}</span><ChevronRight size={17} /></div></button>;
-    })}</div>
+    <LibraryWords state={state} words={filtered} limit={limit} onWord={onWord} />
     {!filtered.length && <Empty title="没有找到这个词">换一个关键词，或切换词表与熟悉程度。</Empty>}
     {filtered.length > limit && <button className="ww-button ww-secondary ww-full ww-load-more" onClick={() => setLimit(value => value + 30)}>再显示 30 个<ArrowDown size={16} /></button>}
     <p className="ww-page-note">需要补充自己的词表？前往「我的」导入 JSON 词表。</p>
@@ -338,8 +362,8 @@ export function ReviewView({ items, state, dispatch, busy, onSpeak, onDone, brow
   const [score, setScore] = useState({ correct: 0, hinted: 0, wrong: 0, skipped: 0 });
   const saving = useRef(false);
   const queued = items[index];
-  const currentWords = useMemo(() => allWords(state), [state.custom]);
-  const canonicalWord = queued && (currentWords.find(word => word.id === queued.word.id && sameSense(word, queued.word)) ?? currentWords.find(word => sameSense(word, queued.word)));
+  const cache = useStudyCache();
+  const canonicalWord = queued && cache.resolve(state, queued.word);
   const current = queued && { ...queued, word: canonicalWord ?? queued.word };
   function next() { setIndex(value => value + 1); setAnswer(''); setRevealed(false); setPeeked(false); setHint(false); setFailed(false); }
   function skip() { if (busy || saving.current || failed) return; setScore(value => ({ ...value, skipped: value.skipped + 1 })); next(); }
@@ -370,8 +394,7 @@ export function ReviewView({ items, state, dispatch, busy, onSpeak, onDone, brow
 export function WordSheet({ word: requestedWord, onClose, state, dispatch, busy, onSpeak, onPractice }: StudyProps & {
   word: Word; onClose: () => void;
 }) {
-  const words = useMemo(() => allWords(state), [state.custom]);
-  const canonicalWord = words.find(word => word.id === requestedWord.id && sameSense(word, requestedWord)) ?? words.find(word => sameSense(word, requestedWord));
+  const canonicalWord = useStudyCache().resolve(state, requestedWord);
   const word = canonicalWord ?? requestedWord;
   const semanticKey = `${word.word.toLowerCase()}|${word.pos}|${word.meaning}`;
   const [note, setNote] = useState(state.notes[word.id] ?? word.mnemonic ?? '');
@@ -414,17 +437,12 @@ export function WordSheet({ word: requestedWord, onClose, state, dispatch, busy,
 export function StatisticsView({ state }: { state: State }) {
   const now = useClock();
   const [historyLimit, setHistoryLimit] = useState(20);
-  const words = useMemo(() => allWords(state), [state.custom]);
-  const wordMap = useMemo(() => new Map(words.map(word => [word.id, word])), [words]);
-  const ids = useMemo(() => new Set(words.filter(word => word.tags.includes(state.settings.level)).map(word => word.id)), [words, state.settings.level]);
-  const events = useMemo(() => state.events.filter(event => ids.has(event.wordId)), [state.events, ids]);
-  const delayed = events.filter(event => event.delayed);
-  const hinted = events.filter(event => event.outcome === 'hinted').length;
-  const rates = MODES.map(mode => { const tested = delayed.filter(event => event.mode === mode); return { mode, total: tested.length, correct: tested.filter(event => event.outcome === 'correct').length }; });
-  const wrong = Object.entries(events.filter(event => event.outcome === 'wrong').reduce<Record<string, number>>((counts, event) => { counts[event.wordId] = (counts[event.wordId] ?? 0) + 1; return counts; }, {})).sort((a, b) => b[1] - a[1]).slice(0, 6);
-  const summary = readingSummary(state);
-  const passages = coursePassages(state);
-  const readingHistory = passages.filter(passage => state.reading?.completed[passage.id]).sort((a, b) => state.reading!.completed[b.id] - state.reading!.completed[a.id]);
+  const cache = useStudyCache();
+  const wordMap = cache.index(state).byId;
+  const {events, delayed, hinted, rates, wrong} = cache.stats(state);
+  const summary = cache.summary(state);
+  const passages = useMemo(() => coursePassages(state), [state.settings.level]);
+  const readingHistory = useMemo(() => passages.filter(passage => state.reading?.completed[passage.id]).sort((a, b) => state.reading!.completed[b.id] - state.reading!.completed[a.id]), [passages, state.reading?.completed]);
   const percent = Math.round(summary.covered / Math.max(1, summary.total) * 100);
   return <div className="ww-page ww-statistics"><Heading eyebrow="SMALL STEPS, REAL PROGRESS" title="学习留下的足迹"><span className="ww-tag">{levelName(state.settings.level)}词表</span></Heading><section className="ww-card ww-stat-summary"><div className="ww-section-title"><h2>回想的积累</h2><Target size={21} /></div><div className="ww-stat-summary-counts"><div><strong>{events.length.toLocaleString()}</strong><span>总练习</span></div><div><strong>{delayed.length.toLocaleString()}</strong><span>延后测试</span></div><div><strong>{hinted.toLocaleString()}</strong><span>提示完成</span></div></div></section>
     <section className="ww-card"><h2>延后独立答对率</h2><p className="ww-muted">同方向间隔至少一天的测试，才计入这里。</p><div className="ww-rate-list">{rates.map(({ mode, total, correct }) => <div key={mode}><div className="ww-row"><span>{modeNames[mode]}</span><strong>{total ? `${Math.round(correct / total * 100)}%` : '—'}</strong></div><Meter value={total ? correct / total * 100 : 0} label={`${modeNames[mode]}延后独立答对率`} /><small>{total ? `${correct} / ${total} 次延后测试独立答对` : '积累延后测试后显示'}</small></div>)}</div><p className="ww-small">阅读、自评熟悉、初测与浏览都不计为测试答对。</p></section>

@@ -1,6 +1,6 @@
 # 词间 Android 构建与交付
 
-应用标识 `com.wordweave.offline`，版本 `0.1.3`（versionCode 4），最低 Android 10 / API 29，编译与目标 API 36。HTML、字体、词库和阅读材料随 APK 打包。
+应用标识 `com.wordweave.offline`，版本 `0.1.8`（versionCode 9），最低 Android 10 / API 29，编译与目标 API 36。HTML、字体、词库和阅读材料随 APK 打包。好友与照片头像见 [FRIENDS.md](FRIENDS.md)，个人主页见 [PERSONAL-HOME.md](PERSONAL-HOME.md)，交互优化见 [FLUIDITY.md](FLUIDITY.md)。
 
 本版内置内容版本为 `wordweave-2026-10-v2`：新增 300 个常用四级义项与 600 条双语例句；四级 89 → 389 个义项，全库 2163 → 2463 个义项；新增 10 篇四级阅读，四级阅读 3 → 13 篇，全库阅读 61 → 71 篇。重复拼写仅用于不同词义。
 
@@ -17,7 +17,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/build-android.ps
 
 已有 JDK 21 可给构建脚本传 `-JdkRoot`，SDK 可传 `-SdkRoot`。Windows 建议用 `-GradleCache` 指向专用短路径：当前已用 `D:\CODE\ww-gradle` 验证解决过长缓存路径造成的 transform 目录重命名失败，原缓存保留。默认缓存为 `.tools/gh`。网络依赖缓存完整后可传 `-Offline`；只重打包已验证页面可传 `-SkipWebBuild`。构建会进行 web 构建、Capacitor 资源复制、原生单元测试、release lint、release APK 和 instrumentation 测试 APK 编译，再对 release APK 对齐、签名、验签与计算校验值。
 
-输出为 `release/wordweave-0.1.3.apk` 与 `release/wordweave-0.1.3.apk.sha256`。下载和 Gradle 缓存位于忽略目录 `.tools/`。不要把生成的 Android assets 文件作为手工修改入口。
+输出为 `release/wordweave-0.1.8.apk` 与 `release/wordweave-0.1.8.apk.sha256`。下载和 Gradle 缓存位于忽略目录 `.tools/`。不要把生成的 Android assets 文件作为手工修改入口。
 
 ## 签名与升级
 
@@ -36,6 +36,8 @@ APK 安装时按 Android 系统提示允许当前来源安装。升级直接安�
 - 语音仅选择已安装的离线英文 Voice，缺少资源可打开系统语音设置；进入后台停止朗读。
 
 ## 原生验证
+
+个人主页验证见 [PERSONAL-HOME.md](PERSONAL-HOME.md)，缓存与交互压力检查见 [FLUIDITY.md](FLUIDITY.md)；当前安装包的资源一致性、签名和测试汇总见 `release/wordweave-0.1.8-verification.json`。
 
 `testDebugUnitTest` 检查固定同步地址策略，以及真实 JSON → JSObject → PluginCall 的修订号解析。`StateStoreInstrumentedTest` 检查序列化请求首次写入、第二次写入、旧修订拒绝、恢复副本、重开数据库、无效 JSON 不覆盖以及 Keystore 凭据往返。连接测试手机或模拟器后在 android 目录执行 `gradlew.bat connectedDebugAndroidTest`。
 
