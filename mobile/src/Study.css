@@ -1,17 +1,17 @@
 :root {
-  --ww-bg: #f5f4ec;
-  --ww-paper: #fffef8;
-  --ww-ink: #233b31;
-  --ww-muted: #738078;
-  --ww-green: #376b56;
-  --ww-green-hover: #2b5745;
-  --ww-soft: #eaf0e5;
-  --ww-line: #e1e5d9;
-  --ww-tint: #f0f2e8;
-  --ww-gold: #9b7c43;
-  --ww-warm: #f5ecd8;
-  --ww-danger: #a14f40;
-  --ww-danger-bg: #f8ece5;
+  --ww-bg: #f6f7f4;
+  --ww-paper: #fdfdfb;
+  --ww-ink: #283b34;
+  --ww-muted: #606e66;
+  --ww-green: #3e6857;
+  --ww-green-hover: #315444;
+  --ww-soft: #e9efea;
+  --ww-line: #dce3dc;
+  --ww-tint: #eef2ed;
+  --ww-gold: #806a43;
+  --ww-warm: #f3eedf;
+  --ww-danger: #9f4d43;
+  --ww-danger-bg: #f8ece7;
   --ww-serif: Georgia, 'Noto Serif SC', 'Songti SC', 'SimSun', serif;
   --ww-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
 }

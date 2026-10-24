@@ -107,12 +107,12 @@
 .personal-avatar-check { position: absolute; top: 3px; right: 3px; width: 15px; height: 15px; padding: 2px; border-radius: 50%; background: var(--ww-green); color: var(--ww-paper); }
 .personal-form > label { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin: 18px 0 8px; font-size: .8rem; line-height: 1.6; }
 .personal-form > label > span { color: var(--ww-muted); font-size: .65rem; font-variant-numeric: tabular-nums; }
-.personal-form > input,
+.personal-form > input:not([hidden]),
 .personal-form > textarea { display: block; width: 100%; min-width: 0; min-height: 48px; padding: 12px 13px; border: 1px solid var(--ww-line); border-radius: 12px; background: var(--ww-bg); color: var(--ww-ink); font: inherit; font-size: .9rem; line-height: 1.8; -webkit-appearance: none; }
 .personal-form > textarea { min-height: 112px; resize: vertical; }
-.personal-form > input::placeholder,
+.personal-form > input:not([hidden])::placeholder,
 .personal-form > textarea::placeholder { color: var(--ww-muted); opacity: .9; }
-.personal-form > input:disabled,
+.personal-form > input:not([hidden]):disabled,
 .personal-form > textarea:disabled { opacity: .65; }
 .personal-form > .personal-field-hint { margin: 8px 0 0; color: var(--ww-muted); font-size: .67rem; line-height: 1.8; }
 .personal-form-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; margin-top: 23px; padding-top: 17px; border-top: 1px solid var(--ww-line); }

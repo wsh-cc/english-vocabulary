@@ -86,7 +86,7 @@ async (page) => {
   await page.screenshot({ path: 'output/playwright/fluidity-dark-320.png' });
   await page.setViewportSize({ width: 393, height: 852 });
   await page.getByRole('button', { name: /^外观：/ }).click();
-  await page.getByRole('radio', { name: /^浅色/ }).click();
+  await page.getByRole('radio', { name: /浅色/ }).click();
   await page.getByRole('button', { name: '确认选择' }).click();
   await page.waitForTimeout(400);
   await chooseTab('今日');

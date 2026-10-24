@@ -3,8 +3,17 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<meta name="theme-color" content="#f5f4ec" />
+<meta name="theme-color" content="#f6f7f4" />
 <meta name="color-scheme" content="light dark" />
+<script>
+  // Apply the saved theme before the first WebView paint, matching the native surface.
+  try {
+    const theme = localStorage.getItem('wordweave-mobile-theme') || 'system';
+    const dark = theme === 'dark' || (theme === 'system' && matchMedia('(prefers-color-scheme: dark)').matches);
+    document.documentElement.classList.toggle('dark', dark);
+    document.querySelector('meta[name="theme-color"]').content = dark ? '#192820' : '#f6f7f4';
+  } catch {}
+</script>
 <meta name="description" content="词间：在句子中学单词。离线阅读、查词与间隔复习。" />
 <title>词间 · 离线学习</title>
 <link rel="icon" type="image/svg+xml" href="/icon.svg" />

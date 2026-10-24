@@ -13,7 +13,7 @@ export function ThemeControl({ expanded = false }: { expanded?: boolean }) {
   const { theme, setTheme } = useTheme();
   const mounted = useSyncExternalStore(subscribe, () => true, () => false);
   const selected = mounted ? theme : 'system';
-  const options = [{ value: 'system', label: '跟随系统', icon: Monitor }, { value: 'light', label: '浅色', icon: Sun }, { value: 'dark', label: '深色', icon: Moon }];
+  const options = [{ value: 'system', label: '跟随系统', icon: Monitor }, { value: 'light', label: '纸白', icon: Sun }, { value: 'dark', label: '深绿', icon: Moon }];
   const current = options.find(option => option.value === selected) ?? options[0];
   const next = options[(options.indexOf(current) + 1) % options.length];
   if (expanded) return <div className="theme-options" role="group" aria-label="外观模式">{options.map(({ value, label, icon: Icon }) => <button key={value} className={selected === value ? 'selected' : ''} aria-pressed={selected === value} onClick={() => setTheme(value)}><Icon size={17}/>{label}</button>)}</div>;

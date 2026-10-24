@@ -42,6 +42,18 @@ public class WordweaveNativePlugin extends Plugin {
     private volatile String speechReason = "正在初始化本机语音，请稍后重试。";
     private boolean filePickerActive;
 
+    @PluginMethod public void setAppearance(PluginCall call) {
+        String theme = call.getString("theme", "system");
+        if (!"system".equals(theme) && !"light".equals(theme) && !"dark".equals(theme)) {
+            call.reject("Unknown appearance", "INVALID_INPUT");
+            return;
+        }
+        getActivity().runOnUiThread(() -> {
+            ((MainActivity) getActivity()).setAppearance(theme);
+            call.resolve();
+        });
+    }
+
     @Override public void load() {
         stateStore = new StateStore(getContext());
         credentials = new CredentialStore(getContext());

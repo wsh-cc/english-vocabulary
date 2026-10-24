@@ -13,8 +13,17 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:background">@null</item>
+        <item name="android:windowBackground">@color/wordweave_surface</item>
     </style>
 
+
+    <!-- Also used by Capacitor's native-padding fallback after configuration changes. -->
+    <style name="WordweaveLightSurface">
+        <item name="android:windowBackground">#f6f7f4</item>
+    </style>
+    <style name="WordweaveDarkSurface">
+        <item name="android:windowBackground">#192820</item>
+    </style>
 
     <style name="AppTheme.NoActionBarLaunch" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/wordweave_surface</item>

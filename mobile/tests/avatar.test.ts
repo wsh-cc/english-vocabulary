@@ -1,11 +1,32 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { prepareAvatar, AVATAR_INPUT_LIMIT } from '../src/avatar';
+import { prepareAvatar, cropRegion, exportAvatar, decodeAvatar, AVATAR_INPUT_LIMIT } from '../src/avatar';
 import { profileSchema, readStoredProfile } from '../src/profile';
 import { sharedProfileSchema } from '@/lib/friends-protocol';
 
 const photo='data:image/jpeg;base64,/9j/AAAA';
 afterEach(()=>vi.unstubAllGlobals());
 describe('bounded custom avatar',()=>{
+  it('bounds movable square crops in portrait and landscape images without blank edges',()=>{
+    for(const [width,height] of [[1024,512],[256,1024]])for(const zoom of [-1,1,2,4,100])for(const [x,y] of [[-1000,-1000],[10000,10000],[width/2,height/2]]){
+      const region=cropRegion(width,height,{x,y,zoom});
+      expect(region.left).toBeGreaterThanOrEqual(0);expect(region.top).toBeGreaterThanOrEqual(0);
+      expect(region.left+region.size).toBeLessThanOrEqual(width);expect(region.top+region.size).toBeLessThanOrEqual(height);
+      expect(region.zoom).toBeGreaterThanOrEqual(1);expect(region.zoom).toBeLessThanOrEqual(4);
+    }
+  });
+  it('exports the chosen off-center region rather than reverting to a center crop',()=>{
+    const drawImage=vi.fn(),close=vi.fn();
+    vi.stubGlobal('document',{createElement:()=>({getContext:()=>({drawImage,fillRect:vi.fn()}),toDataURL:()=>photo})});
+    const bitmap={width:1024,height:512,close} as unknown as ImageBitmap;
+    exportAvatar(bitmap,{x:800,y:256,zoom:2});
+    expect(drawImage).toHaveBeenCalledWith(bitmap,672,128,256,256,0,0,128,128);
+    expect(close).not.toHaveBeenCalled(); // The live crop still owns the pixels for retry.
+  });
+  it('closes unsupported decoded dimensions before rejecting',async()=>{
+    const close=vi.fn();vi.stubGlobal('createImageBitmap',vi.fn(async()=>({width:1024,height:10000,close})));
+    await expect(decodeAvatar(new File(['image'],'portrait.png',{type:'image/png'}))).rejects.toThrow('比例');
+    expect(close).toHaveBeenCalledOnce();
+  });
   it('rejects unsupported, empty and oversized files before decoding',async()=>{
     const decode=vi.fn();vi.stubGlobal('createImageBitmap',decode);
     await expect(prepareAvatar(new File(['<svg/>'],'avatar.svg',{type:'image/svg+xml'}))).rejects.toThrow('JPG');

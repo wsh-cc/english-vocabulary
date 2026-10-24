@@ -7,6 +7,7 @@ export interface StatePersistence {
   writeState(input: StateWrite): Promise<{ revision: number }>;
 }
 export interface WordweaveNativePlugin extends StatePersistence {
+  setAppearance(input: { theme: string }): Promise<void>;
   readCredential(): Promise<{ token: string | null }>;
   writeCredential(input: { token: string | null }): Promise<void>;
   request(input: { url: string; method: string; body?: string; token?: string }): Promise<{ status: number; body: string }>;
@@ -51,6 +52,7 @@ export function createBrowserPersistence(storage: Pick<Storage, 'getItem' | 'set
 }
 
 const browser: WordweaveNativePlugin = {
+  async setAppearance() {},
   async readCredential() { return { token: window.sessionStorage.getItem('wordweave-preview-token') }; },
   async writeCredential({ token }) {
     if (token) window.sessionStorage.setItem('wordweave-preview-token', token);

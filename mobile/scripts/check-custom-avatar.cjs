@@ -1,37 +1,90 @@
 async page => {
-  const key='wordweave-mobile-state-v1',checks=[];
+  const key='wordweave-mobile-state-v1',checks=[],errors=[];
   const check=(name,pass,detail)=>checks.push({name,pass,detail});
+  const onError=error=>errors.push(error.message);page.on('pageerror',onError);
   const original=await page.evaluate(key=>{const value=localStorage.getItem(key);if(JSON.parse(JSON.parse(value).stateJson).user.userId!=='preview')throw Error('Isolated preview account required');return value;},key);
   const nav=()=>page.getByRole('navigation',{name:'主导航'}).getByRole('button',{name:'我的',exact:true});
+  const viewer=()=>page.getByRole('dialog',{name:'查看头像',exact:true});
+  const cropper=()=>page.getByRole('dialog',{name:'裁剪头像',exact:true});
   const editor=()=>page.getByRole('dialog',{name:'编辑个人资料',exact:true});
-  try{
+  const stored=()=>page.evaluate(key=>JSON.parse(JSON.parse(localStorage.getItem(key)).stateJson).localProfile,key);
+  const closeViewer=async()=>{await viewer().getByRole('button',{name:'关闭详情',exact:true}).click();await viewer().waitFor({state:'detached'});};
+  try {
     await page.reload();await page.setViewportSize({width:393,height:852});await nav().click();
-    await page.getByRole('button',{name:'编辑个人资料',exact:true}).click();await page.waitForTimeout(300);
-    const token=await editor().evaluate(node=>{window.__avatarDialog=node;return true;});
+    const image=await page.evaluate(()=>{const c=document.createElement('canvas');c.width=800;c.height=400;const x=c.getContext('2d');x.fillStyle='#e02020';x.fillRect(0,0,400,400);x.fillStyle='#208c40';x.fillRect(400,0,400,400);return c.toDataURL('image/png').split(',')[1];});
+    const file={name:'crop-test.png',mimeType:'image/png',buffer:Buffer.from(image,'base64')};
+    const before=await stored();
+    await page.getByRole('button',{name:'查看个人头像',exact:true}).click();
+    check('avatar tap opens a large preview and replacement action',await viewer().locator('.avatar-large-preview .personal-avatar').isVisible()&&await viewer().getByRole('button',{name:'更换头像',exact:true}).isVisible());
+    check('preview shows only the custom photo button, not the native file input',await viewer().getByLabel('选择新的头像照片',{exact:true}).evaluate(node=>getComputedStyle(node).display==='none'&&node.getClientRects().length===0));
+    await viewer().getByLabel('选择新的头像照片',{exact:true}).setInputFiles(file);await cropper().waitFor();
+    check('selecting a photo opens a visible selection frame without saving',await cropper().locator('.avatar-crop-frame').isVisible()&&JSON.stringify(await stored())===JSON.stringify(before));
+    const frame=cropper().getByRole('group',{name:'头像裁剪区域',exact:true});
+    const box=await frame.boundingBox();
+    const cdp=await page.context().newCDPSession(page);
+    try {
+      const cy=box.y+box.height/2,cx=box.x+box.width/2;
+      await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:cx-25,y:cy,id:1},{x:cx+25,y:cy,id:2}]});
+      await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:cx-55,y:cy,id:1},{x:cx+55,y:cy,id:2}]});
+      await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+      check('two-finger pinch changes the selected region',Number(await cropper().getByRole('slider',{name:'头像缩放',exact:true}).inputValue())>1.5);
+    } finally {await cdp.detach();}
+    await cropper().getByRole('button',{name:'重置取景',exact:true}).click();
+    check('reset restores the initial framing',await cropper().getByRole('slider',{name:'头像缩放',exact:true}).inputValue()==='1');
+    await cropper().getByRole('slider',{name:'头像缩放',exact:true}).focus();await page.keyboard.press('End');
+    await page.mouse.move(box.x+box.width*.8,box.y+box.height/2);await page.mouse.down();await page.mouse.move(box.x+box.width*.12,box.y+box.height/2,{steps:12});await page.mouse.up();
+    await page.screenshot({path:'output/playwright/avatar-crop-393.png'});
+    await cropper().getByRole('button',{name:'保存头像',exact:true}).click();await viewer().waitFor();
+    const saved=await stored();
+    check('drag and zoom save the selected green region',await viewer().locator('.personal-avatar img').evaluate(async image=>{await image.decode();const c=document.createElement('canvas');c.width=c.height=128;const x=c.getContext('2d');x.drawImage(image,0,0);return [[4,4],[64,64],[123,123]].every(([a,b])=>{const p=x.getImageData(a,b,1,1).data;return p[1]>110&&p[0]<60;});}));
+    check('saved photo remains a bounded 128 pixel JPEG',saved.avatar==='custom'&&saved.avatarDataUrl.length<=16384&&await viewer().locator('img').evaluate(image=>image.naturalWidth===128&&image.naturalHeight===128));
+    await page.screenshot({path:'output/playwright/avatar-preview-393.png'});
+    await viewer().getByLabel('选择新的头像照片',{exact:true}).setInputFiles(file);await cropper().waitFor();
+    await cropper().getByRole('group',{name:'头像裁剪区域',exact:true}).focus();await page.keyboard.press('ArrowLeft');
+    await cropper().getByRole('button',{name:'取消裁剪',exact:true}).click();await viewer().waitFor();
+    check('cancel restores the previous preview without changing storage',await viewer().locator('img').getAttribute('src')===saved.avatarDataUrl&&JSON.stringify(await stored())===JSON.stringify(saved));
+    await viewer().getByLabel('选择新的头像照片',{exact:true}).setInputFiles({name:'broken.png',mimeType:'image/png',buffer:Buffer.from('broken')});
+    await viewer().getByRole('alert').waitFor();
+    check('invalid image preserves the avatar and permits retry',await viewer().locator('img').getAttribute('src')===saved.avatarDataUrl&&await viewer().getByRole('button',{name:'更换头像',exact:true}).isEnabled());
+    await viewer().getByLabel('选择新的头像照片',{exact:true}).setInputFiles(file);await cropper().waitFor();
+    await page.evaluate(()=>{window.__avatarSetItem=Storage.prototype.setItem;Storage.prototype.setItem=function(key,value){if(key==='wordweave-mobile-state-v1')throw Error('Avatar storage test failure');return window.__avatarSetItem.call(this,key,value);};});
+    await cropper().getByRole('button',{name:'保存头像',exact:true}).click();await cropper().getByRole('alert').waitFor();
+    check('failed save preserves the crop and previous avatar',await cropper().locator('canvas').isVisible()&&JSON.stringify(await stored())===JSON.stringify(saved));
+    await page.evaluate(()=>{Storage.prototype.setItem=window.__avatarSetItem;delete window.__avatarSetItem;});
+    await cropper().getByRole('button',{name:'保存头像',exact:true}).click();await viewer().waitFor();
+    check('failed save retries successfully',await viewer().locator('img').count()===1);
+    await closeViewer();
+    check('closing preview releases scrolling and restores focus',await page.evaluate(()=>document.body.style.overflow!=='hidden'&&document.activeElement?.getAttribute('aria-label')==='查看个人头像'));
+    await page.reload();await nav().click();check('avatar survives reload',await page.locator('.personal-identity .personal-avatar img').count()===1);
+    await page.getByRole('button',{name:'编辑个人资料',exact:true}).click();
+    check('editor hides the native file control instead of rendering a duplicate upload row',await editor().getByLabel('选择头像照片',{exact:true}).evaluate(node=>getComputedStyle(node).display==='none'&&node.getClientRects().length===0));
+    const wasDark=await page.evaluate(()=>{const was=document.documentElement.classList.contains('dark');document.documentElement.classList.add('dark');return was;});
+    check('dark editor keeps only the styled upload entry',await editor().getByLabel('选择头像照片',{exact:true}).evaluate(node=>node.getClientRects().length===0)&&await editor().getByRole('button',{name:'从手机选择照片',exact:true}).isVisible());
+    await editor().evaluate(node=>Promise.allSettled(node.getAnimations({subtree:true}).map(animation=>animation.finished)));
+    await page.screenshot({path:'output/playwright/profile-photo-entry-dark.png',animations:'disabled'});
+    await page.evaluate(was=>document.documentElement.classList.toggle('dark',was),wasDark);
+    await editor().getByLabel('选择头像照片',{exact:true}).evaluate(node=>{node.__originalClick=node.click;node.__clicks=0;node.click=()=>{node.__clicks++;};});
+    await editor().getByRole('button',{name:'从手机选择照片',exact:true}).click();
+    check('styled photo button triggers the hidden input',await editor().getByLabel('选择头像照片',{exact:true}).evaluate(node=>{const triggered=node.__clicks===1;node.click=node.__originalClick;delete node.__originalClick;delete node.__clicks;return triggered;}));
+    await editor().getByRole('textbox',{name:'昵称',exact:true}).fill('未保存的昵称');
+    const persisted=await stored();
+    await editor().getByLabel('选择头像照片',{exact:true}).setInputFiles(file);await cropper().waitFor();
+    await cropper().getByRole('button',{name:'使用此区域',exact:true}).click();await viewer().waitFor();await closeViewer();
+    check('editor crop changes only the draft and preserves nickname',await editor().locator('.personal-avatar img').count()===1&&await editor().getByRole('textbox',{name:'昵称',exact:true}).inputValue()==='未保存的昵称'&&JSON.stringify(await stored())===JSON.stringify(persisted));
     for(const name of ['书页','新芽','晨光','远山','咖啡','首字'])await editor().getByRole('radio',{name,exact:true}).click();
-    check('avatar choices retain one stable sheet without restarting its entrance',token&&await editor().evaluate(node=>node===window.__avatarDialog&&getComputedStyle(node).borderTopLeftRadius==='25px'&&node.getAnimations().length===0));
-    const image=await page.evaluate(()=>{const canvas=document.createElement('canvas');canvas.width=640;canvas.height=320;const ctx=canvas.getContext('2d');ctx.fillStyle='#678e63';ctx.fillRect(0,0,640,320);ctx.fillStyle='#f6efcf';ctx.beginPath();ctx.arc(320,160,100,0,Math.PI*2);ctx.fill();return canvas.toDataURL('image/png').split(',')[1];});
-    await editor().getByLabel('选择头像照片',{exact:true}).setInputFiles({name:'avatar-test.png',mimeType:'image/png',buffer:Buffer.from(image,'base64')});
-    await editor().locator('.personal-avatar img').waitFor();
-    check('selected photo is cropped and bounded before saving',await editor().locator('.personal-avatar img').evaluate(async image=>{await image.decode();return image.naturalWidth===128&&image.naturalHeight===128&&image.src.startsWith('data:image/jpeg;base64,')&&image.src.length<=16384;}));
-    await editor().getByRole('button',{name:'关闭详情',exact:true}).click();await editor().waitFor({state:'detached'});
-    await page.getByRole('button',{name:'编辑个人资料',exact:true}).click();
-    check('closing and reopening keeps the unsaved photo',await editor().locator('.personal-avatar img').count()===1);
-    await editor().getByRole('button',{name:'保存资料',exact:true}).click();await editor().waitFor({state:'detached'});
-    await page.reload();await nav().click();
-    check('custom photo survives reload in the account profile',await page.locator('.personal-identity .personal-avatar img').count()===1&&await page.evaluate(key=>JSON.parse(JSON.parse(localStorage.getItem(key)).stateJson).localProfile.avatar==='custom',key));
-    await page.getByRole('button',{name:'编辑个人资料',exact:true}).click();
-    const before=await editor().locator('.personal-avatar img').getAttribute('src');
-    await editor().getByLabel('选择头像照片',{exact:true}).setInputFiles({name:'broken.png',mimeType:'image/png',buffer:Buffer.from('invalid-image')});
-    await editor().getByRole('alert').waitFor();
-    check('invalid image keeps the previous photo and permits retry',await editor().locator('.personal-avatar img').getAttribute('src')===before&&await editor().getByRole('button',{name:'从手机选择照片',exact:true}).isEnabled());
+    check('preset switches retain rounded corners',await editor().evaluate(node=>getComputedStyle(node).borderTopLeftRadius==='25px'&&node.getAnimations().length===0));
+    await editor().getByLabel('选择头像照片',{exact:true}).setInputFiles(file);await cropper().waitFor();
     await page.setViewportSize({width:320,height:640});await page.evaluate(()=>document.documentElement.style.fontSize='125%');
-    await editor().getByRole('textbox',{name:'个人签名',exact:true}).scrollIntoViewIfNeeded();
-    check('only the inner content scrolls and both top corners stay clipped',await editor().evaluate(node=>{const scroller=node.querySelector('.ww-sheet-scroll'),box=node.getBoundingClientRect();return node.scrollTop===0&&scroller.scrollTop>0&&getComputedStyle(node).overflow==='hidden'&&!node.contains(document.elementFromPoint(box.left+1,box.top+1))&&node.scrollWidth<=node.clientWidth;}));
-    await page.screenshot({path:'output/playwright/avatar-custom-320.png'});
-  }finally{
-    await page.evaluate(({key,original})=>{localStorage.setItem(key,original);document.documentElement.style.fontSize='';delete window.__avatarDialog;},{key,original});
-    await page.setViewportSize({width:393,height:852});await page.reload();
+    await cropper().getByRole('button',{name:'使用此区域',exact:true}).scrollIntoViewIfNeeded();
+    check('crop actions fit 320 px and large text',await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)&&await cropper().getByRole('button',{name:'使用此区域',exact:true}).isVisible());
+    await page.screenshot({path:'output/playwright/avatar-crop-320.png'});
+    await page.evaluate(()=>window.dispatchEvent(new Event('ww:back',{cancelable:true})));await cropper().waitFor({state:'detached'});
+    check('back dismisses cropping but retains the editor draft',await editor().isVisible()&&await editor().getByRole('textbox',{name:'昵称',exact:true}).inputValue()==='未保存的昵称');
+    check('no uncaught avatar interaction errors',errors.length===0,errors);
+  }catch(error){check('avatar interaction sequence completes',false,error.message);}
+  finally {
+    await page.evaluate(({key,original})=>{if(window.__avatarSetItem){Storage.prototype.setItem=window.__avatarSetItem;delete window.__avatarSetItem;}localStorage.setItem(key,original);document.documentElement.style.fontSize='';},{key,original});
+    page.off('pageerror',onError);await page.setViewportSize({width:393,height:852});await page.reload();
   }
   return JSON.stringify({pass:checks.every(check=>check.pass),checks});
 }

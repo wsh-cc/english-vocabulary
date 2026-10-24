@@ -1,6 +1,6 @@
 "use client";
 import { lazy,Suspense,useCallback,useEffect,useMemo,useRef,useState } from 'react';
-import { BookOpen,Layers,CalendarDays,BarChart3,Cloud,RefreshCw,LogOut,PanelLeftClose,PanelLeftOpen,LibraryBig,RotateCcw,Settings2,Search } from 'lucide-react';
+import { BookOpen,Layers,CalendarDays,BarChart3,Cloud,RefreshCw,LogOut,PanelLeftClose,PanelLeftOpen,LibraryBig,RotateCcw,Settings2,Search,UserRound } from 'lucide-react';
 import Link from 'next/link';
 import { Toaster } from '@/components/ui/sonner';
 import { initialState,type State,type Word,allWords,dueItems } from '@/lib/learning';
@@ -12,11 +12,19 @@ const viewModules={
   review:createLazyModule(()=>import('./review').then(module=>({default:module.Review}))),
   library:createLazyModule(()=>import('./library').then(module=>({default:module.Library}))),
   stats:createLazyModule(()=>import('./statistics').then(module=>({default:module.Statistics}))),
+  my:createLazyModule(()=>import('./personal').then(module=>({default:module.Personal}))),
+  friends:createLazyModule(()=>import('./friends').then(module=>({default:module.Friends}))),
+  appearance:createLazyModule(()=>import('./appearance').then(module=>({default:module.Appearance}))),
 };
 const Lesson=lazy(viewModules.learn.load);
 const Review=lazy(viewModules.review.load);
 const Library=lazy(viewModules.library.load);
 const Statistics=lazy(viewModules.stats.load);
+const Personal=lazy(viewModules.my.load);
+const Friends=lazy(viewModules.friends.load);
+const Appearance=lazy(viewModules.appearance.load);
+import type { PersonalProfile } from '../mobile/src/profile';
+const emptyProfile:PersonalProfile={nickname:'',signature:'',avatar:'initial'};
 import { WordDetail } from './word-detail';
 import type { DeferredView,QueueItem,StateSnapshot } from './types';
 import { ModuleBoundary,ModuleLoading } from './module-boundary';
@@ -33,9 +41,9 @@ function preloadView(view:string){
   if(connection?.saveData||connection?.effectiveType==='slow-2g'||connection?.effectiveType==='2g')return;
   viewModules[view as DeferredView].preload();
 }
-const nav=[{id:'today',label:'今日学习',icon:CalendarDays},{id:'learn',label:'句子学习',icon:BookOpen},{id:'library',label:'我的词库',icon:Layers},{id:'stats',label:'学习记录',icon:BarChart3}];
-const titles:Record<string,[string,string,string]>={today:['OVERVIEW','今日学习',''],learn:['READING','在句子中学单词',''],library:['VOCABULARY','我的词库',''],stats:['INSIGHTS','学习记录',''],review:['REVIEW','词汇复习','']};
-export default function StudyApp({initialSnapshot}:{initialSnapshot:StateSnapshot}){const now=useLearningClock();const [pendingSave,setPendingSave]=useState(false);const [pendingType,setPendingType]=useState('');const [collapsed,setCollapsed]=useState(false);const [settingsOpen,setSettingsOpen]=useState(false);const [username,setUsername]=useState(initialSnapshot.user?.name??'');const [tab,setTab]=useState('today');const [state,setState]=useState<State>(()=>initialSnapshot.state);const [loaded,setLoaded]=useState(true);const [signedIn,setSignedIn]=useState(true);const [busy,setBusy]=useState(false);const [error,setError]=useState('');const [revision,setRevision]=useState(initialSnapshot.revision);const [syncTime,setSyncTime]=useState<number|null>(()=>Date.now());const [word,setWord]=useState<Word|null>(null);const [queue,setQueue]=useState<QueueItem[]>([]);const [reviewKey,setReviewKey]=useState(0);const [browse,setBrowse]=useState(false);const saving=useRef(false);const authChanging=useRef(false);const sync=useRef(createSnapshotSync(initialSnapshot.revision,initialSnapshot.etag??''));const fetching=useRef<number|null>(null);const snapshot=useRef(state);const currentTab=useRef(tab);const pending=useRef<Record<string,unknown>|null>(null);useEffect(()=>{snapshot.current=state;currentTab.current=tab;},[state,tab]);
+const nav=[{id:'today',label:'今日学习',icon:CalendarDays},{id:'learn',label:'句子学习',icon:BookOpen},{id:'library',label:'我的词库',icon:Layers},{id:'stats',label:'学习记录',icon:BarChart3},{id:'my',label:'我的',icon:UserRound}];
+const titles:Record<string,[string,string,string]>={today:['OVERVIEW','今日学习',''],learn:['READING','在句子中学单词',''],library:['VOCABULARY','我的词库',''],stats:['INSIGHTS','学习记录',''],review:['REVIEW','词汇复习',''],my:['MY SPACE','我的',''],friends:['FRIENDS','我的好友',''],appearance:['APPEARANCE','主题外观','']};
+export default function StudyApp({initialSnapshot}:{initialSnapshot:StateSnapshot}){const now=useLearningClock();const [pendingSave,setPendingSave]=useState(false);const [pendingType,setPendingType]=useState('');const [collapsed,setCollapsed]=useState(false);const [settingsOpen,setSettingsOpen]=useState(false);const [username,setUsername]=useState(initialSnapshot.user?.name??'');const [userId,setUserId]=useState(initialSnapshot.user?.userId??'');const [friendProfile,setFriendProfile]=useState<PersonalProfile>(emptyProfile);const [tab,setTab]=useState('today');const [state,setState]=useState<State>(()=>initialSnapshot.state);const [loaded,setLoaded]=useState(true);const [signedIn,setSignedIn]=useState(true);const [busy,setBusy]=useState(false);const [error,setError]=useState('');const [revision,setRevision]=useState(initialSnapshot.revision);const [syncTime,setSyncTime]=useState<number|null>(()=>Date.now());const [word,setWord]=useState<Word|null>(null);const [queue,setQueue]=useState<QueueItem[]>([]);const [reviewKey,setReviewKey]=useState(0);const [browse,setBrowse]=useState(false);const saving=useRef(false);const authChanging=useRef(false);const accountIdentity=useRef(initialSnapshot.user?.userId||initialSnapshot.user?.name||'');const sync=useRef(createSnapshotSync(initialSnapshot.revision,initialSnapshot.etag??''));const fetching=useRef<number|null>(null);const snapshot=useRef(state);const currentTab=useRef(tab);const pending=useRef<Record<string,unknown>|null>(null);useEffect(()=>{snapshot.current=state;currentTab.current=tab;},[state,tab]);
 const receiveSnapshot=useCallback((epoch:number,data:StateSnapshot,etag:string|null)=>{
   const accepted=sync.current.accept(epoch,data.revision,etag);
   if(!accepted)return false;
@@ -45,6 +53,7 @@ const receiveSnapshot=useCallback((epoch:number,data:StateSnapshot,etag:string|n
 },[]);
 // Capture the session when a request starts, including reading saves owned by Lesson.
 const captureSnapshot=useCallback(()=>{const epoch=sync.current.epoch;return (data:StateSnapshot,etag:string|null)=>{if(epoch!==sync.current.epoch)return null;receiveSnapshot(epoch,data,etag);return {state:snapshot.current,revision:sync.current.revision};};},[receiveSnapshot]);
+const expireSession=useCallback(()=>{accountIdentity.current='';sync.current.beginSession(0);saving.current=false;setBusy(false);setSignedIn(false);setState(initialState());setUsername('');setUserId('');setFriendProfile(emptyProfile);setWord(null);setQueue([]);setRevision(0);setTab('today');setSettingsOpen(false);pending.current=null;setPendingSave(false);setLoaded(true);setError('');},[]);
 const refresh=useCallback(async()=>{
   const epoch=sync.current.epoch;
   if(saving.current||authChanging.current||fetching.current===epoch)return;
@@ -55,13 +64,20 @@ const refresh=useCallback(async()=>{
     if(r.status===304){if(sync.current.unchanged(epoch,requestedEtag)){setSyncTime(Date.now());if(!pending.current)setError('');}return;}
     const data=await r.json() as StateSnapshot&{error?:string};
     if(epoch!==sync.current.epoch)return;
-    if(r.status===401){sync.current.beginSession(0);saving.current=false;setBusy(false);setSignedIn(false);setState(initialState());setUsername('');setWord(null);setQueue([]);setRevision(0);setTab('today');pending.current=null;setPendingSave(false);setLoaded(true);setError('');return;}
+    if(r.status===401){expireSession();return;}
     if(!r.ok)throw Error(data.error);
-    if(!receiveSnapshot(epoch,data,r.headers.get('etag')))return;
-    setUsername(data.user?.name??'');setSignedIn(true);setLoaded(true);if(!pending.current)setError('');
+    const incomingIdentity=data.user?.userId||data.user?.name||'';
+    let responseEpoch=epoch;
+    if(incomingIdentity!==accountIdentity.current){
+      sync.current.beginSession();responseEpoch=sync.current.epoch;accountIdentity.current=incomingIdentity;
+      setFriendProfile(emptyProfile);setWord(null);setQueue([]);setTab('today');setSettingsOpen(false);
+      pending.current=null;setPendingSave(false);
+    }
+    if(!receiveSnapshot(responseEpoch,data,r.headers.get('etag')))return;
+    setUsername(data.user?.name??'');setUserId(data.user?.userId??'');setSignedIn(true);setLoaded(true);if(!pending.current)setError('');
   }catch(e){if(epoch!==sync.current.epoch)return;setLoaded(true);setError(e instanceof Error?e.message:'连接暂不可用，请重试。');}
   finally{if(fetching.current===epoch)fetching.current=null;}
-},[receiveSnapshot]);
+},[receiveSnapshot,expireSession]);
 useEffect(()=>{const focus=()=>{if(!document.hidden)void refresh();};window.addEventListener('focus',focus);document.addEventListener('visibilitychange',focus);const interval=setInterval(()=>{if(signedIn)focus();},45000);return()=>{window.removeEventListener('focus',focus);document.removeEventListener('visibilitychange',focus);clearInterval(interval);};},[refresh,signedIn]);
 const save=useCallback(async(action:Record<string,unknown>)=>{
   if(saving.current)return false;
@@ -98,16 +114,16 @@ const save=useCallback(async(action:Record<string,unknown>)=>{
 const navigate=useCallback((id:string)=>{if(saving.current||pending.current)return;setWord(null);setTab(id);window.scrollTo({top:0,behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});},[]);
 const review=(items:QueueItem[],browse=false)=>{if(saving.current||pending.current)return;setBrowse(browse);setWord(null);setQueue(items);setReviewKey(v=>v+1);setTab('review');window.scrollTo({top:0,behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});};
 useEffect(()=>{const context=(document as Document&{modelContext?:{registerTool:(tool:unknown,options:{signal:AbortSignal})=>unknown}}).modelContext;if(!context?.registerTool)return;const lifecycle=new AbortController();const tools=[{name:'read_learning_summary',description:'Read counts for the current learner without exposing test answers.',inputSchema:{type:'object',properties:{},additionalProperties:false},annotations:{readOnlyHint:true,untrustedContentHint:false},execute:()=>({due:dueItems(snapshot.current).length,learned:Object.keys(snapshot.current.learned).length,total:allWords(snapshot.current).length,reading:readingSummary(snapshot.current),view:currentTab.current})},{name:'navigate_learning_view',description:'Open today, paragraph reading, vocabulary library, or records. Does not submit an answer or mark words learned.',inputSchema:{type:'object',properties:{view:{type:'string',enum:['today','learn','library','stats']}},required:['view'],additionalProperties:false},annotations:{readOnlyHint:false,untrustedContentHint:false},execute:async(value:unknown)=>{const input=value as {view?:unknown};if(!input||Object.keys(input).length!==1||!['today','learn','library','stats'].includes(String(input.view)))throw Error('Invalid view');if(currentTab.current==='review')throw Error('Finish or exit the active review before navigating.');navigate(String(input.view));await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));return {view:input.view};}}];for(const tool of tools){try{Promise.resolve(context.registerTool(tool,{signal:lifecycle.signal})).catch(()=>{});}catch{}}return()=>lifecycle.abort();},[navigate]);
-const logout=async()=>{if(busy||pending.current)return;sync.current.beginSession(sync.current.revision);authChanging.current=true;setBusy(true);try{const r=await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'logout'})});if(!r.ok)throw Error('退出失败，请重试。');sync.current.beginSession(0);setSignedIn(false);setState(initialState());setRevision(0);setWord(null);setQueue([]);setTab('today');setUsername('');}catch(e){setError(e instanceof Error?e.message:'退出失败');}finally{authChanging.current=false;setBusy(false);}};
+const logout=async()=>{if(busy||pending.current)return;sync.current.beginSession(sync.current.revision);authChanging.current=true;setBusy(true);try{const r=await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'logout'})});if(!r.ok)throw Error('退出失败，请重试。');accountIdentity.current='';sync.current.beginSession(0);setSignedIn(false);setState(initialState());setRevision(0);setWord(null);setQueue([]);setTab('today');setUsername('');setUserId('');setFriendProfile(emptyProfile);}catch(e){setError(e instanceof Error?e.message:'退出失败');}finally{authChanging.current=false;setBusy(false);}};
 const authenticated=async()=>{sync.current.beginSession();await refresh();};
 const cancelPending=()=>{if(saving.current)return;pending.current=null;setPendingSave(false);setPendingType('');setError('');};const retrySave=()=>{if(pending.current)void save(pending.current);};const blocked=busy||pendingSave;const due=useMemo(()=>dueItems(state,now),[state,now]);const props={state,save,cancelPending,busy:busy||!loaded||!signedIn};const title=titles[tab];const reading=useMemo(()=>readingSummary(state),[state]);
 return <div className={'app-shell '+(signedIn?'is-authenticated':'is-guest')+(collapsed?' nav-collapsed':'')}><Toaster position="top-center" richColors/>
 <a className="skip-link" href="#learning-content">跳到学习内容</a>
 <header className="site-header"><Link className="brand" href="/" aria-label="词间首页"><span className="brand-mark"><LibraryBig size={23}/></span><span>词间<small>WORDWEAVE</small></span></Link>
-{signedIn?<><p className="nav-label">你的学习空间</p><nav className="main-nav" aria-label="主导航">{nav.map(({id,label,icon:Icon})=><button key={id} className={tab===id?'active':''} aria-current={tab===id?'page':undefined} disabled={blocked} onPointerEnter={()=>{if(!blocked)preloadView(id);}} onFocus={()=>preloadView(id)} onClick={()=>navigate(id)} title={label}><Icon size={19}/><span>{label}</span></button>)}</nav>
+{signedIn?<><p className="nav-label">你的学习空间</p><nav className="main-nav" aria-label="主导航">{nav.map(({id,label,icon:Icon})=><button key={id} className={tab===id||(id==='my'&&['friends','appearance'].includes(tab))?'active':''} aria-current={tab===id||(id==='my'&&['friends','appearance'].includes(tab))?'page':undefined} disabled={blocked} onPointerEnter={()=>{if(!blocked)preloadView(id);}} onFocus={()=>preloadView(id)} onClick={()=>navigate(id)} title={label}><Icon size={19}/><span>{label}</span></button>)}</nav>
 <button className={'sidebar-review '+(tab==='review'?'active':'')} disabled={blocked||!due.length} title={due.length?'开始到期复习':'当前没有到期练习'} onClick={()=>review(due.slice(0,30))}><RotateCcw size={18}/><span>到期复习</span><b>{due.length}</b></button>
 <div className="sidebar-progress"><BookOpen size={19}/><span>在句子中学单词</span><p>慢慢读，也在向前。</p><div className="sidebar-track"><i style={{width:Math.min(100,reading.covered/Math.max(1,reading.total)*100)+'%'}}/></div><small>{reading.covered.toLocaleString()} / {reading.total.toLocaleString()} 个词条已接触</small></div>
-<div className="sidebar-bottom"><button className="settings-button" aria-label="学习设置" title={tab==='review'?'结束本轮后可调整学习设置':'学习设置'} disabled={blocked||tab==='review'} onClick={()=>setSettingsOpen(true)}><Settings2 size={18}/><span>学习设置</span></button><button className="collapse-button" title={collapsed?'展开导航':'收起导航'} aria-label={collapsed?'展开导航':'收起导航'} onClick={()=>setCollapsed(!collapsed)}>{collapsed?<PanelLeftOpen size={18}/>:<PanelLeftClose size={18}/>}<span>收起导航</span></button><div className="account"><span className="account-avatar">{username.slice(0,1).toUpperCase()||'我'}</span><div><strong>{username||'我的账号'}</strong><small>私人学习空间</small></div><button className="icon-button" title={pendingSave?'请先重试未保存的操作':'退出登录'} aria-label="退出登录" disabled={blocked} onClick={()=>void logout()}><LogOut size={17}/></button></div></div></>:<div className="guest-tools"><span className="header-note">在句子中学单词</span><ThemeControl/></div>}</header>
+<div className="sidebar-bottom"><button className="settings-button" aria-label="学习设置" title={tab==='review'?'结束本轮后可调整学习设置':'学习设置'} disabled={blocked||tab==='review'} onClick={()=>setSettingsOpen(true)}><Settings2 size={18}/><span>学习设置</span></button><button className="collapse-button" title={collapsed?'展开导航':'收起导航'} aria-label={collapsed?'展开导航':'收起导航'} onClick={()=>setCollapsed(!collapsed)}>{collapsed?<PanelLeftOpen size={18}/>:<PanelLeftClose size={18}/>}<span>收起导航</span></button><div className="account"><button className="account-avatar" aria-label="打开我的主页" disabled={blocked} onClick={()=>navigate('my')}>{username.slice(0,1).toUpperCase()||'我'}</button><div><strong>{username||'我的账号'}</strong><small>私人学习空间</small></div><button className="icon-button" title={pendingSave?'请先重试未保存的操作':'退出登录'} aria-label="退出登录" disabled={blocked} onClick={()=>void logout()}><LogOut size={17}/></button></div></div></>:<div className="guest-tools"><span className="header-note">在句子中学单词</span><ThemeControl/></div>}</header>
 <div className="main-area">{signedIn&&<div className="workspace-bar"><span className="breadcrumbs">我的空间 <span className="breadcrumb-separator">/</span> {titles[tab][1]}</span><div className="workspace-tools"><button className="toolbar-search" aria-label="搜索单词" disabled={blocked} onPointerEnter={()=>{if(!blocked)preloadView('library');}} onFocus={()=>preloadView('library')} onClick={()=>navigate('library')}><Search size={16}/><span>搜索单词</span></button><div title={tab==='review'?'结束本轮后可切换词表':'切换词表保留学习进度'}><Choice label="学习词表" value={state.settings.level} onChange={level=>void save({type:'settings',settings:{level}})} options={ [['CET4','四级 CET-4'],['CET6','六级 CET-6']] } disabled={blocked||tab==='review'}/></div><ThemeControl/><span className={'sync-status '+(error?'sync-error':'')} title={error?error:syncTime?'上次同步 '+new Date(syncTime).toLocaleTimeString('zh-CN'):'正在连接'} role="status"><Cloud size={16}/><span>{busy?'保存中…':error?'同步失败':syncTime?'已同步':'连接中…'}</span></span></div></div>}
 <main id="learning-content" tabIndex={-1} className={!signedIn?'signed-out':''}>{error&&<div className="error-banner" role="alert"><span>{error}{pendingSave?' 当前输入仍保留，请在原操作处重试保存。':''}</span><button className="secondary" disabled={busy} onClick={()=>{if(pendingSave&&pendingType!=='result')retrySave();else void refresh();}}><RefreshCw size={16}/>{pendingSave&&pendingType!=='result'?'重试保存':'重新连接'}</button></div>}
 {!loaded?<div className="loading-state" role="status"><BookOpen size={28}/><p>正在读取学习记录…</p><div className="skeleton-line"/><div className="skeleton-line short"/><div className="skeleton-card"/></div>:!signedIn?<AuthPanel onAuthenticated={authenticated}/>:<div key={tab} className={'page-content page-'+tab}>
@@ -116,6 +132,9 @@ return <div className={'app-shell '+(signedIn?'is-authenticated':'is-guest')+(co
 {tab==='learn'&&<Lesson key={state.settings.level} {...props} onWord={setWord} captureSnapshot={captureSnapshot}/>}
 {tab==='library'&&<Library key={state.settings.level} {...props} onWord={setWord} onReview={review}/>}
 {tab==='stats'&&<Statistics {...props} revision={revision}/>}
+{tab==='my'&&<Personal key={userId||username} state={state} username={username} userId={userId||undefined} busy={blocked} onSettings={()=>setSettingsOpen(true)} onBackup={()=>{navigate('stats');setTimeout(()=>document.getElementById('data-backup')?.scrollIntoView({block:'start'}),0);}} onRead={()=>navigate('learn')} onStats={()=>navigate('stats')} onFriends={profile=>{setFriendProfile(profile);navigate('friends');}} onAppearance={()=>navigate('appearance')}/>}
+{tab==='friends'&&<Friends key={userId||username} username={username} profile={friendProfile} onBack={()=>navigate('my')} onSessionExpired={expireSession}/>}
+{tab==='appearance'&&<Appearance onBack={()=>navigate('my')}/>}
 {tab==='review'&&<Review key={reviewKey} {...props} items={queue} browse={browse} onDone={()=>navigate('today')}/>}</Suspense></ModuleBoundary></div>}
 </main><footer><span>词间 WORDWEAVE</span><span>一点积累，一点熟悉。</span></footer></div>
 {signedIn&&<><WordDetail {...props} word={word} onClose={()=>{if(!busy&&!pendingSave)setWord(null);}} onReview={review}/><Settings {...props} busy={busy||tab==='review'} error={pendingSave?error:''} retry={retrySave} open={settingsOpen} onClose={()=>{setSettingsOpen(false);if(pendingType==='settings')cancelPending();}} onBackup={()=>{setSettingsOpen(false);navigate('stats');setTimeout(()=>document.getElementById('data-backup')?.scrollIntoView({block:'start'}),0);}}/></>}</div>;

@@ -1,0 +1,50 @@
+/* Capacitor supplies zero insets when native padding already protects older
+   WebViews. Never infer a status-bar height from screen size or add it twice. */
+:root {
+  --app-safe-top: var(--safe-area-inset-top, env(safe-area-inset-top, 0px));
+  --app-safe-right: var(--safe-area-inset-right, env(safe-area-inset-right, 0px));
+  --app-safe-bottom: var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px));
+  --app-safe-left: var(--safe-area-inset-left, env(safe-area-inset-left, 0px));
+  --app-gutter: 24px;
+  --app-content-top: 28px;
+  --app-content-bottom: 105px;
+  --app-login-gutter: 28px;
+}
+body { background: var(--app-bg); }
+.app-header {
+  padding: calc(16px + var(--app-safe-top)) calc(var(--app-gutter) + var(--app-safe-right)) 16px calc(var(--app-gutter) + var(--app-safe-left));
+  min-height: calc(82px + var(--app-safe-top));
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.app-sync { margin-left: auto; }
+.app-content { padding: var(--app-content-top) calc(var(--app-gutter) + var(--app-safe-right)) calc(var(--app-content-bottom) + var(--app-safe-bottom)) calc(var(--app-gutter) + var(--app-safe-left)); }
+.app-bottom-nav { padding: 7px calc(10px + var(--app-safe-right)) calc(8px + var(--app-safe-bottom)) calc(10px + var(--app-safe-left)); }
+.app-boot { padding: calc(32px + var(--app-safe-top)) calc(32px + var(--app-safe-right)) calc(32px + var(--app-safe-bottom)) calc(32px + var(--app-safe-left)); }
+.app-login { padding: calc(28px + var(--app-safe-top)) calc(var(--app-login-gutter) + var(--app-safe-right)) calc(24px + var(--app-safe-bottom)) calc(var(--app-login-gutter) + var(--app-safe-left)); }
+
+/* The backdrop covers the whole screen; the panel stays inside the usable
+   rectangle. Percentage caps shrink with the keyboard-resized viewport. */
+.ww-overlay {
+  padding: max(30px, var(--app-safe-top)) var(--app-safe-right) 0 var(--app-safe-left);
+}
+.ww-sheet { max-height: min(92dvh, 100%); min-height: 0; }
+.ww-sheet-scroll { padding-bottom: max(28px, var(--app-safe-bottom)); }
+.ww-choice-overlay { padding: max(24px, var(--app-safe-top)) var(--app-safe-right) 0 var(--app-safe-left); }
+.ww-choice-panel { max-height: 100%; padding-bottom: max(22px, var(--app-safe-bottom)); }
+.app-modal-backdrop { padding: max(24px, var(--app-safe-top)) max(24px, var(--app-safe-right)) max(24px, var(--app-safe-bottom)) max(24px, var(--app-safe-left)); }
+.app-modal { max-height: 100%; }
+.app-toast { max-width: calc(100% - 32px - var(--app-safe-left) - var(--app-safe-right)); left: calc(50% + (var(--app-safe-left) - var(--app-safe-right)) / 2); }
+
+@media (min-width: 650px) {
+  .ww-overlay { padding-bottom: max(30px, var(--app-safe-bottom)); }
+  .ww-sheet { margin-bottom: 0; max-height: min(88dvh, 100%); }
+  .ww-choice-overlay { padding: max(28px, var(--app-safe-top)) max(24px, var(--app-safe-right)) max(28px, var(--app-safe-bottom)) max(24px, var(--app-safe-left)); }
+  .ww-choice-panel { padding-bottom: 27px; }
+}
+@media (min-width: 700px) {
+  :root { --app-gutter: 42px; --app-content-top: 36px; --app-content-bottom: 110px; }
+}
+@media (max-width: 380px) {
+  :root { --app-gutter: 16px; --app-content-top: 24px; --app-login-gutter: 20px; }
+}

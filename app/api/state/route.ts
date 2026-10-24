@@ -16,7 +16,7 @@ export async function GET(request: Request) {
       if (request.headers.get('if-none-match') === etag) return new Response(null, {status: 304, headers: {'Cache-Control': 'no-store', ETag: etag}});
     }
     const current = await readState(user.userId);
-    return json({...current, user: {name: user.name}}, 200, stateEtag(user.userId, current.revision));
+    return json({...current, user: {name: user.name, userId: user.userId}}, 200, stateEtag(user.userId, current.revision));
   } catch (error) {
     console.error('load-state', error);
     return json({error: '学习记录加载失败，请检查连接后重试。'}, 503);

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="wordweave_surface">#F5F4EC</color>
+    <color name="wordweave_surface">#f6f7f4</color>
     <color name="wordweave_sage">#4E6B51</color>
 </resources>

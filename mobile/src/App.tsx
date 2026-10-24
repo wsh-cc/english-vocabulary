@@ -1,7 +1,7 @@
 import { memo, startTransition, useCallback, useDeferredValue, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { App as AndroidApp } from '@capacitor/app';
 import { Capacitor } from '@capacitor/core';
-import { BookOpen, House, LibraryBig, BarChart3, UserRound, Cloud, CloudOff, RefreshCw, Download, Upload, Settings2, LogOut, Moon, Sun, Monitor, ArrowRight, X, Leaf, ShieldCheck, Volume2, Check, ChevronRight } from 'lucide-react';
+import { BookOpen, House, LibraryBig, BarChart3, UserRound, Cloud, CloudOff, RefreshCw, Download, Upload, Settings2, LogOut, ArrowRight, X, Leaf, ShieldCheck, Volume2, Check, ChevronRight } from 'lucide-react';
 import { repository, type LearningSnapshot, type BackupPreview } from './data';
 import { native } from './native';
 import { ChoicePicker } from './ChoicePicker';
@@ -13,6 +13,7 @@ import { PersonalPage, PersonalDetail, type PersonalSection } from './PersonalPa
 import { defaultProfile, type PersonalProfile } from './profile';
 import { FriendsPage } from './FriendsPage';
 import { FriendsService } from './friends';
+import { AppearancePage, appearanceOptions } from './Appearance';
 
 const TodayPage = memo(TodayView);
 const ReadingPage = memo(ReadingView);
@@ -62,7 +63,7 @@ export default function App() {
   useEffect(() => {if (!message) return; const timer=setTimeout(()=>setMessage(''),5000);return()=>clearTimeout(timer);},[message]);
   useEffect(() => {
     const mq=matchMedia('(prefers-color-scheme: dark)');
-    const apply=()=>{const dark=theme==='dark'||(theme==='system'&&mq.matches);document.documentElement.classList.toggle('dark',dark);document.querySelector('meta[name="theme-color"]')?.setAttribute('content',dark?'#192820':'#f5f4ec');};
+    const apply=()=>{const dark=theme==='dark'||(theme==='system'&&mq.matches);document.documentElement.classList.toggle('dark',dark);document.querySelector('meta[name="theme-color"]')?.setAttribute('content',dark?'#192820':'#f6f7f4');void native.setAppearance({theme}).catch(error=>console.warn('System appearance could not be updated',error));};
     localStorage.setItem('wordweave-mobile-theme',theme);apply();mq.addEventListener('change',apply);return()=>mq.removeEventListener('change',apply);
   },[theme]);
   useEffect(() => {
@@ -176,7 +177,8 @@ export default function App() {
           <Page id="reading"><ReadingPage {...props} onWord={setWord}/></Page>
           <Page id="library"><LibraryPage {...props} onWord={setWord}/></Page>
           <Page id="stats"><StatisticsPage state={state!}/></Page>
-          <Page id="my"><PersonalPage snapshot={snapshot} busy={busy} syncLabel={syncLabel} onSection={openPersonalSection} onStats={stats} onRead={read} onSave={saveProfile}/></Page>
+          <Page id="my"><PersonalPage snapshot={snapshot} busy={busy} syncLabel={syncLabel} theme={theme} onSection={openPersonalSection} onStats={stats} onRead={read} onSave={saveProfile}/></Page>
+          <Page id="my-appearance" retain={false}><PersonalDetail title="主题外观" subtitle="把喜欢的光线，留在阅读里。" onBack={personalHome} busy={busy}><AppearancePage value={theme} onChange={setTheme} disabled={busy}/></PersonalDetail></Page>
           <Page id="my-friends" retain={false}>{friendsService?.userId===snapshot.user?.userId&&friendsService&&<FriendsPage userId={snapshot.user!.userId} localProfile={snapshot.profile} service={friendsService} onBack={personalHome} onLogin={()=>setRelogin(true)}/>}</Page>
           <Page id="my-settings" retain={false}><PersonalDetail title="学习偏好" subtitle="找到适合自己的学习节奏。" onBack={personalHome} busy={busy}>
             <section className="ww-card"><div className="app-section-title"><h2><Settings2 size={19}/>学习偏好</h2></div>
@@ -189,11 +191,7 @@ export default function App() {
                 {value:'direct',label:'随句显示',description:'中文释义随句展示，阅读时更容易理解'},
               ]}/></div>
               <div className="app-setting"><span>每日新词上限<small>仅用于新词练习</small></span><ChoicePicker label="每日新词上限" variant="setting" description="新词之外，也给复习留一点时间。调整后用于当天的新词安排。" disabled={busy} value={String(state!.settings.daily)} onChange={daily=>void dispatch({type:'settings',settings:{daily:Number(daily)}})} options={[...new Set([state!.settings.daily,6,10,20,30,40])].sort((a,b)=>a-b).map(n=>({value:String(n),label:`${n} 个词条`,description:n<=10?'轻松安排，慢慢积累':n<=20?'循序积累，兼顾复习':'较多新词，预留充足练习时间'}))}/></div>
-              <div className="app-setting"><span>外观<small>保存在这台设备</small></span><ChoicePicker label="外观" variant="setting" description="选择更适合此刻的阅读光线。" disabled={busy} value={theme} onChange={setTheme} options={[
-                {value:'light',label:'浅色',description:'温暖米白，搭配柔和的绿色',icon:<Sun size={22}/>},
-                {value:'dark',label:'深色',description:'柔和暗色，适合较暗的环境',icon:<Moon size={22}/>},
-                {value:'system',label:'跟随系统',description:'随设备的深浅色设置自动切换',icon:<Monitor size={22}/>},
-              ]}/></div>
+              <div className="app-setting"><span>外观<small>保存在这台设备</small></span><ChoicePicker label="外观" variant="setting" description="选择更适合此刻的阅读光线。" disabled={busy} value={theme} onChange={setTheme} options={appearanceOptions}/></div>
               <button className="app-setting app-setting-button" onClick={()=>void native.openSpeechSettings().catch(e=>setError(e.message))}><span><Volume2 size={16}/>英文朗读设置<small>安装本机英文语音后可离线朗读</small></span><ChevronRight size={18}/></button>
             </section>
           </PersonalDetail></Page>
@@ -209,7 +207,7 @@ export default function App() {
             <section className="ww-card"><div className="app-section-title"><h2><LibraryBig size={19}/>导入词表</h2></div><p>添加你的个人词汇。导入词条可查询和复习，暂不自动编入内置阅读。</p><div className="app-actions"><button className="ww-button ww-secondary" disabled={busy} onClick={()=>void readFile('words')}><Upload size={16}/>选择 JSON 词表</button><button className="ww-button ww-ghost" onClick={()=>void run(async()=>{await native.writeBackup({text:JSON.stringify(WORD_TEMPLATE,null,2),fileName:'词间-词表模板.json'});})}>下载格式模板</button></div></section>
           </PersonalDetail></Page>
           <Page id="my-about" retain={false}><PersonalDetail title="关于词间" subtitle="在句子里相遇，在回忆中熟悉。" onBack={personalHome} busy={busy}>
-            <section className="ww-card app-about"><img src="/icon.svg" alt=""/><h2>词间 WORDWEAVE</h2><p>在句子里相遇，在回忆中熟悉。</p><small>Android 0.1.8 · 2463 个内置义项 · 71 篇阅读</small><p className="ww-muted">四级现有 389 个带标签义项，六级 2128 个，两级有重叠。阅读接触不代表已掌握。</p><a href="https://wordweave-cet-study.shiw36663.chatgpt.site" target="_blank" rel="noreferrer">打开词间网站<ArrowRight size={14}/></a></section>
+            <section className="ww-card app-about"><img src="/icon.svg" alt=""/><h2>词间 WORDWEAVE</h2><p>在句子里相遇，在回忆中熟悉。</p><small>Android 0.1.12 · 2463 个内置义项 · 71 篇阅读</small><p className="ww-muted">四级现有 389 个带标签义项，六级 2128 个，两级有重叠。阅读接触不代表已掌握。</p><a href="https://wordweave-cet-study.shiw36663.chatgpt.site" target="_blank" rel="noreferrer">打开词间网站<ArrowRight size={14}/></a></section>
           </PersonalDetail></Page>
           <Page id="practice" retain={false}>{renderedPractice&&<ReviewView key={renderedPractice.key} {...props} items={renderedPractice.items} browse={renderedPractice.browse} onDone={finishPractice}/>}</Page>
         </PageStack>

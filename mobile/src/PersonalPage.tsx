@@ -1,15 +1,16 @@
 import { useId, useMemo, useRef, useState, type ReactNode } from 'react';
-import { ArrowUpRight, BookOpen, Check, ChevronLeft, ChevronRight, Cloud, Coffee, Database, Info, ImagePlus, Leaf, Mountain, Pencil, Settings2, Sun, Users } from 'lucide-react';
+import { ArrowUpRight, BookOpen, Check, ChevronLeft, ChevronRight, Cloud, Coffee, Database, Info, ImagePlus, Leaf, Mountain, Palette, Pencil, Settings2, Sun, Users } from 'lucide-react';
 import { readingPassages } from '@/lib/curriculum';
 import { seedWords, type State } from '@/lib/learning';
 import type { LearningSnapshot } from './data';
 import { Modal } from './Study';
 import { Presence } from './Motion';
 import { profileSchema, type PersonalProfile, type ProfileAvatar } from './profile';
-import { prepareAvatar } from './avatar';
+import { AvatarPhoto } from './AvatarPhoto';
+import { appearanceOptions } from './Appearance';
 import './PersonalPage.css';
 
-export type PersonalSection = 'home' | 'settings' | 'sync' | 'data' | 'about' | 'friends';
+export type PersonalSection = 'home' | 'settings' | 'sync' | 'data' | 'about' | 'friends' | 'appearance';
 const wordIds = new Set(seedWords.map(word => word.id));
 const passageIds = new Set(readingPassages.map(passage => passage.id));
 export function personalTotals(state: State) {
@@ -39,8 +40,8 @@ function Entry({icon, title, detail, onClick, disabled, badge}: {icon:ReactNode;
   </button>;
 }
 
-export function PersonalPage({snapshot, busy, syncLabel, onSection, onStats, onRead, onSave}: {
-  snapshot: LearningSnapshot; busy:boolean; syncLabel:string; onSection:(section:PersonalSection)=>void; onStats:()=>void; onRead:()=>void; onSave:(profile:PersonalProfile)=>Promise<void>;
+export function PersonalPage({snapshot, busy, syncLabel, theme, onSection, onStats, onRead, onSave}: {
+  snapshot: LearningSnapshot; busy:boolean; syncLabel:string; theme:string; onSection:(section:PersonalSection)=>void; onStats:()=>void; onRead:()=>void; onSave:(profile:PersonalProfile)=>Promise<void>;
 }) {
   const {profile, state, user} = snapshot;
   const totals = useMemo(() => personalTotals(state!), [state?.reading, state?.events]);
@@ -49,18 +50,22 @@ export function PersonalPage({snapshot, busy, syncLabel, onSection, onStats, onR
   const [saving,setSaving] = useState(false);
   const [error,setError] = useState('');
   const savingRef = useRef(false);
-  const [processingPhoto,setProcessingPhoto]=useState(false);
+  const [photoView,setPhotoView]=useState<{draft:boolean;file?:File}|null>(null);
+  const processingPhoto=!!photoView;
   const photoInput=useRef<HTMLInputElement>(null);
   const dirty = draft.nickname !== profile.nickname || draft.signature !== profile.signature || draft.avatar !== profile.avatar || draft.avatarDataUrl !== profile.avatarDataUrl;
   const name = profile.nickname || user?.name || '学习者';
   const hasLearning = totals.passages + totals.encountered + totals.practices > 0;
   function edit() { if (!dirty) setDraft({...profile}); setError(''); setEditing(true); }
-  async function choosePhoto(file?:File) {
+  function choosePhoto(file?:File) {
     if(!file||savingRef.current||busy)return;
-    savingRef.current=true;setProcessingPhoto(true);setError('');
-    try{const avatarDataUrl=await prepareAvatar(file);setDraft(current=>({...current,avatar:'custom',avatarDataUrl}));}
-    catch(error){setError(error instanceof Error?error.message:'照片未能读取，请重试。');}
-    finally{savingRef.current=false;setProcessingPhoto(false);if(photoInput.current)photoInput.current.value='';}
+    setPhotoView({draft:true,file});
+    if(photoInput.current)photoInput.current.value='';
+  }
+  async function applyPhoto(avatarDataUrl:string) {
+    if(photoView?.draft){setDraft(current=>({...current,avatar:'custom',avatarDataUrl}));return;}
+    await onSave({...profile,avatar:'custom',avatarDataUrl});
+    setDraft(current=>({...current,avatar:'custom',avatarDataUrl}));
   }
   async function save() {
     if (savingRef.current || busy) return;
@@ -76,7 +81,7 @@ export function PersonalPage({snapshot, busy, syncLabel, onSection, onStats, onR
   return <div className="personal-home">
     <header className="personal-heading"><span className="ww-eyebrow">A SPACE OF YOUR OWN</span><h1 tabIndex={-1}>我的学习空间</h1><p>把每一点积累，留给更好的自己。</p></header>
     <section className="personal-identity" aria-label="个人资料">
-      <div className="personal-identity-top"><Avatar kind={profile.avatar} photo={profile.avatarDataUrl} name={name}/><div className="personal-name"><h2>{name}</h2><span>词间学习者</span></div><button type="button" className="personal-edit" aria-label="编辑个人资料" onClick={edit} disabled={busy}><Pencil size={15}/><span>编辑</span></button></div>
+      <div className="personal-identity-top"><button type="button" className="personal-avatar-trigger" aria-label="查看个人头像" onClick={()=>setPhotoView({draft:false})} disabled={busy}><Avatar kind={profile.avatar} photo={profile.avatarDataUrl} name={name}/></button><div className="personal-name"><h2>{name}</h2><span>词间学习者</span></div><button type="button" className="personal-edit" aria-label="编辑个人资料" onClick={edit} disabled={busy}><Pencil size={15}/><span>编辑</span></button></div>
       <p className="personal-signature">{profile.signature || '在句子里相遇，在回忆中熟悉。'}</p>
       <div className="personal-identity-foot"><span><Leaf size={13}/>一点积累，一点熟悉</span>{dirty && <small>有未保存的资料草稿</small>}</div>
     </section>
@@ -86,6 +91,7 @@ export function PersonalPage({snapshot, busy, syncLabel, onSection, onStats, onR
       {hasLearning ? <p className="personal-caption">累计全部学习记录 · 阅读接触不代表已掌握</p> : <div className="personal-empty"><p>还没有学习足迹，从一篇阅读开始吧。</p><button type="button" onClick={onRead} disabled={busy}>开始阅读<ChevronRight size={14}/></button></div>}
     </section>
     <section className="personal-entries" aria-label="个人主页功能">
+      <Entry icon={<Palette size={20}/>} title="主题外观" detail={`${appearanceOptions.find(option=>option.value===theme)?.name || '跟随系统'} · 选择舒服的阅读光线`} onClick={()=>onSection('appearance')} disabled={busy}/>
       <Entry icon={<Users size={20}/>} title="我的好友" detail="和好友一起，慢慢积累" onClick={()=>onSection('friends')} disabled={busy}/>
       <Entry icon={<Settings2 size={20}/>} title="学习偏好" detail={`${state!.settings.level === 'CET4' ? '四级' : '六级'}词表 · 每日 ${state!.settings.daily} 个新词`} onClick={()=>onSection('settings')} disabled={busy}/>
       <Entry icon={<Cloud size={20}/>} title="同步与账号" detail={snapshot.conflicts.length ? `${snapshot.conflicts.length} 项冲突需要处理` : snapshot.pending ? `${snapshot.pending} 项记录等待同步` : '让学习记录安心保存'} badge={syncLabel} onClick={()=>onSection('sync')} disabled={busy}/>
@@ -95,10 +101,10 @@ export function PersonalPage({snapshot, busy, syncLabel, onSection, onStats, onR
     <p className="personal-home-note">按照自己的节奏，慢慢来。</p>
     <Presence show={editing} portal><Modal title="编辑个人资料" onClose={()=>{if(!savingRef.current&&!busy)setEditing(false);}}>
       <form className="personal-form" onSubmit={event=>{event.preventDefault();void save();}}>
-        <div className="personal-form-intro"><Avatar kind={draft.avatar} photo={draft.avatarDataUrl} name={draft.nickname || user?.name || '我'}/><div><h2>让这里，更像你</h2><p>头像、昵称和签名先保存在此设备。</p></div></div>
+        <div className="personal-form-intro"><button type="button" className="personal-avatar-trigger" aria-label="查看草稿头像" disabled={saving||busy} onClick={()=>setPhotoView({draft:true})}><Avatar kind={draft.avatar} photo={draft.avatarDataUrl} name={draft.nickname || user?.name || '我'}/></button><div><h2>让这里，更像你</h2><p>头像、昵称和签名先保存在此设备。</p></div></div>
         <input ref={photoInput} type="file" accept="image/jpeg,image/png,image/webp" aria-label="选择头像照片" hidden onChange={event=>void choosePhoto(event.target.files?.[0])}/>
         <button type="button" className="ww-button ww-secondary personal-photo-button" onClick={()=>photoInput.current?.click()} disabled={saving||busy||processingPhoto}><ImagePlus size={18}/>{processingPhoto?'正在处理照片…':'从手机选择照片'}</button>
-        <p className="personal-field-hint">照片居中裁成方形并缩小保存，支持 JPG、PNG、WebP，最大 10 MB。</p>
+        <p className="personal-field-hint">选择照片后拖动、缩放框选区域。支持 JPG、PNG、WebP，最大 10 MB。</p>
         <fieldset className="personal-avatar-picker" disabled={saving || busy || processingPhoto}><legend>或选择内置头像</legend><div role="radiogroup" aria-label="选择头像" onKeyDown={event=>{
           const index=avatars.findIndex(avatar=>avatar.id===draft.avatar);
           const next=event.key==='Home'?0:event.key==='End'?avatars.length-1:['ArrowRight','ArrowDown'].includes(event.key)?(index+1)%avatars.length:['ArrowLeft','ArrowUp'].includes(event.key)?(index+avatars.length-1)%avatars.length:-1;
@@ -112,6 +118,7 @@ export function PersonalPage({snapshot, busy, syncLabel, onSection, onStats, onR
         <div className="personal-form-actions"><button type="button" className="ww-button ww-ghost" disabled={!dirty||saving||busy||processingPhoto} onClick={()=>{setDraft({...profile});setError('');}}>放弃修改</button><button type="submit" className="ww-button ww-primary" disabled={!dirty||saving||busy||processingPhoto}>{saving?'正在保存…':'保存资料'}</button></div>
       </form>
     </Modal></Presence>
+    <Presence show={!!photoView} portal>{photoView&&<AvatarPhoto initialFile={photoView.file} draft={photoView.draft} preview={<Avatar kind={(photoView.draft?draft:profile).avatar} photo={(photoView.draft?draft:profile).avatarDataUrl} name={photoView.draft?draft.nickname||name:name}/>} onApply={applyPhoto} onClose={()=>setPhotoView(null)}/>}</Presence>
   </div>;
 }
 

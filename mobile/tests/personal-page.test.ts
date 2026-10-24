@@ -34,7 +34,7 @@ function props(state = initialState()) {
     locked: false, revision: 1, pending: 0, conflicts: [], needsLogin: false,
     syncing: false, lastSync: 0, error: '', hasRecovery: false,
   };
-  return {snapshot, busy: false, syncLabel: '已保存在本机', onSection: vi.fn(), onStats: vi.fn(), onRead: vi.fn(), onSave: vi.fn(async () => {})};
+  return {snapshot, busy: false, theme: 'system', syncLabel: '已保存在本机', onSection: vi.fn(), onStats: vi.fn(), onRead: vi.fn(), onSave: vi.fn(async () => {})};
 }
 
 describe('personal homepage totals and content', () => {
