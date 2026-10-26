@@ -1,8 +1,8 @@
 # 词间 Android 构建与交付
 
-应用标识 `com.wordweave.offline`，版本 `0.1.12`（versionCode 13），最低 Android 10 / API 29，编译与目标 API 36。HTML、字体、词库和阅读材料随 APK 打包。好友与照片头像见 [FRIENDS.md](FRIENDS.md)，个人主页见 [PERSONAL-HOME.md](PERSONAL-HOME.md)，交互优化见 [FLUIDITY.md](FLUIDITY.md)。
+应用标识 `com.wordweave.offline`，版本 `0.1.13`（versionCode 14），最低 Android 10 / API 29，编译与目标 API 36。HTML、字体、词库和阅读材料随 APK 打包。好友与照片头像见 [FRIENDS.md](FRIENDS.md)，个人主页见 [PERSONAL-HOME.md](PERSONAL-HOME.md)，交互优化见 [FLUIDITY.md](FLUIDITY.md)。
 
-本版内置内容版本为 `wordweave-2026-10-v2`：新增 300 个常用四级义项与 600 条双语例句；四级 89 → 389 个义项，全库 2163 → 2463 个义项；新增 10 篇四级阅读，四级阅读 3 → 13 篇，全库阅读 61 → 71 篇。重复拼写仅用于不同词义。
+本版内置内容版本为 `wordweave-2026-10-v3`：新增 150 个真题常用六级义项、300 句原创双语例句和 6 篇记忆段落。六级 2128 → 2278 个义项，全库 2463 → 2613 个义项；六级阅读 58 → 64 篇，全库阅读 71 → 77 篇。新增拼写与原全库去重，原词条和阅读编号保持。来源与抽样范围见 `../content/sources/cet6-exam-evidence.json`。
 
 ## 本机构建
 

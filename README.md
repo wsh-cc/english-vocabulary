@@ -5,14 +5,15 @@
 ## 当前应用
 
 - 登录采用用户名、密码和服务端会话；初始所有者账号使用私人密钥注册；其他用户凭一次性邀请码注册独立账号。下方 starter 中的 ChatGPT 身份说明不适用于本应用的账号或数据接口。
-- 词库包含 2463 个词条，覆盖 Koolearn 索引的全部 2085 个六级拼写；其中 400 个有完整语境材料，其余明确标记为基础词条。
-- 主要学习入口为句子阅读：71 篇预先写好的中英混合段落，每篇 20～40 个目标词，覆盖全部 2463 个内置词条。打开即可阅读、点词查义、保存进度和重读，无需 API 密钥。
-- 六级有 58 篇、覆盖 2128 个词条；四级有 13 篇、覆盖 389 个词条。本次新增 300 个常用四级词、600 句双语例句和 10 篇主题阅读，新增拼写不与原词库重复。两级共享的义项共享阅读足迹，导入词条可用于词库和复习，尚不自动生成段落。
+- 词库包含 2613 个词条，覆盖 Koolearn 索引的全部 2085 个六级拼写；其中 550 个有完整语境材料，其余明确标记为基础词条。
+- 主要学习入口为句子阅读：77 篇预先写好的中英混合段落，每篇 20～40 个目标词，覆盖全部 2613 个内置词条。打开即可阅读、点词查义、保存进度和重读，无需 API 密钥。
+- 六级有 64 篇、覆盖 2278 个词条；四级有 13 篇、覆盖 389 个词条。2026-10-26 新增 150 个真题常用六级词、300 句原创双语例句和 6 篇主题记忆段落。每个新增词在抽样的 15 套高校整理版真题中至少有 2 套出现记录，拼写与已有全库去重；该样本不是官方高频榜或必考预测。两级共享的义项共享阅读足迹，导入词条尚不自动生成段落。
 - 功能与验证范围见 `IMPLEMENTATION.md`。
 - 网页版「我的」同步 App 的个人主页、头像照片裁剪、好友中心和纸白／深绿主题。好友关系与已发布的展示资料两端共用；个人主页头像、昵称、签名及草稿仅保存在当前浏览器，须在好友中心主动发布后才对好友展示。
 - `node scripts/verify-web-friends-api.mjs` 在内存 SQLite 中验证网页 Cookie 好友接口、请求来源、账号隔离和邀请码，不访问真实账号数据。
 - `node scripts/verify-learning.mjs` 验证词库和学习逻辑。
-- `node scripts/prepare-content.mjs` 重建完整词库与供两端使用的 `content/runtime-catalog.ts`；运行时模块共享重复来源字符串，导出内容与 `content/catalog.json` 完全相等。四级扩充源为 `content/cet4-expansion.tsv` 和 `content/cet4-expansion.json`。
+- `node scripts/verify-cet6-expansion.mjs` 验证 150 个新增六级词、300 句例句、6 篇记忆段落和真题来源记录。选词证据见 `content/sources/cet6-exam-evidence.json`，原始试卷正文不打包。
+- `node scripts/prepare-content.mjs` 重建完整词库与两端共享的 `content/runtime-catalog.ts`；重复字段名和来源字符串共用，运行时还原结果与 `content/catalog.json` 完全相等。扩充源为 `content/cet4-expansion.*` 与 `content/cet6-exam-expansion.*`。
 - `node scripts/prepare-readings.mjs --complete` 从原阅读源和四级扩充源编译段落，检查漏词、词数和全词库覆盖。
 - `node scripts/verify-reading.mjs` 验证全部实际段落、继续阅读、进度去重和备份兼容；`node scripts/verify-passages-api.mjs` 用内存数据库验证阅读接口，不访问用户数据库或外部生成服务。
 - `node scripts/verify-auth.mjs` 验证完整账号及数据流程，仅对 8791 端口的全新独立 QA 数据库运行。不要指向实际学习数据库。

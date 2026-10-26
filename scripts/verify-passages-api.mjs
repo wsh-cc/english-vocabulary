@@ -46,7 +46,7 @@ try {
   assert.equal((await post({action:'next',afterId:missing})).status, 404);
 
   const first = await get();
-  assert.equal(first.status, 200); assert.equal(first.body.available, 58); assert.equal(first.body.completedCount, 0);
+  assert.equal(first.status, 200); assert.equal(first.body.available, 64); assert.equal(first.body.completedCount, 0);
   assert.equal(first.body.history.length, 30); assert.equal(first.body.summary.covered, 0);
   assert.equal((await post({action:'next'})).body.passage.id, first.body.passage.id);
   assert.equal(db.prepare('SELECT COUNT(*) AS total FROM learner_state').get().total, 0, 'Opening is not reading');
@@ -68,7 +68,7 @@ try {
     for (const item of page.body.history) { assert.ok(!found.has(item.id)); found.add(item.id); }
     cursor = page.body.nextCursor;
   } while (cursor);
-  assert.equal(found.size, 58);
+  assert.equal(found.size, 64);
   const course=[];let pageCursor='';
   do{const page=await get(pageCursor?'?cursor='+pageCursor:'');course.push(...page.body.history);pageCursor=page.body.nextCursor;}while(pageCursor);
   const mutateReader=mutate=>{
@@ -103,7 +103,7 @@ try {
   mutateReader(state=>{for(const passage of course)state.reading.completed[passage.id]=Date.now();});
   const loop=await post({action:'complete',id:course.at(-1).id,operationId:crypto.randomUUID(),advance:true});
   assert.equal(loop.body.passage.id,course[0].id,'Completed course loops for rereading');
-  assert.equal(loop.body.completedCount,58);
+  assert.equal(loop.body.completedCount,64);
 
   // A different account shares content, but never the first account's reading progress.
   globalThis.readingTestCookie = 'b'.repeat(64);

@@ -1,0 +1,49 @@
+{
+  "authoredAt": "2026-10-26",
+  "selection": "参考南京大学 EOL 公开整理的 2024 年 6 月至 2026 年 6 月共 15 套六级真题的听力题目及阅读材料，按抽样出现记录和备考价值人工选择；每个新增词的原形或规则屈折形式至少在 2 套样本中出现。排除现有词库拼写和初级功能词；不宣称六级专属、官方高频榜或未来必考。",
+  "materials": "中文释义、搭配、双语例句、语境题和中英混合记忆段落为本项目原创；真题仅用于选词和记录出现来源，不复刻试卷句段。音标另以既有来源词表核验。",
+  "groups": [
+    {
+      "id": "cet6-exam-evidence",
+      "title": "让一次调查经得起追问",
+      "category": "研究与论证",
+      "words": "identify factor indicate determine analyse examine investigate estimate finding conclusion argument principle concept phenomenon underlying assume prove interpretation cognitive perceive critical consensus basis perspective evaluate",
+      "text": "我们准备调查同学们的学习习惯，第一步是 {identify} 真正想研究的问题，并列出可能影响结果的每个 {factor}。问卷中的变化只能 {indicate} 某种线索，不能直接 {determine} 谁的方法更好。收集完记录后，我们一起 {analyse} 数据，逐项 {examine} 异常情况，再去 {investigate} 那些与最初猜测不同的案例。样本规模有限，所以报告先 {estimate} 结果可能变化的范围，把每一项 {finding} 与相应证据放在一起，谨慎写出 {conclusion}。为了让 {argument} 站得住脚，我们遵守同一个 {principle}：先说明每个 {concept} 的含义，再描述观察到的 {phenomenon}，最后讨论可能的 {underlying} 原因。我们不轻易 {assume} 两件事同时发生就存在因果关系，也知道一次实验无法 {prove} 所有观点；遇到不同的 {interpretation} 时，就重新检查条件。讨论 {cognitive} 表现时，老师提醒我们，人们 {perceive} 任务难度的方式也会影响回答，因此需要保持 {critical} 思考。小组最终形成的 {consensus} 是，以现有材料为 {basis}，从参与者的 {perspective} 理解差异，再请另一组同学 {evaluate} 报告是否清楚可靠。"
+    },
+    {
+      "id": "cet6-exam-economy",
+      "title": "一座小城的就业与新工厂",
+      "category": "经济与职场",
+      "words": "economic financial economy industry income investment profit demand supply policy government corporation management efficiency incentive employment production promote compete potential capacity recruit expense occupation commercial",
+      "text": "讨论小城的 {economic} 变化时，我们先看居民实际面对的 {financial} 压力，而不只看新闻里的数字。当地 {economy} 曾经依赖单一 {industry}，不少家庭希望获得更稳定的 {income}，因此对新的 {investment} 很关心。新工厂负责人表示，企业要获得合理的 {profit}，就得先了解真实的 {demand}，同时保证原料 {supply} 可靠。市民则希望相关 {policy} 经过充分讨论，由 {government} 说明监督办法，并要求这家 {corporation} 公开承诺。企业内部的 {management} 准备通过培训提高 {efficiency}，设置鼓励合理建议的 {incentive}，同时提供更多 {employment} 机会。大家知道，扩大 {production} 并不自动意味着生活改善；只有项目能够 {promote} 本地合作，让小企业也能公平 {compete}，新的机会才可能释放社区的 {potential}。工厂根据现有 {capacity} 分阶段建设，先 {recruit} 合适的员工，再核算设备和培训的每一项 {expense}。职业顾问建议年轻人选择 {occupation} 时兼顾兴趣、成长空间和工作条件。最终，我们在报告里写下：一项 {commercial} 计划是否值得支持，需要同时考虑企业经营与居民生活。"
+    },
+    {
+      "id": "cet6-exam-technology",
+      "title": "校园科技展上的一次演示",
+      "category": "科技与媒体",
+      "words": "artificial intelligence autonomous computer database hardware equipment function design model operate feature communication security screen remote automatic intelligent researcher scientist exposure content broadcast influential visual",
+      "text": "校园科技展上，一组同学展示了如何用 {artificial} 方法模拟某些判断过程，同时认真说明这种 {intelligence} 与人的理解仍有差别。旁边的 {autonomous} 小车通过一台 {computer} 读取测试指令，实验结果分别写进 {database}，展板则解释了不同 {hardware} 与测量 {equipment} 的用途。参观者可以逐项查看每个 {function}，比较两种 {design}，再用缩小的 {model} 观察小车怎样 {operate}。其中最实用的 {feature} 是清楚显示当前状态，帮助使用者完成 {communication}，而不是只追求看起来神奇的演示。负责 {security} 的同学提醒大家，{screen} 上应只显示测试资料；开启 {remote} 连接和 {automatic} 更新前，也要检查权限与已有记录。一位研究 {intelligent} 系统的 {researcher} 介绍了项目限制，另一位 {scientist} 则提醒我们，对某种信息的反复 {exposure}，并不意味着已经理解它。学生媒体审核展示的 {content} 后，才决定 {broadcast} 访谈；他们没有因为发言者很 {influential} 就省略核对，也给每张 {visual} 图示加上说明，让观众能看懂证据与结论之间的关系。"
+    },
+    {
+      "id": "cet6-exam-environment",
+      "title": "沿河农场的资源改进计划",
+      "category": "环境与资源",
+      "words": "carbon greenhouse agriculture chemical electricity preserve threaten harmful reduction protection organism fertilizer contaminate diverse boundary restrict widespread catastrophe distribute intensive industrial manufacture radiation absorb survive",
+      "text": "沿河农场准备减少生产中的 {carbon} 排放，先在小型 {greenhouse} 里尝试新的种植安排，再讨论这些经验怎样用于当地 {agriculture}。技术员记录每一种 {chemical} 的用途和 {electricity} 消耗，希望在维持产量的同时 {preserve} 河岸环境。长时间干旱可能 {threaten} 幼苗，而过量投入也可能带来 {harmful} 影响，所以计划把用水量的 {reduction} 与生态 {protection} 放在一起考虑。我们观察土壤中的小型 {organism}，按需要使用 {fertilizer}，避免让废水 {contaminate} 河流。河岸上 {diverse} 的植物形成一条天然 {boundary}，管理人员因此决定在关键季节 {restrict} 某些活动。面对居民 {widespread} 的担忧，大家没有夸大灾难，而是评估极端天气演变为 {catastrophe} 的条件，并提前安排怎样 {distribute} 饮用水与物资。附近企业也参与讨论，比较 {intensive} 生产和较低投入方式的成本，检查 {industrial} 排放，尝试用回收材料 {manufacture} 部分用品。学生测量不同表面接收的 {radiation}，观察材料怎样 {absorb} 水与热。整份计划最后回到一个实际问题：怎样让农场继续经营，也让河流里的生命更好地 {survive}。"
+    },
+    {
+      "id": "cet6-exam-health",
+      "title": "把健康调查做得更细一点",
+      "category": "健康与心理",
+      "words": "psychological anxiety chronic disease nutrition protein fatigue emotion emotional alleviate immune medical surgery genetic vulnerable adolescent childhood brain memory behavior trait instinct temptation resist deteriorate",
+      "text": "学校健康调查先区分 {psychological} 感受与可观察的生活变化，让同学们说明自己的 {anxiety} 来自哪里，也给有 {chronic} 问题的参与者留下单独咨询的机会。讲座并不要求大家自己诊断 {disease}，而是介绍怎样判断 {nutrition} 信息是否可靠，以及如何理解饮食中 {protein} 的来源。面对持续的 {fatigue}，老师鼓励记录真实情况，观察每一种 {emotion}，需要时寻求 {emotional} 支持，而不是把所有不适都归结为不够努力。更合理的安排可能帮助 {alleviate} 日常压力，但有关 {immune} 功能的说法仍须核对专业来源；涉及 {medical} 处理或 {surgery} 的问题，应由专业人员解释。研究小组同时提醒我们，{genetic} 差异与环境都可能影响个体，因此要特别照顾处境 {vulnerable} 的参与者，也认真听取每一位 {adolescent} 对校园生活的看法。谈到 {childhood} 经历时，有人分享了关于 {brain} 与 {memory} 的疑问；讨论最终回到实际 {behavior}，而不是凭一个 {trait} 就给别人贴标签。遇到不确定的说法，我们会检查证据，不只依靠 {instinct}；面对熬夜刷屏的 {temptation}，则尝试改变环境来帮助自己 {resist} 干扰，避免让原本可以处理的小问题继续 {deteriorate}。"
+    },
+    {
+      "id": "cet6-exam-society",
+      "title": "让校园计划成为社区的共同选择",
+      "category": "社会与教育",
+      "words": "education university independent achievement advantage generation citizen authority commitment attitude belief reality traditional freedom emphasis appropriate reasonable inevitable transformation adopt overcome cultivate pursue motivate prospect",
+      "text": "一次关于 {education} 的社区讨论在 {university} 举行。学生希望获得更多 {independent} 学习的机会，也想知道怎样理解成绩之外的 {achievement}，以及实践经验能带来什么 {advantage}。不同 {generation} 的居民轮流发言，每位 {citizen} 都可以向相关 {authority} 提出建议；组织者则作出长期 {commitment}，承诺把讨论结果和后续行动公开。有人认为，改变 {attitude} 需要时间，也有人希望重新检查自己一直相信的 {belief}，看它是否符合眼前的 {reality}。大家既珍惜 {traditional} 经验，也重视个人的 {freedom}，于是决定把 {emphasis} 放在能共同验证的小步骤上。面对不同年龄和条件的参与者，活动必须采用 {appropriate} 的方式，费用也应保持 {reasonable}，不能把有人掉队看成 {inevitable} 的结果。这场讨论没有立刻完成整个社区的 {transformation}，但推动学校 {adopt} 更开放的安排，帮助参与者一起 {overcome} 时间和场地方面的困难。老师希望借此 {cultivate} 对公共议题的兴趣，让学生能够 {pursue} 有意义的目标，也用真实反馈 {motivate} 持续参与。离场时，我们对合作的 {prospect} 有了更具体的认识：每一次承诺，都需要后续行动来支撑。"
+    }
+  ]
+}

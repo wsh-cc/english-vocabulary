@@ -1,0 +1,6912 @@
+{
+  "source": "南京大学 EOL · 六级真题整理版",
+  "indexUrl": "https://eol.nju.edu.cn/cet6/index.html",
+  "retrievedAt": "2026-10-26",
+  "range": "2024-06 至 2026-06",
+  "method": "高校公开整理版的听力题目及阅读正文、题干、选项；排除参考范文、参考译文和重复下拉选项。统计区分大小写归一后的原形与规则屈折形式；套卷间可能共用材料，出现套数不等于独立文章数，不代表官方词频或未来命题概率。",
+  "papers": [
+    {
+      "id": "202406-1",
+      "url": "https://eol.nju.edu.cn/cet6/papers/202406-1.html",
+      "title": "202406-1 六级真题（高校整理版）",
+      "sha256": "622f32d981d8e253ce35e2eb9f3f94f91c10c3759f7bd5d4a6af769cfe51f9d7",
+      "sectionIds": [
+        "listening",
+        "banked",
+        "matching",
+        "careful"
+      ]
+    },
+    {
+      "id": "202406-2",
+      "url": "https://eol.nju.edu.cn/cet6/papers/202406-2.html",
+      "title": "202406-2 六级真题（高校整理版）",
+      "sha256": "ac1e112113f6f496fd5b25be9822f2bb8d6e42ab832859c7e3a6209d66e4f351",
+      "sectionIds": [
+        "listening",
+        "banked",
+        "matching",
+        "careful"
+      ]
+    },
+    {
+      "id": "202406-3",
+      "url": "https://eol.nju.edu.cn/cet6/papers/202406-3.html",
+      "title": "202406-3 六级真题（高校整理版）",
+      "sha256": "c11e6b32fd7fa276ccef1c3722d0221337173b64e3522fdea040cc018cf5f97a",
+      "sectionIds": [
+        "listening",
+        "banked",
+        "matching",
+        "careful"
+      ]
+    },
+    {
+      "id": "202412-1",
+      "url": "https://eol.nju.edu.cn/cet6/papers/202412-1.html",
+      "title": "202412-1 六级真题（高校整理版）",
+      "sha256": "2889465a03ab93730d81dd063056728d8c93d781fd0102b0cbc2b96bcc777c1f",
+      "sectionIds": [
+        "listening",
+        "banked",
+        "matching",
+        "careful"
+      ]
+    },
+    {
+      "id": "202412-2",
+      "url": "https://eol.nju.edu.cn/cet6/papers/202412-2.html",
+      "title": "202412-2 六级真题（高校整理版）",
+      "sha256": "d045d9533ef8b9a08ce53174807ffdfbc05fc738d41dcadf7735749ae98b4253",
+      "sectionIds": [
+        "listening",
+        "banked",
+        "matching",
+        "careful"
+      ]
+    },
+    {
+      "id": "202412-3",
+      "url": "https://eol.nju.edu.cn/cet6/papers/202412-3.html",
+      "title": "202412-3 六级真题（高校整理版）",
+      "sha256": "dd794d434b9b66ec8b89b4a44a396ebbd8ea6dac14b0968bf5b0fb01eee1af01",
+      "sectionIds": [
+        "listening",
+        "banked",
+        "matching",
+        "careful"
+      ]
+    },
+    {
+      "id": "202506-1",
+      "url": "https://eol.nju.edu.cn/cet6/papers/202506-1.html",
+      "title": "202506-1 六级真题（高校整理版）",
+      "sha256": "a9bdfba07836af8dec651cad5117cbe3fc58e1e9a435466b1efdad6225826302",
+      "sectionIds": [
+        "listening",
+        "banked",
+        "matching",
+        "careful"
+      ]
+    },
+    {
+      "id": "202506-2",
+      "url": "https://eol.nju.edu.cn/cet6/papers/202506-2.html",
+      "title": "202506-2 六级真题（高校整理版）",
+      "sha256": "0d7bc57bb8bd3c8e4d75e601425c008b67f3405217996f1cea7c3a97a9711cd4",
+      "sectionIds": [
+        "listening",
+        "banked",
+        "matching",
+        "careful"
+      ]
+    },
+    {
+      "id": "202506-3",
+      "url": "https://eol.nju.edu.cn/cet6/papers/202506-3.html",
+      "title": "202506-3 六级真题（高校整理版）",
+      "sha256": "3bd0a3e1625d18baea42db2138eecd39e91a5091a3d80eb3b6e4a45257422ed3",
+      "sectionIds": [
+        "listening",
+        "banked",
+        "matching",
+        "careful"
+      ]
+    },
+    {
+      "id": "202512-1",
+      "url": "https://eol.nju.edu.cn/cet6/papers/202512-1.html",
+      "title": "202512-1 六级真题（高校整理版）",
+      "sha256": "a5a3217ee1976b94436d50214ac9d155403ddba964538ea5937dc40614a05bce",
+      "sectionIds": [
+        "listening",
+        "banked",
+        "matching",
+        "careful"
+      ]
+    },
+    {
+      "id": "202512-2",
+      "url": "https://eol.nju.edu.cn/cet6/papers/202512-2.html",
+      "title": "202512-2 六级真题（高校整理版）",
+      "sha256": "9c19ab8e729f2ef7e035f11efb34ac49961976b5ab5b53adfdc33d028153d463",
+      "sectionIds": [
+        "listening",
+        "banked",
+        "matching",
+        "careful"
+      ]
+    },
+    {
+      "id": "202512-3",
+      "url": "https://eol.nju.edu.cn/cet6/papers/202512-3.html",
+      "title": "202512-3 六级真题（高校整理版）",
+      "sha256": "f89870ff2042529d337713e78c29cc51e39a5b3596dab047938cbfdab1c462a5",
+      "sectionIds": [
+        "listening",
+        "banked",
+        "matching",
+        "careful"
+      ]
+    },
+    {
+      "id": "202606-1",
+      "url": "https://eol.nju.edu.cn/cet6/papers/202606-1.html",
+      "title": "202606-1 六级真题（高校整理版）",
+      "sha256": "ffef3955db7787a505e1d4e4965461b99f2580dbd0886fe90591ea0bbb754103",
+      "sectionIds": [
+        "listening",
+        "banked",
+        "matching",
+        "careful"
+      ]
+    },
+    {
+      "id": "202606-2",
+      "url": "https://eol.nju.edu.cn/cet6/papers/202606-2.html",
+      "title": "202606-2 六级真题（高校整理版）",
+      "sha256": "8ef4a3c834c3eb20ab68f645981e1bcb44359539cce60750ad6e0a571654fa9e",
+      "sectionIds": [
+        "listening",
+        "banked",
+        "matching",
+        "careful"
+      ]
+    },
+    {
+      "id": "202606-3",
+      "url": "https://eol.nju.edu.cn/cet6/papers/202606-3.html",
+      "title": "202606-3 六级真题（高校整理版）",
+      "sha256": "9e977653ec551a3874d36c1e402fe62fffbe96f925303722853c253f6804a23f",
+      "sectionIds": [
+        "listening",
+        "banked",
+        "matching",
+        "careful"
+      ]
+    }
+  ],
+  "entries": [
+    {
+      "word": "identify",
+      "phonetic": "aiˈdentifai",
+      "phoneticReference": "identify [aiˈdentifai] vt.认出，识别，鉴定",
+      "papers": 14,
+      "count": 19,
+      "evidence": [
+        {
+          "paper": "202406-1",
+          "forms": [
+            "identify"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202406-2",
+          "forms": [
+            "identifies",
+            "identify"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202406-3",
+          "forms": [
+            "identified",
+            "identify"
+          ],
+          "count": 3
+        },
+        {
+          "paper": "202412-1",
+          "forms": [
+            "identify"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-3",
+          "forms": [
+            "identify"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-1",
+          "forms": [
+            "identifying"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-2",
+          "forms": [
+            "identified"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "identified"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-1",
+          "forms": [
+            "identify"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-2",
+          "forms": [
+            "identify",
+            "identifying"
+          ],
+          "count": 3
+        },
+        {
+          "paper": "202512-3",
+          "forms": [
+            "identify"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-1",
+          "forms": [
+            "identified"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-2",
+          "forms": [
+            "identified"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-3",
+          "forms": [
+            "identified"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "factor",
+      "phonetic": "ˈfæktə",
+      "phoneticReference": "factor [ˈfæktə] n.因素；因子，系数",
+      "papers": 10,
+      "count": 23,
+      "evidence": [
+        {
+          "paper": "202406-1",
+          "forms": [
+            "factor",
+            "factors"
+          ],
+          "count": 4
+        },
+        {
+          "paper": "202406-2",
+          "forms": [
+            "factor",
+            "factors"
+          ],
+          "count": 3
+        },
+        {
+          "paper": "202412-2",
+          "forms": [
+            "factors"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-2",
+          "forms": [
+            "factor",
+            "factors"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "factor",
+            "factors"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202512-1",
+          "forms": [
+            "factoring"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-2",
+          "forms": [
+            "factor",
+            "factors"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202606-1",
+          "forms": [
+            "factors"
+          ],
+          "count": 4
+        },
+        {
+          "paper": "202606-2",
+          "forms": [
+            "factors"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202606-3",
+          "forms": [
+            "factors"
+          ],
+          "count": 2
+        }
+      ]
+    },
+    {
+      "word": "indicate",
+      "phonetic": "ˈindikeit",
+      "phoneticReference": "indicate [ˈindikeit] vt.标示，表示；表明",
+      "papers": 6,
+      "count": 8,
+      "evidence": [
+        {
+          "paper": "202406-1",
+          "forms": [
+            "indicate",
+            "indicates"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202406-2",
+          "forms": [
+            "indicated"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-1",
+          "forms": [
+            "indicate",
+            "indicated"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202512-2",
+          "forms": [
+            "indicates"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-3",
+          "forms": [
+            "indicated"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-2",
+          "forms": [
+            "indicate"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "determine",
+      "phonetic": "diˈtəːmin",
+      "phoneticReference": "determine [diˈtəːmin] vt.决定；查明；决心",
+      "papers": 10,
+      "count": 17,
+      "evidence": [
+        {
+          "paper": "202406-2",
+          "forms": [
+            "determined"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202406-3",
+          "forms": [
+            "determine"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-1",
+          "forms": [
+            "determines"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202412-2",
+          "forms": [
+            "determine"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-3",
+          "forms": [
+            "determine",
+            "determines"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202506-1",
+          "forms": [
+            "determined"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-3",
+          "forms": [
+            "determine"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202606-1",
+          "forms": [
+            "determining"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-2",
+          "forms": [
+            "determines",
+            "determining"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202606-3",
+          "forms": [
+            "determine",
+            "determined",
+            "determines"
+          ],
+          "count": 3
+        }
+      ]
+    },
+    {
+      "word": "analyse",
+      "phonetic": "ˈænəlaiz",
+      "phoneticReference": "analyse [ˈænəlaiz] vt.分析，分解，解析",
+      "papers": 4,
+      "count": 4,
+      "evidence": [
+        {
+          "paper": "202412-1",
+          "forms": [
+            "analysed"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-3",
+          "forms": [
+            "analysed"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-2",
+          "forms": [
+            "analysing"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-3",
+          "forms": [
+            "analyse"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "examine",
+      "phonetic": "igˈzæmin",
+      "phoneticReference": "examine [igˈzæmin] vt.检查，仔细观察",
+      "papers": 4,
+      "count": 6,
+      "evidence": [
+        {
+          "paper": "202406-2",
+          "forms": [
+            "examine",
+            "examining"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202412-1",
+          "forms": [
+            "examined"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202412-3",
+          "forms": [
+            "examined"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-2",
+          "forms": [
+            "examine"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "investigate",
+      "phonetic": "inˈvestigeit",
+      "phoneticReference": "investigate [inˈvestigeit] vt.&vi.调查",
+      "papers": 5,
+      "count": 7,
+      "evidence": [
+        {
+          "paper": "202412-2",
+          "forms": [
+            "investigate",
+            "investigating"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202506-1",
+          "forms": [
+            "investigate",
+            "investigated"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202606-1",
+          "forms": [
+            "investigate"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-2",
+          "forms": [
+            "investigated"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-3",
+          "forms": [
+            "investigate"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "estimate",
+      "phonetic": "ˈestimeit",
+      "phoneticReference": "estimate [ˈestimeit] vt.估计，评价 n.估计",
+      "papers": 6,
+      "count": 8,
+      "evidence": [
+        {
+          "paper": "202412-1",
+          "forms": [
+            "estimates"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-2",
+          "forms": [
+            "estimated"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "estimated"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-1",
+          "forms": [
+            "estimate",
+            "estimated"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202606-2",
+          "forms": [
+            "estimated",
+            "estimates"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202606-3",
+          "forms": [
+            "estimate"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "finding",
+      "phonetic": "ˈfaindiŋ",
+      "phoneticReference": "finding [ˈfaindiŋ] n.发现；调查的结果",
+      "papers": 10,
+      "count": 19,
+      "evidence": [
+        {
+          "paper": "202406-2",
+          "forms": [
+            "findings"
+          ],
+          "count": 3
+        },
+        {
+          "paper": "202406-3",
+          "forms": [
+            "finding",
+            "findings"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202506-1",
+          "forms": [
+            "finding"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-2",
+          "forms": [
+            "finding"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "finding"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202512-1",
+          "forms": [
+            "findings"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-2",
+          "forms": [
+            "finding",
+            "findings"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202606-1",
+          "forms": [
+            "finding",
+            "findings"
+          ],
+          "count": 5
+        },
+        {
+          "paper": "202606-2",
+          "forms": [
+            "findings"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-3",
+          "forms": [
+            "finding"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "conclusion",
+      "phonetic": "kənˈkluːʒən",
+      "phoneticReference": "conclusion [kənˈkluːʒən] n.结论，推论；结尾",
+      "papers": 7,
+      "count": 12,
+      "evidence": [
+        {
+          "paper": "202406-2",
+          "forms": [
+            "conclusion"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202412-2",
+          "forms": [
+            "conclusion"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-2",
+          "forms": [
+            "conclusion"
+          ],
+          "count": 3
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "conclusion"
+          ],
+          "count": 3
+        },
+        {
+          "paper": "202512-2",
+          "forms": [
+            "conclusions"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-1",
+          "forms": [
+            "conclusions"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-3",
+          "forms": [
+            "conclusions"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "argument",
+      "phonetic": "ˈɑːgjumənt",
+      "phoneticReference": "argument [ˈɑːgjumənt] n.争论，辩论；理由",
+      "papers": 8,
+      "count": 17,
+      "evidence": [
+        {
+          "paper": "202412-1",
+          "forms": [
+            "argument"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-3",
+          "forms": [
+            "argument",
+            "arguments"
+          ],
+          "count": 6
+        },
+        {
+          "paper": "202506-1",
+          "forms": [
+            "arguments"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-2",
+          "forms": [
+            "argument",
+            "arguments"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "argument",
+            "arguments"
+          ],
+          "count": 3
+        },
+        {
+          "paper": "202606-1",
+          "forms": [
+            "arguments"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-2",
+          "forms": [
+            "argument"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202606-3",
+          "forms": [
+            "arguments"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "principle",
+      "phonetic": "ˈprinsəpl",
+      "phoneticReference": "principle [ˈprinsəpl] n.原则，原理；主义",
+      "papers": 5,
+      "count": 25,
+      "evidence": [
+        {
+          "paper": "202406-3",
+          "forms": [
+            "principle",
+            "principles"
+          ],
+          "count": 6
+        },
+        {
+          "paper": "202412-2",
+          "forms": [
+            "principle",
+            "principles"
+          ],
+          "count": 7
+        },
+        {
+          "paper": "202506-1",
+          "forms": [
+            "principle",
+            "principles"
+          ],
+          "count": 8
+        },
+        {
+          "paper": "202512-1",
+          "forms": [
+            "principle",
+            "principles"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202512-2",
+          "forms": [
+            "principle",
+            "principles"
+          ],
+          "count": 2
+        }
+      ]
+    },
+    {
+      "word": "concept",
+      "phonetic": "ˈkɔnsept",
+      "phoneticReference": "concept [ˈkɔnsept] n.概念，观念，设想",
+      "papers": 6,
+      "count": 14,
+      "evidence": [
+        {
+          "paper": "202406-1",
+          "forms": [
+            "concept",
+            "concepts"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202406-3",
+          "forms": [
+            "concept",
+            "concepts"
+          ],
+          "count": 4
+        },
+        {
+          "paper": "202412-2",
+          "forms": [
+            "concepts"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202512-1",
+          "forms": [
+            "concept"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-2",
+          "forms": [
+            "concept",
+            "concepts"
+          ],
+          "count": 4
+        },
+        {
+          "paper": "202512-3",
+          "forms": [
+            "concept"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "phenomenon",
+      "phonetic": "fiˈnɔminən",
+      "phoneticReference": "phenomenon [fiˈnɔminən] n.现象",
+      "papers": 5,
+      "count": 7,
+      "evidence": [
+        {
+          "paper": "202406-1",
+          "forms": [
+            "phenomenon"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202406-3",
+          "forms": [
+            "phenomenon"
+          ],
+          "count": 3
+        },
+        {
+          "paper": "202412-1",
+          "forms": [
+            "phenomenon"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-3",
+          "forms": [
+            "phenomenon"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-1",
+          "forms": [
+            "phenomenon"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "underlying",
+      "phonetic": "ˌʌndәˈlaiiŋ",
+      "phoneticReference": "underlying [ˌʌndәˈlaiiŋ] a. 1. 在下面的 2. 优先的，基础的",
+      "papers": 7,
+      "count": 11,
+      "evidence": [
+        {
+          "paper": "202406-3",
+          "forms": [
+            "underlying"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202412-1",
+          "forms": [
+            "underlying"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-1",
+          "forms": [
+            "underlying"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202506-2",
+          "forms": [
+            "underlying"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "underlying"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-2",
+          "forms": [
+            "underlying"
+          ],
+          "count": 3
+        },
+        {
+          "paper": "202606-2",
+          "forms": [
+            "underlying"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "assume",
+      "phonetic": "əˈsjuːm",
+      "phoneticReference": "assume [əˈsjuːm] vt.假定；承担；呈现",
+      "papers": 7,
+      "count": 10,
+      "evidence": [
+        {
+          "paper": "202406-1",
+          "forms": [
+            "assume",
+            "assumed"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202406-2",
+          "forms": [
+            "assume"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202412-2",
+          "forms": [
+            "assume"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-1",
+          "forms": [
+            "assume"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202512-1",
+          "forms": [
+            "assumed"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-3",
+          "forms": [
+            "assumed"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-1",
+          "forms": [
+            "assume"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "prove",
+      "phonetic": "pruːv",
+      "phoneticReference": "prove [pruːv] vt.证明 vi.结果是",
+      "papers": 7,
+      "count": 10,
+      "evidence": [
+        {
+          "paper": "202406-1",
+          "forms": [
+            "proved"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202406-2",
+          "forms": [
+            "prove",
+            "proves"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202412-1",
+          "forms": [
+            "prove",
+            "proved"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202512-2",
+          "forms": [
+            "prove",
+            "proved"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202512-3",
+          "forms": [
+            "prove"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-1",
+          "forms": [
+            "prove"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-2",
+          "forms": [
+            "proves"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "interpretation",
+      "phonetic": "inˌtəːpriˈtei∫ən",
+      "phoneticReference": "interpretation [inˌtəːpriˈtei∫ən] n.解释；口译",
+      "papers": 3,
+      "count": 3,
+      "evidence": [
+        {
+          "paper": "202406-1",
+          "forms": [
+            "interpretations"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-2",
+          "forms": [
+            "interpretations"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-3",
+          "forms": [
+            "interpretations"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "cognitive",
+      "phonetic": "ˈkɒɡnɪtɪv",
+      "phoneticReference": "cognitive [ˈkɒɡnɪtɪv] adj. 认识(力)的，认知的",
+      "papers": 8,
+      "count": 8,
+      "evidence": [
+        {
+          "paper": "202406-1",
+          "forms": [
+            "cognitive"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202406-2",
+          "forms": [
+            "cognitive"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202406-3",
+          "forms": [
+            "cognitive"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-3",
+          "forms": [
+            "cognitive"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-1",
+          "forms": [
+            "cognitive"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "cognitive"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-1",
+          "forms": [
+            "cognitive"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-2",
+          "forms": [
+            "cognitive"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "perceive",
+      "phonetic": "pəˈsiːv",
+      "phoneticReference": "perceive [pəˈsiːv] vt.察觉，发觉；理解",
+      "papers": 4,
+      "count": 4,
+      "evidence": [
+        {
+          "paper": "202406-3",
+          "forms": [
+            "perceive"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-3",
+          "forms": [
+            "perceive"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-2",
+          "forms": [
+            "perceived"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-3",
+          "forms": [
+            "perceived"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "critical",
+      "phonetic": "ˈkritikəl",
+      "phoneticReference": "critical [ˈkritikəl] a.决定性的；批评的",
+      "papers": 4,
+      "count": 7,
+      "evidence": [
+        {
+          "paper": "202406-1",
+          "forms": [
+            "critical"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202412-1",
+          "forms": [
+            "critical"
+          ],
+          "count": 3
+        },
+        {
+          "paper": "202512-2",
+          "forms": [
+            "critical"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-2",
+          "forms": [
+            "critical"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "consensus",
+      "phonetic": "kənˈsensəs",
+      "phoneticReference": "consensus [kənˈsensəs] n. (意见等的)一致，一致同意，共识",
+      "papers": 4,
+      "count": 4,
+      "evidence": [
+        {
+          "paper": "202406-1",
+          "forms": [
+            "consensus"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202406-2",
+          "forms": [
+            "consensus"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202406-3",
+          "forms": [
+            "consensus"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-2",
+          "forms": [
+            "consensus"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "basis",
+      "phonetic": "ˈbeisis",
+      "phoneticReference": "basis [ˈbeisis] n.基础，根据",
+      "papers": 8,
+      "count": 10,
+      "evidence": [
+        {
+          "paper": "202406-1",
+          "forms": [
+            "basis"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202406-2",
+          "forms": [
+            "basis"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202406-3",
+          "forms": [
+            "basis"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-2",
+          "forms": [
+            "basis"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "basis"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-1",
+          "forms": [
+            "basis"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-3",
+          "forms": [
+            "basis"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-3",
+          "forms": [
+            "basis"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "perspective",
+      "phonetic": "pəˈspektiv",
+      "phoneticReference": "perspective [pəˈspektiv] n.透视;远景;观点",
+      "papers": 3,
+      "count": 5,
+      "evidence": [
+        {
+          "paper": "202506-2",
+          "forms": [
+            "perspectives"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-2",
+          "forms": [
+            "perspective",
+            "perspectives"
+          ],
+          "count": 3
+        },
+        {
+          "paper": "202606-1",
+          "forms": [
+            "perspective"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "evaluate",
+      "phonetic": "iˈvæljueit",
+      "phoneticReference": "evaluate [iˈvæljueit] vt.评价，估…的价",
+      "papers": 2,
+      "count": 3,
+      "evidence": [
+        {
+          "paper": "202412-2",
+          "forms": [
+            "evaluate"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-3",
+          "forms": [
+            "evaluate"
+          ],
+          "count": 2
+        }
+      ]
+    },
+    {
+      "word": "economic",
+      "phonetic": "ˌiːkəˈnɔmik",
+      "phoneticReference": "economic [ˌiːkəˈnɔmik] a.经济的，经济学的",
+      "papers": 12,
+      "count": 40,
+      "evidence": [
+        {
+          "paper": "202406-1",
+          "forms": [
+            "economic"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202406-2",
+          "forms": [
+            "economic"
+          ],
+          "count": 7
+        },
+        {
+          "paper": "202406-3",
+          "forms": [
+            "economic"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-1",
+          "forms": [
+            "economics"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-2",
+          "forms": [
+            "economic",
+            "economics"
+          ],
+          "count": 4
+        },
+        {
+          "paper": "202412-3",
+          "forms": [
+            "economic"
+          ],
+          "count": 5
+        },
+        {
+          "paper": "202506-1",
+          "forms": [
+            "economic"
+          ],
+          "count": 8
+        },
+        {
+          "paper": "202506-2",
+          "forms": [
+            "economic"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "economic"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202606-1",
+          "forms": [
+            "economic"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-2",
+          "forms": [
+            "economic"
+          ],
+          "count": 3
+        },
+        {
+          "paper": "202606-3",
+          "forms": [
+            "economic"
+          ],
+          "count": 6
+        }
+      ]
+    },
+    {
+      "word": "financial",
+      "phonetic": "faiˈnæn∫əl",
+      "phoneticReference": "financial [faiˈnæn∫əl] a.财政的，金融的",
+      "papers": 9,
+      "count": 23,
+      "evidence": [
+        {
+          "paper": "202406-1",
+          "forms": [
+            "financial"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-1",
+          "forms": [
+            "financial"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-2",
+          "forms": [
+            "financial"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202412-3",
+          "forms": [
+            "financial"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-1",
+          "forms": [
+            "financial"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-1",
+          "forms": [
+            "financial"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-3",
+          "forms": [
+            "financial"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-2",
+          "forms": [
+            "financial"
+          ],
+          "count": 5
+        },
+        {
+          "paper": "202606-3",
+          "forms": [
+            "financial"
+          ],
+          "count": 10
+        }
+      ]
+    },
+    {
+      "word": "economy",
+      "phonetic": "i(ː)ˈkɔnəmi",
+      "phoneticReference": "economy [i(ː)ˈkɔnəmi] n.经济；节约，节省",
+      "papers": 9,
+      "count": 18,
+      "evidence": [
+        {
+          "paper": "202406-2",
+          "forms": [
+            "economy"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-1",
+          "forms": [
+            "economy"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-2",
+          "forms": [
+            "economies"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202412-3",
+          "forms": [
+            "economy"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202506-2",
+          "forms": [
+            "economies"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "economies"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-3",
+          "forms": [
+            "economy"
+          ],
+          "count": 6
+        },
+        {
+          "paper": "202606-1",
+          "forms": [
+            "economies",
+            "economy"
+          ],
+          "count": 3
+        },
+        {
+          "paper": "202606-3",
+          "forms": [
+            "economy"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "industry",
+      "phonetic": "ˈindəstri",
+      "phoneticReference": "industry [ˈindəstri] n.工业，产业；勤劳",
+      "papers": 10,
+      "count": 18,
+      "evidence": [
+        {
+          "paper": "202412-1",
+          "forms": [
+            "industries"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-2",
+          "forms": [
+            "industry"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-1",
+          "forms": [
+            "industry"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-2",
+          "forms": [
+            "industry"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "industry"
+          ],
+          "count": 3
+        },
+        {
+          "paper": "202512-1",
+          "forms": [
+            "industries",
+            "industry"
+          ],
+          "count": 6
+        },
+        {
+          "paper": "202512-2",
+          "forms": [
+            "industry"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-3",
+          "forms": [
+            "industries"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-1",
+          "forms": [
+            "industry"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-2",
+          "forms": [
+            "industry"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "income",
+      "phonetic": "ˈinkəm",
+      "phoneticReference": "income [ˈinkəm] n.收入；收益；进款",
+      "papers": 8,
+      "count": 13,
+      "evidence": [
+        {
+          "paper": "202412-1",
+          "forms": [
+            "income"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-3",
+          "forms": [
+            "income"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-1",
+          "forms": [
+            "income"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202506-2",
+          "forms": [
+            "income"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "income"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202512-1",
+          "forms": [
+            "income",
+            "incomes"
+          ],
+          "count": 3
+        },
+        {
+          "paper": "202512-3",
+          "forms": [
+            "income"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-3",
+          "forms": [
+            "income"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "investment",
+      "phonetic": "inˈvestmənt",
+      "phoneticReference": "investment [inˈvestmənt] n.投资(额)，投入",
+      "papers": 4,
+      "count": 8,
+      "evidence": [
+        {
+          "paper": "202412-1",
+          "forms": [
+            "investment"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-1",
+          "forms": [
+            "investment"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-2",
+          "forms": [
+            "investment",
+            "investments"
+          ],
+          "count": 5
+        },
+        {
+          "paper": "202606-3",
+          "forms": [
+            "investments"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "profit",
+      "phonetic": "ˈprɔfit",
+      "phoneticReference": "profit [ˈprɔfit] n.益处；利润 vi.得益",
+      "papers": 5,
+      "count": 16,
+      "evidence": [
+        {
+          "paper": "202506-1",
+          "forms": [
+            "profits"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "profits"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-1",
+          "forms": [
+            "profits"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202512-3",
+          "forms": [
+            "profit"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-1",
+          "forms": [
+            "profit",
+            "profits"
+          ],
+          "count": 11
+        }
+      ]
+    },
+    {
+      "word": "demand",
+      "phonetic": "diˈmɑːnd",
+      "phoneticReference": "demand [diˈmɑːnd] vt.要求；需要；询问",
+      "papers": 6,
+      "count": 10,
+      "evidence": [
+        {
+          "paper": "202406-1",
+          "forms": [
+            "demands"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-1",
+          "forms": [
+            "demand"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-2",
+          "forms": [
+            "demand"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-2",
+          "forms": [
+            "demand",
+            "demanding",
+            "demands"
+          ],
+          "count": 3
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "demand",
+            "demands"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202512-1",
+          "forms": [
+            "demand",
+            "demands"
+          ],
+          "count": 2
+        }
+      ]
+    },
+    {
+      "word": "supply",
+      "phonetic": "səˈplai",
+      "phoneticReference": "supply [səˈplai] vt.&n.供给，供应",
+      "papers": 6,
+      "count": 18,
+      "evidence": [
+        {
+          "paper": "202406-1",
+          "forms": [
+            "supplies"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202406-3",
+          "forms": [
+            "supply"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-1",
+          "forms": [
+            "supply"
+          ],
+          "count": 5
+        },
+        {
+          "paper": "202412-3",
+          "forms": [
+            "supplied",
+            "supply"
+          ],
+          "count": 4
+        },
+        {
+          "paper": "202512-1",
+          "forms": [
+            "supplies"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-3",
+          "forms": [
+            "supply"
+          ],
+          "count": 5
+        }
+      ]
+    },
+    {
+      "word": "policy",
+      "phonetic": "ˈpɔlisi",
+      "phoneticReference": "policy [ˈpɔlisi] n.政策，方针",
+      "papers": 8,
+      "count": 33,
+      "evidence": [
+        {
+          "paper": "202406-2",
+          "forms": [
+            "policies"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202412-1",
+          "forms": [
+            "policy"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202412-3",
+          "forms": [
+            "policy"
+          ],
+          "count": 3
+        },
+        {
+          "paper": "202506-1",
+          "forms": [
+            "policies",
+            "policy"
+          ],
+          "count": 7
+        },
+        {
+          "paper": "202506-2",
+          "forms": [
+            "policies",
+            "policy"
+          ],
+          "count": 7
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "policies",
+            "policy"
+          ],
+          "count": 7
+        },
+        {
+          "paper": "202606-1",
+          "forms": [
+            "policies",
+            "policy"
+          ],
+          "count": 4
+        },
+        {
+          "paper": "202606-3",
+          "forms": [
+            "policies"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "government",
+      "phonetic": "ˈgʌvənmənt",
+      "phoneticReference": "government [ˈgʌvənmənt] n.政府；治理；政治",
+      "papers": 9,
+      "count": 32,
+      "evidence": [
+        {
+          "paper": "202406-2",
+          "forms": [
+            "government"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-1",
+          "forms": [
+            "government"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-2",
+          "forms": [
+            "government",
+            "governments"
+          ],
+          "count": 4
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "government",
+            "governments"
+          ],
+          "count": 4
+        },
+        {
+          "paper": "202512-1",
+          "forms": [
+            "government"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-3",
+          "forms": [
+            "government"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202606-1",
+          "forms": [
+            "government",
+            "governments"
+          ],
+          "count": 7
+        },
+        {
+          "paper": "202606-2",
+          "forms": [
+            "government",
+            "governments"
+          ],
+          "count": 7
+        },
+        {
+          "paper": "202606-3",
+          "forms": [
+            "governments"
+          ],
+          "count": 5
+        }
+      ]
+    },
+    {
+      "word": "corporation",
+      "phonetic": "ˌkɔːpəˈrei∫ən",
+      "phoneticReference": "corporation [ˌkɔːpəˈrei∫ən] n.公司，企业；社团",
+      "papers": 4,
+      "count": 8,
+      "evidence": [
+        {
+          "paper": "202506-2",
+          "forms": [
+            "corporations"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "corporations"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-3",
+          "forms": [
+            "corporations"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202606-1",
+          "forms": [
+            "corporations"
+          ],
+          "count": 4
+        }
+      ]
+    },
+    {
+      "word": "management",
+      "phonetic": "ˈmænidʒmənt",
+      "phoneticReference": "management [ˈmænidʒmənt] n.管理；经营，处理",
+      "papers": 6,
+      "count": 9,
+      "evidence": [
+        {
+          "paper": "202406-1",
+          "forms": [
+            "management"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202406-3",
+          "forms": [
+            "management"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-2",
+          "forms": [
+            "management"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "management"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202606-2",
+          "forms": [
+            "management"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-3",
+          "forms": [
+            "management"
+          ],
+          "count": 2
+        }
+      ]
+    },
+    {
+      "word": "efficiency",
+      "phonetic": "iˈfi∫ənsi",
+      "phoneticReference": "efficiency [iˈfi∫ənsi] n.效率；功效，效能",
+      "papers": 6,
+      "count": 8,
+      "evidence": [
+        {
+          "paper": "202406-3",
+          "forms": [
+            "efficiency"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-2",
+          "forms": [
+            "efficiency"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-2",
+          "forms": [
+            "efficiencies",
+            "efficiency"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "efficiencies",
+            "efficiency"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202606-1",
+          "forms": [
+            "efficiency"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-3",
+          "forms": [
+            "efficiency"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "incentive",
+      "phonetic": "ɪnˈsentɪv",
+      "phoneticReference": "incentive [ɪnˈsentɪv] n. 刺激，鼓励，推动力",
+      "papers": 6,
+      "count": 6,
+      "evidence": [
+        {
+          "paper": "202406-1",
+          "forms": [
+            "incentive"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202406-3",
+          "forms": [
+            "incentive"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-1",
+          "forms": [
+            "incentives"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-3",
+          "forms": [
+            "incentives"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-1",
+          "forms": [
+            "incentives"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-2",
+          "forms": [
+            "incentives"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "employment",
+      "phonetic": "imˈplɔimənt",
+      "phoneticReference": "employment [imˈplɔimənt] n.工业；雇/使用",
+      "papers": 2,
+      "count": 3,
+      "evidence": [
+        {
+          "paper": "202412-2",
+          "forms": [
+            "employment"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202506-1",
+          "forms": [
+            "employment"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "production",
+      "phonetic": "prəˈdʌk∫ən",
+      "phoneticReference": "production [prəˈdʌk∫ən] n.生产；产品；总产量",
+      "papers": 3,
+      "count": 14,
+      "evidence": [
+        {
+          "paper": "202506-2",
+          "forms": [
+            "production"
+          ],
+          "count": 6
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "production"
+          ],
+          "count": 6
+        },
+        {
+          "paper": "202512-3",
+          "forms": [
+            "production"
+          ],
+          "count": 2
+        }
+      ]
+    },
+    {
+      "word": "promote",
+      "phonetic": "prəˈməut",
+      "phoneticReference": "promote [prəˈməut] vt.促进，发扬；提升",
+      "papers": 9,
+      "count": 13,
+      "evidence": [
+        {
+          "paper": "202406-1",
+          "forms": [
+            "promoting"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202406-2",
+          "forms": [
+            "promotes"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-1",
+          "forms": [
+            "promoting"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-1",
+          "forms": [
+            "promote",
+            "promoting"
+          ],
+          "count": 4
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "promoting"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-2",
+          "forms": [
+            "promote"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-3",
+          "forms": [
+            "promote"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-2",
+          "forms": [
+            "promote"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-3",
+          "forms": [
+            "promotes",
+            "promoting"
+          ],
+          "count": 2
+        }
+      ]
+    },
+    {
+      "word": "compete",
+      "phonetic": "kəmˈpiːt",
+      "phoneticReference": "compete [kəmˈpiːt] vi.比赛；竞争；对抗",
+      "papers": 3,
+      "count": 3,
+      "evidence": [
+        {
+          "paper": "202512-1",
+          "forms": [
+            "competing"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-3",
+          "forms": [
+            "competing"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-3",
+          "forms": [
+            "competing"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "potential",
+      "phonetic": "pəˈten∫(ə)l",
+      "phoneticReference": "potential [pəˈten∫(ə)l] a.潜在的 n.潜力",
+      "papers": 8,
+      "count": 13,
+      "evidence": [
+        {
+          "paper": "202406-1",
+          "forms": [
+            "potential"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202406-3",
+          "forms": [
+            "potential"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202412-1",
+          "forms": [
+            "potential"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202506-1",
+          "forms": [
+            "potential"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "potential"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-3",
+          "forms": [
+            "potential"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-2",
+          "forms": [
+            "potential"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-3",
+          "forms": [
+            "potential"
+          ],
+          "count": 3
+        }
+      ]
+    },
+    {
+      "word": "capacity",
+      "phonetic": "kəˈpæsiti",
+      "phoneticReference": "capacity [kəˈpæsiti] n.容量；能力；能量",
+      "papers": 3,
+      "count": 4,
+      "evidence": [
+        {
+          "paper": "202406-1",
+          "forms": [
+            "capacity"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202506-1",
+          "forms": [
+            "capacities"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-3",
+          "forms": [
+            "capacity"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "recruit",
+      "phonetic": "rɪˈkruːt",
+      "phoneticReference": "recruit [rɪˈkruːt] n. 新兵，新成员，新手 v. 征募(新兵)，吸收(新成员)",
+      "papers": 2,
+      "count": 3,
+      "evidence": [
+        {
+          "paper": "202412-3",
+          "forms": [
+            "recruit"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-1",
+          "forms": [
+            "recruited",
+            "recruiting"
+          ],
+          "count": 2
+        }
+      ]
+    },
+    {
+      "word": "expense",
+      "phonetic": "ikˈspens",
+      "phoneticReference": "expense [ikˈspens] n.花费，消费；费用",
+      "papers": 6,
+      "count": 6,
+      "evidence": [
+        {
+          "paper": "202406-1",
+          "forms": [
+            "expenses"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202406-3",
+          "forms": [
+            "expenses"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-1",
+          "forms": [
+            "expenses"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-2",
+          "forms": [
+            "expense"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-3",
+          "forms": [
+            "expenses"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-2",
+          "forms": [
+            "expenses"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "occupation",
+      "phonetic": "ˌɔkjuˈpei∫ən",
+      "phoneticReference": "occupation [ˌɔkjuˈpei∫ən] n.占领/据；职业",
+      "papers": 3,
+      "count": 3,
+      "evidence": [
+        {
+          "paper": "202406-2",
+          "forms": [
+            "occupation"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-2",
+          "forms": [
+            "occupation"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "occupation"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "commercial",
+      "phonetic": "kəˈməː∫əl",
+      "phoneticReference": "commercial [kəˈməː∫əl] a.商业的；商品化的",
+      "papers": 2,
+      "count": 2,
+      "evidence": [
+        {
+          "paper": "202512-1",
+          "forms": [
+            "commercial"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-2",
+          "forms": [
+            "commercial"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "artificial",
+      "phonetic": "ˌɑːtiˈfi∫əl",
+      "phoneticReference": "artificial [ˌɑːtiˈfi∫əl] a.人工的；娇揉造作的",
+      "papers": 4,
+      "count": 4,
+      "evidence": [
+        {
+          "paper": "202412-2",
+          "forms": [
+            "artificial"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-1",
+          "forms": [
+            "artificial"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-1",
+          "forms": [
+            "artificial"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-2",
+          "forms": [
+            "artificial"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "intelligence",
+      "phonetic": "inˈtelidʒəns",
+      "phoneticReference": "intelligence [inˈtelidʒəns] n.智力；理解力；情报",
+      "papers": 3,
+      "count": 8,
+      "evidence": [
+        {
+          "paper": "202506-2",
+          "forms": [
+            "intelligence"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "intelligence"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-2",
+          "forms": [
+            "intelligence"
+          ],
+          "count": 6
+        }
+      ]
+    },
+    {
+      "word": "autonomous",
+      "phonetic": "ɔːˈtɒnəməs",
+      "phoneticReference": "autonomous [ɔːˈtɒnəməs] adj. 自治的，自主的，有自治权的",
+      "papers": 3,
+      "count": 5,
+      "evidence": [
+        {
+          "paper": "202512-3",
+          "forms": [
+            "autonomous"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-1",
+          "forms": [
+            "autonomous"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202606-3",
+          "forms": [
+            "autonomous"
+          ],
+          "count": 2
+        }
+      ]
+    },
+    {
+      "word": "computer",
+      "phonetic": "kəmˈpjuːtə",
+      "phoneticReference": "computer [kəmˈpjuːtə] n.计算机，电脑",
+      "papers": 7,
+      "count": 15,
+      "evidence": [
+        {
+          "paper": "202406-3",
+          "forms": [
+            "computer"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-1",
+          "forms": [
+            "computer"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-3",
+          "forms": [
+            "computer"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-1",
+          "forms": [
+            "computer",
+            "computers"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "computer"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-2",
+          "forms": [
+            "computer",
+            "computers"
+          ],
+          "count": 6
+        },
+        {
+          "paper": "202606-3",
+          "forms": [
+            "computer",
+            "computers"
+          ],
+          "count": 3
+        }
+      ]
+    },
+    {
+      "word": "database",
+      "phonetic": "ˈdeɪtəˌbeɪs",
+      "phoneticReference": "database [ˈdeɪtəˌbeɪs] n. 资料库，数据库",
+      "papers": 3,
+      "count": 3,
+      "evidence": [
+        {
+          "paper": "202506-1",
+          "forms": [
+            "database"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-2",
+          "forms": [
+            "database"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "database"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "hardware",
+      "phonetic": "ˈhɑːdweə",
+      "phoneticReference": "hardware [ˈhɑːdweə] n.五金器具；硬件",
+      "papers": 2,
+      "count": 2,
+      "evidence": [
+        {
+          "paper": "202406-2",
+          "forms": [
+            "hardware"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-3",
+          "forms": [
+            "hardware"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "equipment",
+      "phonetic": "iˈkwipmənt",
+      "phoneticReference": "equipment [iˈkwipmənt] n.装备，设备，配备",
+      "papers": 3,
+      "count": 5,
+      "evidence": [
+        {
+          "paper": "202406-1",
+          "forms": [
+            "equipment"
+          ],
+          "count": 3
+        },
+        {
+          "paper": "202406-3",
+          "forms": [
+            "equipment"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-2",
+          "forms": [
+            "equipment"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "function",
+      "phonetic": "ˈfʌŋk∫ən",
+      "phoneticReference": "function [ˈfʌŋk∫ən] n.功能；职务；函数",
+      "papers": 8,
+      "count": 10,
+      "evidence": [
+        {
+          "paper": "202406-1",
+          "forms": [
+            "function",
+            "functions"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202412-1",
+          "forms": [
+            "functions"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-3",
+          "forms": [
+            "functions"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202506-1",
+          "forms": [
+            "function"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "function"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-1",
+          "forms": [
+            "functioning"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-2",
+          "forms": [
+            "function"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-3",
+          "forms": [
+            "functions"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "design",
+      "phonetic": "diˈzain",
+      "phoneticReference": "design [diˈzain] vt.设计 n.设计；图样",
+      "papers": 10,
+      "count": 27,
+      "evidence": [
+        {
+          "paper": "202412-1",
+          "forms": [
+            "design"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-2",
+          "forms": [
+            "designs"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-3",
+          "forms": [
+            "design"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-2",
+          "forms": [
+            "designed",
+            "designs"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202512-1",
+          "forms": [
+            "designed",
+            "designing"
+          ],
+          "count": 3
+        },
+        {
+          "paper": "202512-2",
+          "forms": [
+            "design"
+          ],
+          "count": 3
+        },
+        {
+          "paper": "202512-3",
+          "forms": [
+            "design",
+            "designed",
+            "designing"
+          ],
+          "count": 6
+        },
+        {
+          "paper": "202606-1",
+          "forms": [
+            "design",
+            "designing"
+          ],
+          "count": 4
+        },
+        {
+          "paper": "202606-2",
+          "forms": [
+            "designing",
+            "designs"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202606-3",
+          "forms": [
+            "design",
+            "designed",
+            "designing"
+          ],
+          "count": 4
+        }
+      ]
+    },
+    {
+      "word": "model",
+      "phonetic": "ˈmɔdl",
+      "phoneticReference": "model [ˈmɔdl] n.模型；模式；模特儿",
+      "papers": 10,
+      "count": 27,
+      "evidence": [
+        {
+          "paper": "202406-2",
+          "forms": [
+            "models"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-1",
+          "forms": [
+            "model",
+            "models"
+          ],
+          "count": 3
+        },
+        {
+          "paper": "202412-3",
+          "forms": [
+            "model",
+            "models"
+          ],
+          "count": 7
+        },
+        {
+          "paper": "202506-1",
+          "forms": [
+            "model",
+            "modeling",
+            "models"
+          ],
+          "count": 3
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "model"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-1",
+          "forms": [
+            "models"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-3",
+          "forms": [
+            "models"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-1",
+          "forms": [
+            "model",
+            "models"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202606-2",
+          "forms": [
+            "model"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202606-3",
+          "forms": [
+            "model",
+            "models"
+          ],
+          "count": 6
+        }
+      ]
+    },
+    {
+      "word": "operate",
+      "phonetic": "ˈɔpəreit",
+      "phoneticReference": "operate [ˈɔpəreit] vi.操作；施行手术",
+      "papers": 8,
+      "count": 14,
+      "evidence": [
+        {
+          "paper": "202406-1",
+          "forms": [
+            "operate"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202406-2",
+          "forms": [
+            "operate",
+            "operated"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202412-3",
+          "forms": [
+            "operate"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-1",
+          "forms": [
+            "operating"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-3",
+          "forms": [
+            "operated"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202606-1",
+          "forms": [
+            "operate",
+            "operates"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202606-2",
+          "forms": [
+            "operate"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-3",
+          "forms": [
+            "operate",
+            "operates"
+          ],
+          "count": 4
+        }
+      ]
+    },
+    {
+      "word": "feature",
+      "phonetic": "ˈfiːt∫ə",
+      "phoneticReference": "feature [ˈfiːt∫ə] n.特征，特色；面貌",
+      "papers": 6,
+      "count": 11,
+      "evidence": [
+        {
+          "paper": "202406-1",
+          "forms": [
+            "featured",
+            "features",
+            "featuring"
+          ],
+          "count": 3
+        },
+        {
+          "paper": "202406-2",
+          "forms": [
+            "feature"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202412-1",
+          "forms": [
+            "features"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-2",
+          "forms": [
+            "features"
+          ],
+          "count": 3
+        },
+        {
+          "paper": "202512-3",
+          "forms": [
+            "features"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-2",
+          "forms": [
+            "features"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "communication",
+      "phonetic": "kəˌmjuːniˈkei∫n",
+      "phoneticReference": "communication [kəˌmjuːniˈkei∫n] n.通讯;传达；交通",
+      "papers": 4,
+      "count": 9,
+      "evidence": [
+        {
+          "paper": "202406-1",
+          "forms": [
+            "communication"
+          ],
+          "count": 4
+        },
+        {
+          "paper": "202606-1",
+          "forms": [
+            "communication"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202606-2",
+          "forms": [
+            "communication"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202606-3",
+          "forms": [
+            "communication"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "security",
+      "phonetic": "siˈkjuəriti",
+      "phoneticReference": "security [siˈkjuəriti] n.安全，安全感",
+      "papers": 2,
+      "count": 4,
+      "evidence": [
+        {
+          "paper": "202412-1",
+          "forms": [
+            "security"
+          ],
+          "count": 3
+        },
+        {
+          "paper": "202412-2",
+          "forms": [
+            "security"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "screen",
+      "phonetic": "skriːn",
+      "phoneticReference": "screen [skriːn] n.屏；屏幕 vt.掩蔽",
+      "papers": 6,
+      "count": 18,
+      "evidence": [
+        {
+          "paper": "202406-2",
+          "forms": [
+            "screen"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-1",
+          "forms": [
+            "screen"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202512-1",
+          "forms": [
+            "screen",
+            "screens"
+          ],
+          "count": 6
+        },
+        {
+          "paper": "202512-2",
+          "forms": [
+            "screens"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-1",
+          "forms": [
+            "screen",
+            "screens"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202606-2",
+          "forms": [
+            "screen"
+          ],
+          "count": 6
+        }
+      ]
+    },
+    {
+      "word": "remote",
+      "phonetic": "riˈməut",
+      "phoneticReference": "remote [riˈməut] a.相隔很远的；冷淡的",
+      "papers": 2,
+      "count": 7,
+      "evidence": [
+        {
+          "paper": "202406-2",
+          "forms": [
+            "remote"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202606-1",
+          "forms": [
+            "remote"
+          ],
+          "count": 5
+        }
+      ]
+    },
+    {
+      "word": "automatic",
+      "phonetic": "ˌɔːtəˈmætik",
+      "phoneticReference": "automatic [ˌɔːtəˈmætik] a.自动的；机械的",
+      "papers": 4,
+      "count": 6,
+      "evidence": [
+        {
+          "paper": "202406-2",
+          "forms": [
+            "automatic"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202512-1",
+          "forms": [
+            "automatic"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-3",
+          "forms": [
+            "automatic"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202606-2",
+          "forms": [
+            "automatic"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "intelligent",
+      "phonetic": "inˈtelidʒənt",
+      "phoneticReference": "intelligent [inˈtelidʒənt] a.聪明的；理智的",
+      "papers": 4,
+      "count": 4,
+      "evidence": [
+        {
+          "paper": "202412-3",
+          "forms": [
+            "intelligent"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-2",
+          "forms": [
+            "intelligent"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-1",
+          "forms": [
+            "intelligent"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-2",
+          "forms": [
+            "intelligent"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "researcher",
+      "phonetic": "riˈsəːt∫ə(r)",
+      "phoneticReference": "researcher [riˈsəːt∫ə(r)] n.调查者；探究者",
+      "papers": 9,
+      "count": 22,
+      "evidence": [
+        {
+          "paper": "202406-1",
+          "forms": [
+            "researchers"
+          ],
+          "count": 3
+        },
+        {
+          "paper": "202406-2",
+          "forms": [
+            "researchers"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202406-3",
+          "forms": [
+            "researcher",
+            "researchers"
+          ],
+          "count": 5
+        },
+        {
+          "paper": "202412-1",
+          "forms": [
+            "researcher",
+            "researchers"
+          ],
+          "count": 3
+        },
+        {
+          "paper": "202412-3",
+          "forms": [
+            "researchers"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202506-2",
+          "forms": [
+            "researchers"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "researchers"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-1",
+          "forms": [
+            "researchers"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-3",
+          "forms": [
+            "researchers"
+          ],
+          "count": 5
+        }
+      ]
+    },
+    {
+      "word": "scientist",
+      "phonetic": "ˈsaiəntist",
+      "phoneticReference": "scientist [ˈsaiəntist] n.(自然)科学家",
+      "papers": 8,
+      "count": 15,
+      "evidence": [
+        {
+          "paper": "202406-1",
+          "forms": [
+            "scientists"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202406-3",
+          "forms": [
+            "scientists"
+          ],
+          "count": 3
+        },
+        {
+          "paper": "202412-1",
+          "forms": [
+            "scientists"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202412-3",
+          "forms": [
+            "scientists"
+          ],
+          "count": 4
+        },
+        {
+          "paper": "202506-1",
+          "forms": [
+            "scientists"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-2",
+          "forms": [
+            "scientists"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "scientists"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-2",
+          "forms": [
+            "scientists"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "exposure",
+      "phonetic": "iksˈpəuʒə",
+      "phoneticReference": "exposure [iksˈpəuʒə] n.暴露；揭露；曝光",
+      "papers": 2,
+      "count": 3,
+      "evidence": [
+        {
+          "paper": "202406-3",
+          "forms": [
+            "exposure"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-2",
+          "forms": [
+            "exposure"
+          ],
+          "count": 2
+        }
+      ]
+    },
+    {
+      "word": "content",
+      "phonetic": "kənˈtent",
+      "phoneticReference": "content [kənˈtent] n.内容，目录；容量",
+      "papers": 6,
+      "count": 9,
+      "evidence": [
+        {
+          "paper": "202412-3",
+          "forms": [
+            "content"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-1",
+          "forms": [
+            "contents"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "contents"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-2",
+          "forms": [
+            "content"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-3",
+          "forms": [
+            "content"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-2",
+          "forms": [
+            "content"
+          ],
+          "count": 4
+        }
+      ]
+    },
+    {
+      "word": "broadcast",
+      "phonetic": "ˈbrɔːdkɑːst",
+      "phoneticReference": "broadcast [ˈbrɔːdkɑːst] n.广播，播音",
+      "papers": 2,
+      "count": 4,
+      "evidence": [
+        {
+          "paper": "202406-2",
+          "forms": [
+            "broadcasts"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202512-3",
+          "forms": [
+            "broadcast",
+            "broadcasts"
+          ],
+          "count": 2
+        }
+      ]
+    },
+    {
+      "word": "influential",
+      "phonetic": "ˌinfluˈen∫əl",
+      "phoneticReference": "influential [ˌinfluˈen∫əl] a.有影响的；有权势的",
+      "papers": 2,
+      "count": 2,
+      "evidence": [
+        {
+          "paper": "202512-3",
+          "forms": [
+            "influential"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-3",
+          "forms": [
+            "influential"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "visual",
+      "phonetic": "ˈvizjuəl",
+      "phoneticReference": "visual [ˈvizjuəl] a.看的；看得见的",
+      "papers": 2,
+      "count": 2,
+      "evidence": [
+        {
+          "paper": "202406-3",
+          "forms": [
+            "visual"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-2",
+          "forms": [
+            "visual"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "carbon",
+      "phonetic": "ˈkɑːbən",
+      "phoneticReference": "carbon [ˈkɑːbən] n.碳",
+      "papers": 7,
+      "count": 11,
+      "evidence": [
+        {
+          "paper": "202406-1",
+          "forms": [
+            "carbon"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-1",
+          "forms": [
+            "carbon"
+          ],
+          "count": 3
+        },
+        {
+          "paper": "202412-2",
+          "forms": [
+            "carbon"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-1",
+          "forms": [
+            "carbon"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-2",
+          "forms": [
+            "carbon"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "carbon"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-2",
+          "forms": [
+            "carbon"
+          ],
+          "count": 3
+        }
+      ]
+    },
+    {
+      "word": "greenhouse",
+      "phonetic": "ˈgriːnhaus",
+      "phoneticReference": "greenhouse [ˈgriːnhaus] n.温室，玻璃暖房",
+      "papers": 4,
+      "count": 36,
+      "evidence": [
+        {
+          "paper": "202406-1",
+          "forms": [
+            "greenhouse"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-1",
+          "forms": [
+            "greenhouse"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-2",
+          "forms": [
+            "greenhouse"
+          ],
+          "count": 17
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "greenhouse"
+          ],
+          "count": 17
+        }
+      ]
+    },
+    {
+      "word": "agriculture",
+      "phonetic": "ˈægrikʌlt∫ə",
+      "phoneticReference": "agriculture [ˈægrikʌlt∫ə] n.农业，农艺；农学",
+      "papers": 4,
+      "count": 21,
+      "evidence": [
+        {
+          "paper": "202406-1",
+          "forms": [
+            "agriculture"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-1",
+          "forms": [
+            "agriculture"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202506-2",
+          "forms": [
+            "agriculture"
+          ],
+          "count": 9
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "agriculture"
+          ],
+          "count": 9
+        }
+      ]
+    },
+    {
+      "word": "chemical",
+      "phonetic": "ˈkemikəl",
+      "phoneticReference": "chemical [ˈkemikəl] a.化学的 n.化学制品",
+      "papers": 6,
+      "count": 9,
+      "evidence": [
+        {
+          "paper": "202406-1",
+          "forms": [
+            "chemical"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202406-2",
+          "forms": [
+            "chemical",
+            "chemicals"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202406-3",
+          "forms": [
+            "chemical"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-2",
+          "forms": [
+            "chemical"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202506-1",
+          "forms": [
+            "chemicals"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202606-2",
+          "forms": [
+            "chemical"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "electricity",
+      "phonetic": "ilekˈtrisiti",
+      "phoneticReference": "electricity [ilekˈtrisiti] n.电，电学；电流",
+      "papers": 4,
+      "count": 8,
+      "evidence": [
+        {
+          "paper": "202406-1",
+          "forms": [
+            "electricity"
+          ],
+          "count": 3
+        },
+        {
+          "paper": "202506-2",
+          "forms": [
+            "electricity"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "electricity"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-3",
+          "forms": [
+            "electricity"
+          ],
+          "count": 3
+        }
+      ]
+    },
+    {
+      "word": "preserve",
+      "phonetic": "priˈzəːv",
+      "phoneticReference": "preserve [priˈzəːv] vt.保护；保存；腌渍",
+      "papers": 3,
+      "count": 4,
+      "evidence": [
+        {
+          "paper": "202506-1",
+          "forms": [
+            "preserve",
+            "preserved"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "preserved"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-2",
+          "forms": [
+            "preserving"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "threaten",
+      "phonetic": "ˈθretn",
+      "phoneticReference": "threaten [ˈθretn] vt.&vi.威胁，恐吓",
+      "papers": 5,
+      "count": 6,
+      "evidence": [
+        {
+          "paper": "202406-3",
+          "forms": [
+            "threatened"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-1",
+          "forms": [
+            "threaten",
+            "threatening"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202512-1",
+          "forms": [
+            "threatened"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-2",
+          "forms": [
+            "threatened"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-2",
+          "forms": [
+            "threatening"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "harmful",
+      "phonetic": "ˈhɑːmful",
+      "phoneticReference": "harmful [ˈhɑːmful] a.有害的",
+      "papers": 5,
+      "count": 5,
+      "evidence": [
+        {
+          "paper": "202506-2",
+          "forms": [
+            "harmful"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "harmful"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-1",
+          "forms": [
+            "harmful"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-3",
+          "forms": [
+            "harmful"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-3",
+          "forms": [
+            "harmful"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "reduction",
+      "phonetic": "riˈdʌk∫ən",
+      "phoneticReference": "reduction [riˈdʌk∫ən] n.减少，减小，缩减",
+      "papers": 3,
+      "count": 5,
+      "evidence": [
+        {
+          "paper": "202506-2",
+          "forms": [
+            "reduction"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "reduction"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202512-1",
+          "forms": [
+            "reductions"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "protection",
+      "phonetic": "prəˈtek∫ən",
+      "phoneticReference": "protection [prəˈtek∫ən] n.保护，警戒",
+      "papers": 3,
+      "count": 5,
+      "evidence": [
+        {
+          "paper": "202506-2",
+          "forms": [
+            "protection"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "protection"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202512-2",
+          "forms": [
+            "protection"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "organism",
+      "phonetic": "ˈɔːgənizəm",
+      "phoneticReference": "organism [ˈɔːgənizəm] n.生物体；有机体",
+      "papers": 3,
+      "count": 3,
+      "evidence": [
+        {
+          "paper": "202506-2",
+          "forms": [
+            "organisms"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "organisms"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-2",
+          "forms": [
+            "organisms"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "fertilizer",
+      "phonetic": "ˈfəːtiˌlaizə",
+      "phoneticReference": "fertilizer [ˈfəːtiˌlaizə] n.肥料",
+      "papers": 3,
+      "count": 3,
+      "evidence": [
+        {
+          "paper": "202506-1",
+          "forms": [
+            "fertilizers"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-2",
+          "forms": [
+            "fertilizer"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "fertilizer"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "contaminate",
+      "phonetic": "kənˈtæmɪneɪt",
+      "phoneticReference": "contaminate [kənˈtæmɪneɪt] v. 污染，玷污，弄脏",
+      "papers": 2,
+      "count": 2,
+      "evidence": [
+        {
+          "paper": "202506-1",
+          "forms": [
+            "contaminated"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-2",
+          "forms": [
+            "contaminated"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "diverse",
+      "phonetic": "daiˈvəːs",
+      "phoneticReference": "diverse [daiˈvəːs] a.不一样的，相异的",
+      "papers": 3,
+      "count": 5,
+      "evidence": [
+        {
+          "paper": "202412-2",
+          "forms": [
+            "diverse"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-1",
+          "forms": [
+            "diverse"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-2",
+          "forms": [
+            "diverse"
+          ],
+          "count": 3
+        }
+      ]
+    },
+    {
+      "word": "boundary",
+      "phonetic": "ˈbaundəri",
+      "phoneticReference": "boundary [ˈbaundəri] n.分界线，办界",
+      "papers": 3,
+      "count": 5,
+      "evidence": [
+        {
+          "paper": "202412-1",
+          "forms": [
+            "boundaries"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-2",
+          "forms": [
+            "boundaries",
+            "boundary"
+          ],
+          "count": 3
+        },
+        {
+          "paper": "202606-2",
+          "forms": [
+            "boundary"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "restrict",
+      "phonetic": "risˈtrikt",
+      "phoneticReference": "restrict [risˈtrikt] vt 限制，限定，约束",
+      "papers": 3,
+      "count": 3,
+      "evidence": [
+        {
+          "paper": "202512-2",
+          "forms": [
+            "restricts"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-1",
+          "forms": [
+            "restrict"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-3",
+          "forms": [
+            "restrict"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "widespread",
+      "phonetic": "ˈwaidspred",
+      "phoneticReference": "widespread [ˈwaidspred] a.分布广/普遍的",
+      "papers": 3,
+      "count": 3,
+      "evidence": [
+        {
+          "paper": "202412-3",
+          "forms": [
+            "widespread"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-2",
+          "forms": [
+            "widespread"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "widespread"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "catastrophe",
+      "phonetic": "kəˈtæstrəfɪ",
+      "phoneticReference": "catastrophe [kəˈtæstrəfɪ] n. (突然的)大灾祸，大灾害",
+      "papers": 2,
+      "count": 2,
+      "evidence": [
+        {
+          "paper": "202412-2",
+          "forms": [
+            "catastrophes"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-1",
+          "forms": [
+            "catastrophe"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "distribute",
+      "phonetic": "disˈtribju(ː)t",
+      "phoneticReference": "distribute [disˈtribju(ː)t] vt.分发，分送；分布",
+      "papers": 2,
+      "count": 2,
+      "evidence": [
+        {
+          "paper": "202412-3",
+          "forms": [
+            "distributed"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-1",
+          "forms": [
+            "distributes"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "intensive",
+      "phonetic": "inˈtensiv",
+      "phoneticReference": "intensive [inˈtensiv] a.加强的；精耕细作的",
+      "papers": 2,
+      "count": 2,
+      "evidence": [
+        {
+          "paper": "202506-2",
+          "forms": [
+            "intensive"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "intensive"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "industrial",
+      "phonetic": "inˈdʌstriəl",
+      "phoneticReference": "industrial [inˈdʌstriəl] a.工业的；产业的",
+      "papers": 3,
+      "count": 5,
+      "evidence": [
+        {
+          "paper": "202406-1",
+          "forms": [
+            "industrial"
+          ],
+          "count": 3
+        },
+        {
+          "paper": "202406-3",
+          "forms": [
+            "industrial"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-1",
+          "forms": [
+            "industrial"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "manufacture",
+      "phonetic": "ˌmænjuˈfækt∫ə",
+      "phoneticReference": "manufacture [ˌmænjuˈfækt∫ə] vt.制造 n.制造；产品",
+      "papers": 4,
+      "count": 5,
+      "evidence": [
+        {
+          "paper": "202412-3",
+          "forms": [
+            "manufacture"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202506-2",
+          "forms": [
+            "manufacturing"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "manufacturing"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-2",
+          "forms": [
+            "manufacturing"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "radiation",
+      "phonetic": "ˌreidiˈei∫ən",
+      "phoneticReference": "radiation [ˌreidiˈei∫ən] n.放/发射；辐射能",
+      "papers": 2,
+      "count": 4,
+      "evidence": [
+        {
+          "paper": "202506-2",
+          "forms": [
+            "radiation"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "radiation"
+          ],
+          "count": 2
+        }
+      ]
+    },
+    {
+      "word": "absorb",
+      "phonetic": "əbˈsɔːb",
+      "phoneticReference": "absorb [əbˈsɔːb] vt.吸收；使专心",
+      "papers": 2,
+      "count": 2,
+      "evidence": [
+        {
+          "paper": "202406-2",
+          "forms": [
+            "absorb"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-1",
+          "forms": [
+            "absorb"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "survive",
+      "phonetic": "səˈvaiv",
+      "phoneticReference": "survive [səˈvaiv] vt.幸免于 vi.活下来",
+      "papers": 5,
+      "count": 5,
+      "evidence": [
+        {
+          "paper": "202412-2",
+          "forms": [
+            "survive"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-2",
+          "forms": [
+            "survive"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "survive"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-2",
+          "forms": [
+            "survive"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-2",
+          "forms": [
+            "survived"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "psychological",
+      "phonetic": "ˌsaikəˈlɔdʒikəl",
+      "phoneticReference": "psychological [ˌsaikəˈlɔdʒikəl] a.心理(学)的",
+      "papers": 6,
+      "count": 7,
+      "evidence": [
+        {
+          "paper": "202406-3",
+          "forms": [
+            "psychological"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-1",
+          "forms": [
+            "psychological"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-2",
+          "forms": [
+            "psychological"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "psychological"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-1",
+          "forms": [
+            "psychological"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202606-2",
+          "forms": [
+            "psychological"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "anxiety",
+      "phonetic": "æŋˈzaiəti",
+      "phoneticReference": "anxiety [æŋˈzaiəti] n.焦虑，忧虑；渴望",
+      "papers": 6,
+      "count": 8,
+      "evidence": [
+        {
+          "paper": "202406-1",
+          "forms": [
+            "anxiety"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-1",
+          "forms": [
+            "anxiety"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-2",
+          "forms": [
+            "anxiety"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202512-3",
+          "forms": [
+            "anxiety"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-1",
+          "forms": [
+            "anxiety"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-2",
+          "forms": [
+            "anxiety"
+          ],
+          "count": 2
+        }
+      ]
+    },
+    {
+      "word": "chronic",
+      "phonetic": "ˈkrɒnɪk",
+      "phoneticReference": "chronic [ˈkrɒnɪk] adj. 1. (病症)长期未愈的，慢性的 2. 极坏的，极差的",
+      "papers": 6,
+      "count": 6,
+      "evidence": [
+        {
+          "paper": "202406-1",
+          "forms": [
+            "chronic"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202406-3",
+          "forms": [
+            "chronic"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-1",
+          "forms": [
+            "chronic"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-2",
+          "forms": [
+            "chronic"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-1",
+          "forms": [
+            "chronic"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-3",
+          "forms": [
+            "chronic"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "disease",
+      "phonetic": "diˈziːz",
+      "phoneticReference": "disease [diˈziːz] n.病，疾病；病害",
+      "papers": 6,
+      "count": 8,
+      "evidence": [
+        {
+          "paper": "202406-1",
+          "forms": [
+            "diseases"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202406-3",
+          "forms": [
+            "diseases"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-3",
+          "forms": [
+            "disease"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-1",
+          "forms": [
+            "disease",
+            "diseases"
+          ],
+          "count": 3
+        },
+        {
+          "paper": "202606-1",
+          "forms": [
+            "diseases"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-3",
+          "forms": [
+            "diseases"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "nutrition",
+      "phonetic": "njuːˈtrɪʃən",
+      "phoneticReference": "nutrition [njuːˈtrɪʃən] n. 1. 营养，滋养 2. 营养物，食物",
+      "papers": 3,
+      "count": 6,
+      "evidence": [
+        {
+          "paper": "202406-1",
+          "forms": [
+            "nutrition"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202406-3",
+          "forms": [
+            "nutrition"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202412-1",
+          "forms": [
+            "nutrition"
+          ],
+          "count": 2
+        }
+      ]
+    },
+    {
+      "word": "protein",
+      "phonetic": "ˈprəutiːn",
+      "phoneticReference": "protein [ˈprəutiːn] n.蛋白质，朊",
+      "papers": 3,
+      "count": 15,
+      "evidence": [
+        {
+          "paper": "202412-1",
+          "forms": [
+            "protein"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-2",
+          "forms": [
+            "protein",
+            "proteins"
+          ],
+          "count": 7
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "protein",
+            "proteins"
+          ],
+          "count": 7
+        }
+      ]
+    },
+    {
+      "word": "fatigue",
+      "phonetic": "fəˈtiːg",
+      "phoneticReference": "fatigue [fəˈtiːg] n.疲劳，劳累",
+      "papers": 3,
+      "count": 5,
+      "evidence": [
+        {
+          "paper": "202406-3",
+          "forms": [
+            "fatigue",
+            "fatigued"
+          ],
+          "count": 3
+        },
+        {
+          "paper": "202606-1",
+          "forms": [
+            "fatigue"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-3",
+          "forms": [
+            "fatigue"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "emotion",
+      "phonetic": "iˈməu∫ən",
+      "phoneticReference": "emotion [iˈməu∫ən] n.情感，感情；激动",
+      "papers": 7,
+      "count": 10,
+      "evidence": [
+        {
+          "paper": "202406-1",
+          "forms": [
+            "emotions"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202406-3",
+          "forms": [
+            "emotions"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-1",
+          "forms": [
+            "emotion",
+            "emotions"
+          ],
+          "count": 3
+        },
+        {
+          "paper": "202412-2",
+          "forms": [
+            "emotion"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-2",
+          "forms": [
+            "emotion",
+            "emotions"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202512-3",
+          "forms": [
+            "emotion"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-2",
+          "forms": [
+            "emotions"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "emotional",
+      "phonetic": "iˈməu∫ənl",
+      "phoneticReference": "emotional [iˈməu∫ənl] a.感情的，情绪的",
+      "papers": 5,
+      "count": 12,
+      "evidence": [
+        {
+          "paper": "202406-1",
+          "forms": [
+            "emotional"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202406-2",
+          "forms": [
+            "emotional"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202406-3",
+          "forms": [
+            "emotional"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-2",
+          "forms": [
+            "emotional"
+          ],
+          "count": 5
+        },
+        {
+          "paper": "202512-2",
+          "forms": [
+            "emotional"
+          ],
+          "count": 3
+        }
+      ]
+    },
+    {
+      "word": "alleviate",
+      "phonetic": "əˈliːvɪeɪt",
+      "phoneticReference": "alleviate [əˈliːvɪeɪt] v. 缓和，减轻(痛苦等)",
+      "papers": 6,
+      "count": 8,
+      "evidence": [
+        {
+          "paper": "202406-1",
+          "forms": [
+            "alleviate"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202412-1",
+          "forms": [
+            "alleviate"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-2",
+          "forms": [
+            "alleviating"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-1",
+          "forms": [
+            "alleviate"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-2",
+          "forms": [
+            "alleviate"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202606-3",
+          "forms": [
+            "alleviate"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "immune",
+      "phonetic": "ɪˈmjuːn",
+      "phoneticReference": "immune [ɪˈmjuːn] adj. 有免疫力的，不受影响的，获豁免的  immunity",
+      "papers": 4,
+      "count": 5,
+      "evidence": [
+        {
+          "paper": "202406-2",
+          "forms": [
+            "immune"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202406-3",
+          "forms": [
+            "immune"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202412-1",
+          "forms": [
+            "immune"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-2",
+          "forms": [
+            "immune"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "medical",
+      "phonetic": "ˈmedikəl",
+      "phoneticReference": "medical [ˈmedikəl] a.医学的；内科的",
+      "papers": 3,
+      "count": 8,
+      "evidence": [
+        {
+          "paper": "202412-1",
+          "forms": [
+            "medical"
+          ],
+          "count": 3
+        },
+        {
+          "paper": "202412-3",
+          "forms": [
+            "medical"
+          ],
+          "count": 4
+        },
+        {
+          "paper": "202506-1",
+          "forms": [
+            "medical"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "surgery",
+      "phonetic": "ˈsəːdʒəri",
+      "phoneticReference": "surgery [ˈsəːdʒəri] n.外科，外科手术",
+      "papers": 3,
+      "count": 3,
+      "evidence": [
+        {
+          "paper": "202406-1",
+          "forms": [
+            "surgeries"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202406-2",
+          "forms": [
+            "surgery"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-1",
+          "forms": [
+            "surgery"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "genetic",
+      "phonetic": "dʒɪˈnetɪk",
+      "phoneticReference": "genetic [dʒɪˈnetɪk] adj. 遗传(学)的",
+      "papers": 2,
+      "count": 2,
+      "evidence": [
+        {
+          "paper": "202506-2",
+          "forms": [
+            "genetic"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "genetic"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "vulnerable",
+      "phonetic": "ˈvʌlnərəbl",
+      "phoneticReference": "vulnerable [ˈvʌlnərəbl] adj. 1. 易受攻击的，有弱点的 2. (指人)易受伤害的，脆弱的，敏感的",
+      "papers": 2,
+      "count": 4,
+      "evidence": [
+        {
+          "paper": "202512-2",
+          "forms": [
+            "vulnerable"
+          ],
+          "count": 3
+        },
+        {
+          "paper": "202512-3",
+          "forms": [
+            "vulnerable"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "adolescent",
+      "phonetic": "ˌædəˈlesənt",
+      "phoneticReference": "adolescent [ˌædəˈlesənt] adj. 青少年期的 n. 青少年",
+      "papers": 2,
+      "count": 2,
+      "evidence": [
+        {
+          "paper": "202506-1",
+          "forms": [
+            "adolescents"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-1",
+          "forms": [
+            "adolescents"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "childhood",
+      "phonetic": "ˈt∫aildhud",
+      "phoneticReference": "childhood [ˈt∫aildhud] n.童年，幼年；早期",
+      "papers": 4,
+      "count": 4,
+      "evidence": [
+        {
+          "paper": "202406-1",
+          "forms": [
+            "childhood"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202406-3",
+          "forms": [
+            "childhood"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-2",
+          "forms": [
+            "childhood"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-2",
+          "forms": [
+            "childhood"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "brain",
+      "phonetic": "brein",
+      "phoneticReference": "brain [brein] n.脑，脑髓；脑力",
+      "papers": 7,
+      "count": 49,
+      "evidence": [
+        {
+          "paper": "202406-1",
+          "forms": [
+            "brain"
+          ],
+          "count": 3
+        },
+        {
+          "paper": "202406-2",
+          "forms": [
+            "brain"
+          ],
+          "count": 4
+        },
+        {
+          "paper": "202406-3",
+          "forms": [
+            "brain"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202412-1",
+          "forms": [
+            "brain"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-2",
+          "forms": [
+            "brain"
+          ],
+          "count": 3
+        },
+        {
+          "paper": "202412-3",
+          "forms": [
+            "brain",
+            "brained",
+            "brains"
+          ],
+          "count": 35
+        },
+        {
+          "paper": "202512-2",
+          "forms": [
+            "brain"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "memory",
+      "phonetic": "ˈmeməri",
+      "phoneticReference": "memory [ˈmeməri] n.记忆；回忆；存储",
+      "papers": 7,
+      "count": 24,
+      "evidence": [
+        {
+          "paper": "202406-1",
+          "forms": [
+            "memories"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202406-2",
+          "forms": [
+            "memory"
+          ],
+          "count": 3
+        },
+        {
+          "paper": "202406-3",
+          "forms": [
+            "memories",
+            "memory"
+          ],
+          "count": 4
+        },
+        {
+          "paper": "202412-2",
+          "forms": [
+            "memories",
+            "memory"
+          ],
+          "count": 4
+        },
+        {
+          "paper": "202506-1",
+          "forms": [
+            "memories",
+            "memory"
+          ],
+          "count": 6
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "memories",
+            "memory"
+          ],
+          "count": 5
+        },
+        {
+          "paper": "202512-3",
+          "forms": [
+            "memories"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "behavior",
+      "phonetic": "biˈheivjə",
+      "phoneticReference": "behavior [biˈheivjə] n.行为，举止，态度",
+      "papers": 10,
+      "count": 38,
+      "evidence": [
+        {
+          "paper": "202406-1",
+          "forms": [
+            "behavior",
+            "behaviors"
+          ],
+          "count": 6
+        },
+        {
+          "paper": "202406-2",
+          "forms": [
+            "behavior",
+            "behaviors"
+          ],
+          "count": 18
+        },
+        {
+          "paper": "202406-3",
+          "forms": [
+            "behaviors"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-1",
+          "forms": [
+            "behavior"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-3",
+          "forms": [
+            "behavior",
+            "behaviors"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202506-2",
+          "forms": [
+            "behavior"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202512-2",
+          "forms": [
+            "behavior"
+          ],
+          "count": 5
+        },
+        {
+          "paper": "202606-1",
+          "forms": [
+            "behavior"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-2",
+          "forms": [
+            "behavior"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-3",
+          "forms": [
+            "behavior"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "trait",
+      "phonetic": "treɪt",
+      "phoneticReference": "trait [treɪt] n. (人的)个性，显著的特点",
+      "papers": 9,
+      "count": 14,
+      "evidence": [
+        {
+          "paper": "202412-1",
+          "forms": [
+            "traits"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-2",
+          "forms": [
+            "traits"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-3",
+          "forms": [
+            "traits"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-1",
+          "forms": [
+            "traits"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202506-2",
+          "forms": [
+            "traits"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "traits"
+          ],
+          "count": 3
+        },
+        {
+          "paper": "202512-2",
+          "forms": [
+            "traits"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202606-2",
+          "forms": [
+            "traits"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-3",
+          "forms": [
+            "trait"
+          ],
+          "count": 2
+        }
+      ]
+    },
+    {
+      "word": "instinct",
+      "phonetic": "ˈinstiŋkt",
+      "phoneticReference": "instinct [ˈinstiŋkt] n.本能；直觉；生性",
+      "papers": 4,
+      "count": 4,
+      "evidence": [
+        {
+          "paper": "202406-2",
+          "forms": [
+            "instinct"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-2",
+          "forms": [
+            "instincts"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-1",
+          "forms": [
+            "instinct"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-3",
+          "forms": [
+            "instinct"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "temptation",
+      "phonetic": "tempˈtei∫ən",
+      "phoneticReference": "temptation [tempˈtei∫ən] n.诱惑，引诱",
+      "papers": 5,
+      "count": 9,
+      "evidence": [
+        {
+          "paper": "202406-2",
+          "forms": [
+            "temptation"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-3",
+          "forms": [
+            "temptation"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-1",
+          "forms": [
+            "temptations"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-2",
+          "forms": [
+            "temptation"
+          ],
+          "count": 5
+        },
+        {
+          "paper": "202606-3",
+          "forms": [
+            "temptations"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "resist",
+      "phonetic": "riˈzist",
+      "phoneticReference": "resist [riˈzist] vt.&vi.抵抗，抵制",
+      "papers": 5,
+      "count": 11,
+      "evidence": [
+        {
+          "paper": "202406-2",
+          "forms": [
+            "resist"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-3",
+          "forms": [
+            "resist",
+            "resisting"
+          ],
+          "count": 3
+        },
+        {
+          "paper": "202606-1",
+          "forms": [
+            "resisting"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-2",
+          "forms": [
+            "resist",
+            "resisting"
+          ],
+          "count": 5
+        },
+        {
+          "paper": "202606-3",
+          "forms": [
+            "resisting"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "deteriorate",
+      "phonetic": "dɪˈtɪərɪəreɪt",
+      "phoneticReference": "deteriorate [dɪˈtɪərɪəreɪt] v. 恶化，(使)变坏，退化",
+      "papers": 5,
+      "count": 5,
+      "evidence": [
+        {
+          "paper": "202412-1",
+          "forms": [
+            "deteriorated"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-2",
+          "forms": [
+            "deteriorating"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-3",
+          "forms": [
+            "deteriorated"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-1",
+          "forms": [
+            "deteriorating"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-3",
+          "forms": [
+            "deteriorating"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "education",
+      "phonetic": "ˌedju(ː)ˈkei∫ən",
+      "phoneticReference": "education [ˌedju(ː)ˈkei∫ən] n.教育;训导;教育学",
+      "papers": 7,
+      "count": 22,
+      "evidence": [
+        {
+          "paper": "202406-3",
+          "forms": [
+            "education"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202412-1",
+          "forms": [
+            "education"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202412-3",
+          "forms": [
+            "education"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-1",
+          "forms": [
+            "education"
+          ],
+          "count": 11
+        },
+        {
+          "paper": "202512-1",
+          "forms": [
+            "education"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202606-1",
+          "forms": [
+            "education"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-3",
+          "forms": [
+            "education"
+          ],
+          "count": 3
+        }
+      ]
+    },
+    {
+      "word": "university",
+      "phonetic": "ˌjuːniˈvəːsiti",
+      "phoneticReference": "university [ˌjuːniˈvəːsiti] n.大学，综合性大学",
+      "papers": 11,
+      "count": 17,
+      "evidence": [
+        {
+          "paper": "202406-1",
+          "forms": [
+            "university"
+          ],
+          "count": 4
+        },
+        {
+          "paper": "202406-2",
+          "forms": [
+            "university"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202406-3",
+          "forms": [
+            "university"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202412-1",
+          "forms": [
+            "university"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202506-1",
+          "forms": [
+            "university"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202506-2",
+          "forms": [
+            "university"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "university"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-1",
+          "forms": [
+            "university"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-2",
+          "forms": [
+            "university"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-1",
+          "forms": [
+            "university"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-3",
+          "forms": [
+            "university"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "independent",
+      "phonetic": "indiˈpendənt",
+      "phoneticReference": "independent [indiˈpendənt] a.独立的;自主的",
+      "papers": 6,
+      "count": 12,
+      "evidence": [
+        {
+          "paper": "202412-1",
+          "forms": [
+            "independent"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-3",
+          "forms": [
+            "independent"
+          ],
+          "count": 5
+        },
+        {
+          "paper": "202506-1",
+          "forms": [
+            "independent"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-1",
+          "forms": [
+            "independent"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-2",
+          "forms": [
+            "independent"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-1",
+          "forms": [
+            "independent"
+          ],
+          "count": 3
+        }
+      ]
+    },
+    {
+      "word": "achievement",
+      "phonetic": "əˈt∫iːvmənt",
+      "phoneticReference": "achievement [əˈt∫iːvmənt] n.完成；成就/绩",
+      "papers": 4,
+      "count": 12,
+      "evidence": [
+        {
+          "paper": "202412-2",
+          "forms": [
+            "achievement"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-1",
+          "forms": [
+            "achievement",
+            "achievements"
+          ],
+          "count": 6
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "achievements"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-1",
+          "forms": [
+            "achievement",
+            "achievements"
+          ],
+          "count": 4
+        }
+      ]
+    },
+    {
+      "word": "advantage",
+      "phonetic": "ədˈvɑːntidʒ",
+      "phoneticReference": "advantage [ədˈvɑːntidʒ] n.优点，优势；好处",
+      "papers": 4,
+      "count": 4,
+      "evidence": [
+        {
+          "paper": "202412-1",
+          "forms": [
+            "advantage"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-1",
+          "forms": [
+            "advantage"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-2",
+          "forms": [
+            "advantage"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "advantage"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "generation",
+      "phonetic": "ˌdʒenəˈrei∫ən",
+      "phoneticReference": "generation [ˌdʒenəˈrei∫ən] n.一代(人)；产生",
+      "papers": 4,
+      "count": 5,
+      "evidence": [
+        {
+          "paper": "202406-1",
+          "forms": [
+            "generation"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202412-2",
+          "forms": [
+            "generation"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-1",
+          "forms": [
+            "generation"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-3",
+          "forms": [
+            "generation"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "citizen",
+      "phonetic": "ˈsitizn",
+      "phoneticReference": "citizen [ˈsitizn] n.公民；市民，居民",
+      "papers": 3,
+      "count": 5,
+      "evidence": [
+        {
+          "paper": "202406-1",
+          "forms": [
+            "citizens"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-3",
+          "forms": [
+            "citizens"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-1",
+          "forms": [
+            "citizen",
+            "citizens"
+          ],
+          "count": 3
+        }
+      ]
+    },
+    {
+      "word": "authority",
+      "phonetic": "ɔːˈθɔriti",
+      "phoneticReference": "authority [ɔːˈθɔriti] n.当局，官方；权力",
+      "papers": 3,
+      "count": 4,
+      "evidence": [
+        {
+          "paper": "202412-1",
+          "forms": [
+            "authority"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-3",
+          "forms": [
+            "authority"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202606-1",
+          "forms": [
+            "authorities"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "commitment",
+      "phonetic": "kəˈmɪtmənt",
+      "phoneticReference": "commitment [kəˈmɪtmənt]  n. 1. 信奉，献身 2. 承担的义务 3. 承诺，许诺，保证",
+      "papers": 2,
+      "count": 5,
+      "evidence": [
+        {
+          "paper": "202512-1",
+          "forms": [
+            "commitment"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-2",
+          "forms": [
+            "commitment",
+            "commitments"
+          ],
+          "count": 4
+        }
+      ]
+    },
+    {
+      "word": "attitude",
+      "phonetic": "ˈætitjuːd",
+      "phoneticReference": "attitude [ˈætitjuːd] n.态度，看法；姿势",
+      "papers": 2,
+      "count": 2,
+      "evidence": [
+        {
+          "paper": "202506-1",
+          "forms": [
+            "attitude"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "attitude"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "belief",
+      "phonetic": "biˈliːf",
+      "phoneticReference": "belief [biˈliːf] n.信任，相信；信念",
+      "papers": 6,
+      "count": 23,
+      "evidence": [
+        {
+          "paper": "202406-2",
+          "forms": [
+            "belief",
+            "beliefs"
+          ],
+          "count": 15
+        },
+        {
+          "paper": "202412-3",
+          "forms": [
+            "belief"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202506-2",
+          "forms": [
+            "beliefs"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "beliefs"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-2",
+          "forms": [
+            "beliefs"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-2",
+          "forms": [
+            "belief",
+            "beliefs"
+          ],
+          "count": 3
+        }
+      ]
+    },
+    {
+      "word": "reality",
+      "phonetic": "ri(ː)ˈæliti",
+      "phoneticReference": "reality [ri(ː)ˈæliti] n.现实；真实",
+      "papers": 6,
+      "count": 18,
+      "evidence": [
+        {
+          "paper": "202406-2",
+          "forms": [
+            "reality"
+          ],
+          "count": 8
+        },
+        {
+          "paper": "202412-2",
+          "forms": [
+            "reality"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-3",
+          "forms": [
+            "realities",
+            "reality"
+          ],
+          "count": 3
+        },
+        {
+          "paper": "202512-1",
+          "forms": [
+            "reality"
+          ],
+          "count": 3
+        },
+        {
+          "paper": "202512-3",
+          "forms": [
+            "reality"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-1",
+          "forms": [
+            "reality"
+          ],
+          "count": 2
+        }
+      ]
+    },
+    {
+      "word": "traditional",
+      "phonetic": "trəˈdi∫ən(ə)l",
+      "phoneticReference": "traditional [trəˈdi∫ən(ə)l] a.传统的，惯例的",
+      "papers": 5,
+      "count": 7,
+      "evidence": [
+        {
+          "paper": "202406-1",
+          "forms": [
+            "traditional"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202406-3",
+          "forms": [
+            "traditional"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-2",
+          "forms": [
+            "traditional"
+          ],
+          "count": 3
+        },
+        {
+          "paper": "202506-2",
+          "forms": [
+            "traditional"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-1",
+          "forms": [
+            "traditional"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "freedom",
+      "phonetic": "ˈfriːdəm",
+      "phoneticReference": "freedom [ˈfriːdəm] n.自由；自主",
+      "papers": 3,
+      "count": 6,
+      "evidence": [
+        {
+          "paper": "202512-1",
+          "forms": [
+            "freedom"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202512-2",
+          "forms": [
+            "freedom"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202606-1",
+          "forms": [
+            "freedom"
+          ],
+          "count": 2
+        }
+      ]
+    },
+    {
+      "word": "emphasis",
+      "phonetic": "ˈemfəsis",
+      "phoneticReference": "emphasis [ˈemfəsis] n.强调，重点，重要性",
+      "papers": 3,
+      "count": 4,
+      "evidence": [
+        {
+          "paper": "202406-1",
+          "forms": [
+            "emphasis"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202406-3",
+          "forms": [
+            "emphasis"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-2",
+          "forms": [
+            "emphasis"
+          ],
+          "count": 2
+        }
+      ]
+    },
+    {
+      "word": "appropriate",
+      "phonetic": "əˈprəupriit",
+      "phoneticReference": "appropriate [əˈprəupriit] a.适当的，恰当的",
+      "papers": 3,
+      "count": 4,
+      "evidence": [
+        {
+          "paper": "202512-3",
+          "forms": [
+            "appropriate"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202606-1",
+          "forms": [
+            "appropriate"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-2",
+          "forms": [
+            "appropriate"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "reasonable",
+      "phonetic": "ˈriːznəbl",
+      "phoneticReference": "reasonable [ˈriːznəbl] a.合情合理的；公道的",
+      "papers": 5,
+      "count": 6,
+      "evidence": [
+        {
+          "paper": "202412-1",
+          "forms": [
+            "reasonable"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-2",
+          "forms": [
+            "reasonable"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-2",
+          "forms": [
+            "reasonable"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202606-1",
+          "forms": [
+            "reasonable"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-3",
+          "forms": [
+            "reasonable"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "inevitable",
+      "phonetic": "inˈevitəbl",
+      "phoneticReference": "inevitable [inˈevitəbl] a.不可避免的，必然的",
+      "papers": 5,
+      "count": 9,
+      "evidence": [
+        {
+          "paper": "202412-1",
+          "forms": [
+            "inevitable"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-2",
+          "forms": [
+            "inevitable"
+          ],
+          "count": 3
+        },
+        {
+          "paper": "202512-1",
+          "forms": [
+            "inevitable"
+          ],
+          "count": 3
+        },
+        {
+          "paper": "202512-2",
+          "forms": [
+            "inevitable"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-3",
+          "forms": [
+            "inevitable"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "transformation",
+      "phonetic": "ˌtrænsfəˈmei∫ən",
+      "phoneticReference": "transformation [ˌtrænsfəˈmei∫ən] n.变化；改造；转变",
+      "papers": 4,
+      "count": 4,
+      "evidence": [
+        {
+          "paper": "202412-2",
+          "forms": [
+            "transformation"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-2",
+          "forms": [
+            "transformation"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-3",
+          "forms": [
+            "transformation"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-2",
+          "forms": [
+            "transformations"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "adopt",
+      "phonetic": "əˈdɔpt",
+      "phoneticReference": "adopt [əˈdɔpt] vt.收养；采用；采取",
+      "papers": 7,
+      "count": 9,
+      "evidence": [
+        {
+          "paper": "202406-1",
+          "forms": [
+            "adopts"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202406-2",
+          "forms": [
+            "adopt"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202406-3",
+          "forms": [
+            "adopts"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-1",
+          "forms": [
+            "adopted"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-2",
+          "forms": [
+            "adopted"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "adopted"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202512-2",
+          "forms": [
+            "adopt"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "overcome",
+      "phonetic": "ˌəuvəˈkʌm",
+      "phoneticReference": "overcome [ˌəuvəˈkʌm] vt.战胜，克服",
+      "papers": 5,
+      "count": 5,
+      "evidence": [
+        {
+          "paper": "202406-2",
+          "forms": [
+            "overcoming"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-1",
+          "forms": [
+            "overcoming"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-1",
+          "forms": [
+            "overcoming"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "overcoming"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-2",
+          "forms": [
+            "overcome"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "cultivate",
+      "phonetic": "ˈkʌltiveit",
+      "phoneticReference": "cultivate [ˈkʌltiveit] vt.耕；种植；培养",
+      "papers": 4,
+      "count": 5,
+      "evidence": [
+        {
+          "paper": "202506-2",
+          "forms": [
+            "cultivate",
+            "cultivating"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202512-1",
+          "forms": [
+            "cultivate"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202512-3",
+          "forms": [
+            "cultivate"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-2",
+          "forms": [
+            "cultivating"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "pursue",
+      "phonetic": "pəˈsjuː",
+      "phoneticReference": "pursue [pəˈsjuː] vt.追赶，追踪；进行",
+      "papers": 6,
+      "count": 12,
+      "evidence": [
+        {
+          "paper": "202412-1",
+          "forms": [
+            "pursue",
+            "pursued"
+          ],
+          "count": 2
+        },
+        {
+          "paper": "202412-2",
+          "forms": [
+            "pursuing"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202412-3",
+          "forms": [
+            "pursued"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-1",
+          "forms": [
+            "pursue"
+          ],
+          "count": 4
+        },
+        {
+          "paper": "202512-1",
+          "forms": [
+            "pursue"
+          ],
+          "count": 3
+        },
+        {
+          "paper": "202512-2",
+          "forms": [
+            "pursue"
+          ],
+          "count": 1
+        }
+      ]
+    },
+    {
+      "word": "motivate",
+      "phonetic": "ˈməutiveit",
+      "phoneticReference": "motivate [ˈməutiveit] vt.促动；激励，激发",
+      "papers": 3,
+      "count": 4,
+      "evidence": [
+        {
+          "paper": "202412-1",
+          "forms": [
+            "motivating"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-1",
+          "forms": [
+            "motivating"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202606-3",
+          "forms": [
+            "motivated",
+            "motivating"
+          ],
+          "count": 2
+        }
+      ]
+    },
+    {
+      "word": "prospect",
+      "phonetic": "ˈprɔspekt",
+      "phoneticReference": "prospect [ˈprɔspekt] n.展望；前景，前程",
+      "papers": 4,
+      "count": 4,
+      "evidence": [
+        {
+          "paper": "202406-1",
+          "forms": [
+            "prospects"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202406-3",
+          "forms": [
+            "prospects"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-2",
+          "forms": [
+            "prospect"
+          ],
+          "count": 1
+        },
+        {
+          "paper": "202506-3",
+          "forms": [
+            "prospect"
+          ],
+          "count": 1
+        }
+      ]
+    }
+  ]
+}

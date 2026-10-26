@@ -13,6 +13,16 @@ countStrings(catalog);
 const shared = new Map([...counts].filter(([value, count]) => value.length >= 24 && count >= 3)
   .map(([value], index) => [value, `shared${index}`]));
 const wordBatches = Array.from({length: Math.ceil(catalog.words.length / 100)}, (_, index) => catalog.words.slice(index * 100, (index + 1) * 100));
+// Store repeated field names once. Decode into the same ordinary word objects
+// so adding complete examples does not enlarge the initial script unnecessarily.
+const shapes = [];
+const shapeIds = new Map();
+const packWord = word => {
+  const keys = Object.keys(word), signature = JSON.stringify(keys);
+  if (!shapeIds.has(signature)) { shapeIds.set(signature, shapes.length); shapes.push(keys); }
+  return [shapeIds.get(signature), ...keys.map(key => word[key])];
+};
+const packedBatches = wordBatches.map(batch => batch.map(packWord));
 function serialize(value) {
   if (typeof value === 'string') return shared.get(value) ?? JSON.stringify(value);
   if (value === catalog.words) return `[${wordBatches.map((_, index) => `...words${index}`).join(',')}]`;
@@ -24,8 +34,9 @@ function serialize(value) {
 }
 const declarations = (annotation = '') => [...shared].map(([value, name]) => `const ${name}${annotation} = ${JSON.stringify(value)};`).join('\n');
 const data = serialize(catalog);
-const batches = (typed) => wordBatches.map((batch, index) => `const words${index}${typed ? ': typeof SourceCatalog.words' : ''} = ${serialize(batch)};`).join('\n');
-const moduleSource = (typed = false) => `${declarations(typed ? ': string' : '')}\n${batches(typed)}\nconst catalog${typed ? ': typeof SourceCatalog' : ''} = ${data};\nexport default catalog;\n`;
+const batches = (typed) => packedBatches.map((batch, index) => `const words${index}${typed ? ': typeof SourceCatalog.words' : ''} = unpack(${serialize(batch)});`).join('\n');
+const decoder = typed => `const shapes${typed ? ': string[][]' : ''} = ${JSON.stringify(shapes)};\nconst unpack = (rows${typed ? ': [number, ...unknown[]][]' : ''})${typed ? ': typeof SourceCatalog.words' : ''} => rows.map(([shape, ...values]) => Object.fromEntries(shapes[shape].map((key, index) => [key, values[index]])))${typed ? ' as typeof SourceCatalog.words' : ''};`;
+const moduleSource = (typed = false) => `${declarations(typed ? ': string' : '')}\n${decoder(typed)}\n${batches(typed)}\nconst catalog${typed ? ': typeof SourceCatalog' : ''} = ${data};\nexport default catalog;\n`;
 const runtime = await import(`data:text/javascript;base64,${Buffer.from(moduleSource()).toString('base64')}`);
 assert.deepStrictEqual(runtime.default, catalog, 'Runtime catalog must preserve every source field and value.');
 // Typed batches avoid inferring one union from thousands of object literals.

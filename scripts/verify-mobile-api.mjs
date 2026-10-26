@@ -199,7 +199,7 @@ try {
   assert.deepEqual(oldReadingRetry.body.state.reading, oldReadingSaved.body.state.reading);
   const changedVersionRetry = await sync([{ ...oldReading, action: { ...oldReading.action, contentVersion: api.MOBILE_CONTENT_VERSION } }]);
   assert.equal(changedVersionRetry.body.conflicts[0].code, 'operation_mismatch');
-  const expandedReading = operation({ type: 'reading-complete', passageId: expandedPassage.id, contentVersion: api.MOBILE_CONTENT_VERSION });
+  const expandedReading = operation({ type: 'reading-complete', passageId: expandedPassage.id, contentVersion: 'wordweave-2026-10-v2' });
   const expandedReadingSaved = await sync([expandedReading]);
   assert.deepEqual(expandedReadingSaved.body.accepted, [expandedReading.operationId]);
   assert.equal(expandedReadingSaved.body.state.reading.completed[expandedPassage.id], expandedReading.occurredAt);
@@ -211,6 +211,14 @@ try {
   assert.equal(unknownVersionResult.body.conflicts[0].code, 'content_version');
   assert.equal(unknownVersionResult.body.revision, expandedReadingSaved.body.revision);
   assert.deepEqual(unknownVersionResult.body.state, expandedReadingSaved.body.state);
+
+  const cet6Expansion = api.readingPassages.find(p => p.batch.startsWith('cet6-exam-'));
+  assert.ok(cet6Expansion && cet6Expansion.wordIds.length === 25);
+  const currentReading = operation({ type: 'reading-complete', passageId: cet6Expansion.id, contentVersion: api.MOBILE_CONTENT_VERSION });
+  const currentReadingSaved = await sync([currentReading]);
+  assert.deepEqual(currentReadingSaved.body.accepted, [currentReading.operationId]);
+  assert.ok(cet6Expansion.wordIds.every(id => currentReadingSaved.body.state.reading.encounters[id]?.count === 1));
+  assert.deepEqual(currentReadingSaved.body.state.events, expandedReadingSaved.body.state.events, 'new CET6 reading does not create practice scores');
 
   const beforeFailure = await boot(tokenA);
   const failing = operation({ type: 'result', wordId, mode: 'recall', outcome: 'wrong', answer: 'preserve' });

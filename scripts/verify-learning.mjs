@@ -13,7 +13,7 @@ let s=initialState();const id=seedWords[0].id;s=applyAction(s,{type:'familiar',w
 s=applyAction(s,{type:'result',wordId:id,mode:'meaning',outcome:'correct',answer:'展示',operationId:'b'},now);assert.equal(s.progress[id].recall.attempts,0);assert.equal(s.events[0].delayed,false);
 s=applyAction(s,{type:'result',wordId:id,mode:'meaning',outcome:'correct',answer:'展示',operationId:'c'},now+DAY);assert.equal(s.events[1].delayed,true);
 const count=s.events.length;s=applyAction(s,{type:'result',wordId:id,mode:'meaning',outcome:'correct',answer:'展示',operationId:'c'},now+DAY);assert.equal(s.events.length,count);
-assert.equal(seedWords.length,2463);assert.equal(scenes.length,20);for(const w of seedWords.filter(w=>w.materialStatus==='complete')){assert.ok(w.tags.length);assert.ok(w.phonetic);assert.notEqual(w.example,w.test);assert.ok(w.sourceUrl.includes(w.version));assert.ok(scenes.find(x=>x.id===w.scene)?.words.includes(w.word));assert.ok(w.example.toLowerCase().includes(w.word)||['research','rehearsal','conserve'].includes(w.word),w.word);}
+assert.equal(seedWords.length,2613);assert.equal(scenes.length,26);for(const w of seedWords.filter(w=>w.materialStatus==='complete')){assert.ok(w.tags.length);assert.ok(w.phonetic);assert.notEqual(w.example,w.test);assert.ok(w.sourceUrl.includes(w.version));assert.ok(scenes.find(x=>x.id===w.scene)?.words.includes(w.word));assert.ok(w.example.toLowerCase().includes(w.word)||['research','rehearsal','conserve'].includes(w.word),w.word);}
 console.log('PASS: independent ability tracks, same-day scheduling, spaced intervals, hinted/wrong outcomes, baseline not mastery, delayed-test classification, idempotency and complete-content scene mappings.');
 const added=seedWords.filter(w=>w.id.startsWith('cet4-common-'));
 assert.equal(added.length,300);
@@ -39,4 +39,4 @@ s=applyAction(initialState(),{type:'introduce',ids:[basic.id],operationId:'basic
 assert.equal(s.progress[basic.id].context,undefined);
 assert.equal(dueItems(s,now).length,2);
 assert.throws(()=>applyAction(s,{type:'result',wordId:basic.id,mode:'context',outcome:'correct',answer:'',operationId:'bad-context'},now),/训练方向/);
-console.log('PASS: all 2085 source words included, original IDs preserved, 2463 unique IDs, basic entries use two directions only.');
+console.log('PASS: all 2085 source words included, original IDs preserved, 2613 unique IDs, basic entries use two directions only.');

@@ -9,9 +9,9 @@ const { readingPassages, coursePassages, nextReading } = await import('../.sites
 const now = Date.now();
 const byId = new Map(seedWords.map(word => [word.id, word]));
 
-assert.equal(readingPassages.length, 71);
-assert.equal(new Set(readingPassages.map(p => p.id)).size, 71);
-assert.equal(new Set(readingPassages.map(p => p.title)).size, 71);
+assert.equal(readingPassages.length, 77);
+assert.equal(new Set(readingPassages.map(p => p.id)).size, 77);
+assert.equal(new Set(readingPassages.map(p => p.title)).size, 77);
 assert.equal(new Set(readingPassages.flatMap(p => p.wordIds)).size, seedWords.length);
 for (const passage of readingPassages) {
   assert.ok(passage.wordIds.length >= 20 && passage.wordIds.length <= 40);
@@ -71,7 +71,7 @@ const invalid = structuredClone(progress); invalid.reading.encounters.unknown = 
 assert.ok(!stateSchema.safeParse(invalid).success);
 const imported = { ...seedWords[0], id: 'imported_word', word: 'customword', tags: ['CET6'] };
 progress.custom.push(imported);
-assert.equal(readingSummary(progress).total, 2128, 'Imported words do not falsely expand the built-in course');
+assert.equal(readingSummary(progress).total, 2278, 'Imported words do not falsely expand the built-in course');
 assert.equal(seedWords.find(w => w.word === 'sheriff').meaning.includes('县警长'), true);
 assert.equal(seedWords.find(w => w.word === 'arc').meaning.includes('弧线'), true);
-console.log('PASS: 71 real paragraphs, exact targets, full 2463-sense coverage, legacy CET4 progress continues into new readings, resume/loop, completion deduplication, backup roundtrip, old backups, untrusted completion rejection and dictionary corrections.');
+console.log('PASS: 77 real paragraphs, exact targets, full 2613-sense coverage, legacy CET4 progress continues into new readings, resume/loop, completion deduplication, backup roundtrip, old backups, untrusted completion rejection and dictionary corrections.');

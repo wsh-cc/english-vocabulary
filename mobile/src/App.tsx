@@ -207,7 +207,7 @@ export default function App() {
             <section className="ww-card"><div className="app-section-title"><h2><LibraryBig size={19}/>导入词表</h2></div><p>添加你的个人词汇。导入词条可查询和复习，暂不自动编入内置阅读。</p><div className="app-actions"><button className="ww-button ww-secondary" disabled={busy} onClick={()=>void readFile('words')}><Upload size={16}/>选择 JSON 词表</button><button className="ww-button ww-ghost" onClick={()=>void run(async()=>{await native.writeBackup({text:JSON.stringify(WORD_TEMPLATE,null,2),fileName:'词间-词表模板.json'});})}>下载格式模板</button></div></section>
           </PersonalDetail></Page>
           <Page id="my-about" retain={false}><PersonalDetail title="关于词间" subtitle="在句子里相遇，在回忆中熟悉。" onBack={personalHome} busy={busy}>
-            <section className="ww-card app-about"><img src="/icon.svg" alt=""/><h2>词间 WORDWEAVE</h2><p>在句子里相遇，在回忆中熟悉。</p><small>Android 0.1.12 · 2463 个内置义项 · 71 篇阅读</small><p className="ww-muted">四级现有 389 个带标签义项，六级 2128 个，两级有重叠。阅读接触不代表已掌握。</p><a href="https://wordweave-cet-study.shiw36663.chatgpt.site" target="_blank" rel="noreferrer">打开词间网站<ArrowRight size={14}/></a></section>
+            <section className="ww-card app-about"><img src="/icon.svg" alt=""/><h2>词间 WORDWEAVE</h2><p>在句子里相遇，在回忆中熟悉。</p><small>Android 0.1.13 · 2613 个内置义项 · 77 篇阅读</small><p className="ww-muted">四级现有 389 个带标签义项，六级 2278 个，两级有重叠。阅读接触不代表已掌握。</p><a href="https://wordweave-cet-study.shiw36663.chatgpt.site" target="_blank" rel="noreferrer">打开词间网站<ArrowRight size={14}/></a></section>
           </PersonalDetail></Page>
           <Page id="practice" retain={false}>{renderedPractice&&<ReviewView key={renderedPractice.key} {...props} items={renderedPractice.items} browse={renderedPractice.browse} onDone={finishPractice}/>}</Page>
         </PageStack>
